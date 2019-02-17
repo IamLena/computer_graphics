@@ -20,6 +20,10 @@ def error(message):
     error1.grid(row = 2, column = 2, columnspan = 3)
     error2.grid(row = 3, column = 2, columnspan = 3)
 
+def clearcanvas(event):
+    w.delete('all')
+    drawsys()
+
 #rectangle
 def isrect(M):
     cx = (M[0][0] + M[1][0] + M[2][0] + M[3][0])/4
@@ -33,10 +37,13 @@ def isrect(M):
     return dd1==dd2 and dd1==dd3 and dd1==dd4
 
 def draw_rect(M):
-    w.create_line(M[0][0], M[0][1], M[1][0], M[1][1])
-    w.create_line(M[1][0], M[1][1], M[2][0], M[2][1])
-    w.create_line(M[2][0], M[2][1], M[3][0], M[3][1])
-    w.create_line(M[3][0], M[3][1], M[0][0], M[0][1])
+    # w.create_line(M[0][0], M[0][1], M[1][0], M[1][1])
+    # w.create_line(M[1][0], M[1][1], M[2][0], M[2][1])
+    # w.create_line(M[2][0], M[2][1], M[3][0], M[3][1])
+    # w.create_line(M[3][0], M[3][1], M[0][0], M[0][1])
+
+    myrect = w.create_polygon(M, outline = 'black', fill = '')
+    return myrect
 
 def add_dot_rect(event):
     x = inputx_rect.get()
@@ -60,7 +67,7 @@ def add_dot_rect(event):
             w.create_oval(x, y, x+1, y + 1, fill='black')
         print(M)
         if (len(M) == 4):
-            draw_rect(M)
+            myrect = draw_rect(M)
             rect_label.grid_forget()
             inputx_rect.grid_forget()
             inputy_rect.grid_forget()
@@ -71,10 +78,11 @@ def add_dot_rect(event):
                 print('not a rectangle')     
 
 def createrect(event):
-    w.delete("all")
+    #w.delete(myrect) - not working
     drawsys()
 
     input_dots.grid_forget()
+    delete_btn.grid_forget()
 
     error1.grid_forget()
     error2.grid_forget()
@@ -93,7 +101,10 @@ def createrect(event):
         dots_label.grid(row=5, column=2, columnspan = 3)
         inputx_dots.grid(row = 6, column = 2)
         inputy_dots.grid(row = 6, column = 3)
-        add_btn_dots.grid(row = 6, column = 4)  
+        add_btn_dots.grid(row = 6, column = 4)
+        delete_btn.grid(row = 7, column = 2, columnspan = 3)
+    else:
+        delete_btn.grid(row = 5, column = 2, columnspan = 3)
 
 #dots
 def add_dot_dots(event):
@@ -110,20 +121,22 @@ def add_dot_dots(event):
     else:
         exist = 0
         for i in range(len(M)):
-            if M[i]==[x,y]:
+            if Dots[i]==[x,y]:
                 print('It has been already added')
                 exist = 1
         if exist == 0:
-            M.append([x,y])
+            Dots.append([x,y])
             w.create_oval(x, y, x+1, y + 1, fill='black')
-        print(M)
+        print(Dots)
 
 def inputdots(event):
     row = input_dots.grid_info()['row']
+    delete_btn.grid_forget()
     dots_label.grid(row = row + 1, column = 2, columnspan = 3)
     inputx_dots.grid(row = row + 2, column = 2)
     inputy_dots.grid(row = row + 2, column = 3)
     add_btn_dots.grid(row = row + 2, column = 4)
+    delete_btn.grid(row = row + 3, column = 2, columnspan = 3)
 
 def solve(event):
     drawsys()
@@ -139,8 +152,6 @@ def solve(event):
                     dot3 = M[k]
                     print('looking at this triangle:')
                     print(dot1,dot2,dot3)
-
-
 
 #buttons
 input_rect = Button(root, text = 'create new rectangle', width = 20, height = 1, bg = 'black', fg = 'white')
@@ -169,15 +180,18 @@ w = Canvas(root, width = 610, height = 610)
 w.grid(row = 1, column = 1, rowspan = 20)
 input_rect.grid(row = 1, column = 2, columnspan = 3)
 input_dots.grid(row = 2, column = 2, columnspan = 3)
+delete_btn.grid(row = 3, column = 2, columnspan = 3)
 
 #run
 M =[]
+Dots = []
 drawsys()
 input_rect.bind("<Button-1>", createrect)
 input_dots.bind("<Button-1>", inputdots)
 
 add_btn_rect.bind("<Button-1>", add_dot_rect)
 add_btn_dots.bind("<Button-1>", add_dot_dots)
+delete_btn.bind("<Button-1>", clearcanvas)
 
 #left click
 #add_btn.bind("<Return>", add_dot)#fires by enter
