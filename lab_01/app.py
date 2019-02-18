@@ -9,7 +9,6 @@ Dots = []
 RectVer = []
 rectCenter = []
 triangleCenter = []
-scaleKoef = 5
 
 #functions
 def getLine(x1, y1, x2, y2):#get koefs by two dots
@@ -23,11 +22,11 @@ def findIntersection(m1, b1, m2, b2):#get the intersection of two lines by their
     return x, y
 
 def drawsys():#draws the system and the frame
-    w.create_rectangle(5, 5, canvasWidth - 10, canvasHeight - 10)
-    w.create_line(5, canvasHeight/2 + 5, canvasWidth - 10, canvasHeight/2 + 5)#x
-    w.create_line(canvasWidth/2 + 5, 5, canvasWidth/2 + 5, canvasHeight - 10)#y
+    w.create_rectangle(5, 5, canvasWidth - 5, canvasHeight - 5)
+    w.create_line(5, canvasHeight/2 + 5, canvasWidth - 5, canvasHeight/2 + 5)#x
+    w.create_line(canvasWidth/2 + 5, 5, canvasWidth/2 + 5, canvasHeight - 5)#y
 
-def clearDots():
+def clearDots():#clear set of dots, redraw the rectangle
     error.config(text = '')
 
     global Dots
@@ -37,7 +36,7 @@ def clearDots():
     drawsys()
     draw_rect(RectVer)
 
-def clearRect():
+def clearRect():#clear the rectangle, redraw the dots
     error.config(text = '')
 
     global Dots
@@ -47,7 +46,7 @@ def clearRect():
     drawsys()
     draw_dots(Dots)
 
-def clearcanvas(event):
+def clearcanvas(event):#clear everything, dots sets = to zero
     error.config(text = '')
 
     global Dots
@@ -57,27 +56,60 @@ def clearcanvas(event):
     RectVer = []
     drawsys()
 
+def getScaleKoef(RectVer, Dots):
+    maxx = 0
+    maxy = 0
+    for i in RectVer:
+        if (abs(i[0]) > maxx):
+            maxx = abs(i[0])
+    for i in Dots:
+        if (abs(i[0]) > maxx):
+            maxx = abs(i[0])
+
+    for i in RectVer:
+        if (abs(i[1]) > maxy):
+            maxy = abs(i[1])
+    for i in Dots:
+        if (abs(i[1]) > maxy):
+            maxy = abs(i[1])
+
+    if (maxx == 0 and maxy != 0):
+        return ((canvasHeight - 10)/2 - 10)/maxy
+    if (maxy == 0 and maxx != 0):
+        return ((canvasWidth - 10)/2 - 10)/maxx
+
+    ky = ((canvasHeight - 10)/2 - 10)/maxy
+    kx = ((canvasWidth - 10)/2 - 10)/maxx
+
+    if (ky > kx):
+        return kx
+    else:
+        return ky
+
 def scale(dot):
-    global scaleKoef
+    global RectVer
+    global Dots
+    scaleKoef = getScaleKoef(RectVer, Dots)
+    print(scaleKoef)
     x = canvasWidth/2 + 5 + dot[0] * scaleKoef
     y = canvasHeight/2 + 5 - dot[1] * scaleKoef
     return [x, y]
 
-def draw_rect(M):
+def draw_rect(M):#draws the rectangle
     #supposed to be in order
     if (len(M) == 4):
         w.create_polygon(scale(M[0]), scale(M[1]), scale(M[2]), scale(M[3]), outline = 'black', fill = '')
 
-def draw_dots(M):
+def draw_dots(M):#draws all the dots
     for i in M:
         scaled = scale(i)
         w.create_oval(scaled[0], scaled[1], scaled[0]+1, scaled[1] + 1, fill='black')
 
-def errorMes(message):
+def errorMes(message):#shows the error messages
     print('error!', message)
     error.config(text= message)
 
-def isrect(M):
+def isrect(M):#return the boolean if the polygon is a rectangle, gets the center coords
     global rect_center
     cx = (M[0][0] + M[1][0] + M[2][0] + M[3][0])/4
     cy = (M[0][1] + M[1][1] + M[2][1] + M[3][1])/4
@@ -89,7 +121,7 @@ def isrect(M):
     dd4=sqrt(abs(cx-M[3][0]))+sqrt(abs(cy-M[3][1]))
     return dd1==dd2 and dd1==dd3 and dd1==dd4
 
-def add_dot_rect(event):
+def add_dot_rect(event):#add the dot to rectVertexs, if 4 of them - do actions
     error.config(text = '')
     rect_label.config(text = 'input the coordinats of four dots\n in the correct order:')
 
@@ -125,7 +157,7 @@ def add_dot_rect(event):
             if (not isrect(RectVer)):
                 errorMes('not a rectangle')
 
-def add_dot_dots(event):
+def add_dot_dots(event):#add the dot of the set
     error.config(text = '')
     rect_label.config(text = 'input the coordinats of the dot:')
 
@@ -150,7 +182,7 @@ def add_dot_dots(event):
         print(Dots)
         draw_dots(Dots)
 
-def solve(event):
+def solve(event):#solves the task
     global RectVer
     global Dots
     global rect_center
@@ -191,7 +223,7 @@ def solve(event):
         w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
 
 
-def createrect(event):
+def createrect(event):#show the inputs, clears the rect
     clearRect()
 
     rect_label.grid(row = 3, column = 2, columnspan = 8)
@@ -201,7 +233,7 @@ def createrect(event):
     inputy_rect.grid(row = 4, column = 6, columnspan = 2)
     add_btn_rect.grid(row = 4, column = 8, columnspan = 2)
 
-def createdots(event):
+def createdots(event):#shows the inputs, clear the set of dots
     clearDots()
     dots_label.grid(row = 6, column = 2, columnspan = 8)
 
