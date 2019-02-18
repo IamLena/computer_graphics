@@ -2,10 +2,13 @@ from Tkinter import *
 from math import sqrt
 
 root = Tk()
-M =[]
+
+RectVertexs = []
 Dots = []
 scaleKoef = 5
 rect_center = []
+
+M =[]
 
 def getLine(x1, y1, x2, y2):
     m = (y1 - y2)/(x1 - x2)
@@ -21,7 +24,6 @@ def scale(dot):
     x = canvasWidth/2 + 5 + dot[0] * scaleKoef
     y = canvasHeight/2 + 5 - dot[1] * scaleKoef
     return [x, y]
-
 
 #total
 def drawsys():
@@ -239,12 +241,24 @@ delete_btn = Button(root, text = 'clear', width = 8, height = 1, bg = 'black', f
 
 w = Canvas(root, width = canvasWidth, height = canvasHeight)
 
+taskMessage = 'On the plane, a rectangle is defined\n\
+    by the coordinates of the vertices \n\
+    (in the order of the traversal) and a set of points. \n\
+    Find such a triangle with vertices at points of a set\n\
+    for which the straight line connecting \n\
+    the center of the rectangle and the center \n\
+    of gravity of the triangle forms \n\
+    the minimum angle with the axis of ordinates.'
+
+task = Label(root, text = taskMessage)
+
 #packer
 w.grid(row = 1, column = 1, rowspan = 20)
 input_rect.grid(row = 1, column = 2, columnspan = 3)
 input_dots.grid(row = 2, column = 2, columnspan = 3)
 solve_btn.grid(row = 3, column = 2, columnspan = 2)
 delete_btn.grid(row = 3, column = 4)
+task.grid(row = 12, rowspan = 8, column = 2, columnspan = 4)
 
 #run
 
