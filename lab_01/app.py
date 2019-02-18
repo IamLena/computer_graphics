@@ -28,6 +28,8 @@ def drawsys():#draws the system and the frame
     w.create_line(canvasWidth/2 + 5, 5, canvasWidth/2 + 5, canvasHeight - 10)#y
 
 def clearDots():
+    error.config(text = '')
+
     global Dots
     global RectVer
     w.delete('all')
@@ -36,6 +38,8 @@ def clearDots():
     draw_rect(RectVer)
 
 def clearRect():
+    error.config(text = '')
+
     global Dots
     global RectVer
     w.delete('all')
@@ -44,6 +48,8 @@ def clearRect():
     draw_dots(Dots)
 
 def clearcanvas(event):
+    error.config(text = '')
+
     global Dots
     global RectVer
     w.delete('all')
@@ -59,9 +65,8 @@ def scale(dot):
 
 def draw_rect(M):
     #supposed to be in order
-    if (len(M) == 2):
-        myrect = w.create_polygon(scale(M[0]), scale(M[1]), scale(M[2]), scale(M[3]), outline = 'black', fill = '')
-        return myrect
+    if (len(M) == 4):
+        w.create_polygon(scale(M[0]), scale(M[1]), scale(M[2]), scale(M[3]), outline = 'black', fill = '')
 
 def draw_dots(M):
     for i in M:
@@ -71,7 +76,6 @@ def draw_dots(M):
 def errorMes(message):
     print('error!', message)
     error.config(text= message)
-    error.grid(row = 10, column = 2, columnspan = 3)
 
 def isrect(M):
     global rect_center
@@ -86,7 +90,7 @@ def isrect(M):
     return dd1==dd2 and dd1==dd3 and dd1==dd4
 
 def add_dot_rect(event):
-    error.grid_forget()
+    error.config(text = '')
     rect_label.config(text = 'input the coordinats of four dots\n in the correct order:')
 
     x = inputx_rect.get()
@@ -110,18 +114,86 @@ def add_dot_rect(event):
         print(RectVer)
         if (len(RectVer) == 4):
             draw_rect(RectVer)
-
-            rect_label.config(text = 'four dots are provided')
-
+            
+            x_rect_lab.grid_forget()
             inputx_rect.grid_forget()
+            y_rect_lab.grid_forget()
             inputy_rect.grid_forget()
             add_btn_rect.grid_forget()
+            rect_label.config(text = 'four dots are provided')
 
             if (not isrect(RectVer)):
                 errorMes('not a rectangle')
 
+def add_dot_dots(event):
+    error.config(text = '')
+    rect_label.config(text = 'input the coordinats of the dot:')
+
+    x = inputx_dots.get()
+    y = inputy_dots.get()
+    inputx_dots.delete(0,END)
+    inputy_dots.delete(0,END)
+    try:
+        x = float(x)
+        y = float(y)
+    except ValueError:
+        errorMes('Input a float value')
+    else:
+        exist = 0
+        for i in range(len(Dots)):
+            if Dots[i]==[x,y]:
+                print('It has been already added')
+                exist = 1
+                break
+        if exist == 0:
+            Dots.append([x,y])
+        print(Dots)
+        draw_dots(Dots)
+
+def solve(event):
+    global RectVer
+    global Dots
+    global rect_center
+
+    if (len(RectVer) != 4 or not len(rect_center) == 2):
+        errorMes('input the rectangle first')
+    elif (len(Dots) < 3):
+        errorMes('not enough dots for a triangle')
+    else:
+        maxm = 0
+        xres = 0
+        yres = 0
+        triangle = []
+        for i in range(len(Dots)):
+                dot1 = Dots[i]
+                for j in range(i+1, len(Dots)):
+                    dot2 = Dots[j]
+                    for k in range(j+1, len(Dots)):
+                        dot3 = Dots[k]
+                        print('looking at this triangle:')
+                        print(dot1,dot2,dot3)
+                        m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
+                        m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
+                        xi, yi = findIntersection(m1, b1, m2, b2)
+                        
+                        print(xi, yi)
+
+                        mres, bres = getLine(xi, yi, rect_center[0], rect_center[1])
+                        
+                        if (maxm < abs(mres)):
+                            maxm = abs(mres)
+                            xres = xi
+                            yres = yi
+                            triangle = [scale(dot1), scale(dot2), scale(dot3)]
+        scaled1 = scale([xres, yres])
+        scaled2 = scale(rect_center)
+        w.create_polygon(triangle, outline = 'black', fill = '')
+        w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
+
+
 def createrect(event):
     clearRect()
+
     rect_label.grid(row = 3, column = 2, columnspan = 8)
     x_rect_lab.grid(row = 4, column = 2)
     inputx_rect.grid(row = 4, column = 3, columnspan = 2)
@@ -198,10 +270,11 @@ drawsys()
 
 input_rect.bind("<Button-1>", createrect)
 input_dots.bind("<Button-1>", createdots)
-# delete_btn.bind("<Button-1>", clearcanvas)
-# solve_btn.bind('<Button-1>', solve)
+
+delete_btn.bind("<Button-1>", clearcanvas)
+solve_btn.bind('<Button-1>', solve)
 
 add_btn_rect.bind("<Button-1>", add_dot_rect)
-# add_btn_dots.bind("<Button-1>", add_dot_dots)
+add_btn_dots.bind("<Button-1>", add_dot_dots)
 
 root.mainloop()
