@@ -9,6 +9,7 @@ Dots = []
 RectVer = []
 rectCenter = []
 triangleCenter = []
+scaleKoef = 1
 
 #functions
 def getLine(x1, y1, x2, y2):#get koefs by two dots
@@ -77,7 +78,8 @@ def getScaleKoef(RectVer, Dots):
         return ((canvasHeight - 10)/2 - 10)/maxy
     if (maxy == 0 and maxx != 0):
         return ((canvasWidth - 10)/2 - 10)/maxx
-
+    if (maxx == 0 and maxy == 0):
+        return 5
     ky = ((canvasHeight - 10)/2 - 10)/maxy
     kx = ((canvasWidth - 10)/2 - 10)/maxx
 
@@ -86,23 +88,44 @@ def getScaleKoef(RectVer, Dots):
     else:
         return ky
 
-def scale(dot):
+def scale(dot, koef):
     global RectVer
     global Dots
-    scaleKoef = getScaleKoef(RectVer, Dots)
-    print(scaleKoef)
-    x = canvasWidth/2 + 5 + dot[0] * scaleKoef
-    y = canvasHeight/2 + 5 - dot[1] * scaleKoef
+    
+
+    x = canvasWidth/2 + 5 + dot[0] * koef
+    y = canvasHeight/2 + 5 - dot[1] * koef
     return [x, y]
 
 def draw_rect(M):#draws the rectangle
     #supposed to be in order
+    global scaleKoef
+    global Dots
     if (len(M) == 4):
-        w.create_polygon(scale(M[0]), scale(M[1]), scale(M[2]), scale(M[3]), outline = 'black', fill = '')
+        newScaleKoef = getScaleKoef(M, Dots)
+        if (newScaleKoef != scaleKoef):
+            scaleKoef = newScaleKoef
+            w.delete('all')
+            drawsys()
+            for i in Dots:
+                scaled = scale(i, newScaleKoef)
+                w.create_oval(scaled[0], scaled[1], scaled[0]+1, scaled[1] + 1, fill='black')
+
+        w.create_polygon(scale(M[0], newScaleKoef), scale(M[1], newScaleKoef), scale(M[2], newScaleKoef), scale(M[3], newScaleKoef), outline = 'black', fill = '')
 
 def draw_dots(M):#draws all the dots
+    global scaleKoef
+    global RectVer
+    newScaleKoef = getScaleKoef(RectVer, Dots)
+    if (newScaleKoef != scaleKoef):
+        scaleKoef = newScaleKoef
+        if (len(RectVer) == 4):
+            w.delete('all')
+            drawsys()
+            w.create_polygon(scale(RectVer[0], newScaleKoef), scale(RectVer[1], newScaleKoef), scale(RectVer[2], newScaleKoef), scale(RectVer[3], newScaleKoef), outline = 'black', fill = '')
+
     for i in M:
-        scaled = scale(i)
+        scaled = scale(i, newScaleKoef)
         w.create_oval(scaled[0], scaled[1], scaled[0]+1, scaled[1] + 1, fill='black')
 
 def errorMes(message):#shows the error messages
@@ -186,6 +209,7 @@ def solve(event):#solves the task
     global RectVer
     global Dots
     global rect_center
+    global scaleKoef
 
     if (len(RectVer) != 4 or not len(rect_center) == 2):
         errorMes('input the rectangle first')
@@ -216,9 +240,9 @@ def solve(event):#solves the task
                             maxm = abs(mres)
                             xres = xi
                             yres = yi
-                            triangle = [scale(dot1), scale(dot2), scale(dot3)]
-        scaled1 = scale([xres, yres])
-        scaled2 = scale(rect_center)
+                            triangle = [scale(dot1, scaleKoef), scale(dot2, scaleKoef), scale(dot3, scaleKoef)]
+        scaled1 = scale([xres, yres], scaleKoef)
+        scaled2 = scale(rect_center, scaleKoef)
         w.create_polygon(triangle, outline = 'black', fill = '')
         w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
 
