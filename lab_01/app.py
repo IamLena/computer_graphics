@@ -23,9 +23,9 @@ def findIntersection(m1, b1, m2, b2):#get the intersection of two lines by their
     return x, y
 
 def drawsys():#draws the system and the frame
-    w.create_rectangle(5, 5, canvasWidth - 5, canvasHeight - 5)
-    w.create_line(5, canvasHeight/2 + 5, canvasWidth - 5, canvasHeight/2 + 5)#x
-    w.create_line(canvasWidth/2 + 5, 5, canvasWidth/2 + 5, canvasHeight - 5)#y
+    w.create_rectangle(5, 5, canvasWidth - 5, canvasHeight - 5, width=3)
+    w.create_line(5, canvasHeight/2, canvasWidth - 5, canvasHeight/2)#x
+    w.create_line(canvasWidth/2, 5, canvasWidth/2, canvasHeight - 5)#y
 
 def clearDots():#clear set of dots, redraw the rectangle
     error.config(text = '')
@@ -34,6 +34,8 @@ def clearDots():#clear set of dots, redraw the rectangle
     global RectVer
     w.delete('all')
     Dots = []
+    dotslist.delete(0, END)
+
     drawsys()
     draw_rect(RectVer)
 
@@ -44,6 +46,7 @@ def clearRect():#clear the rectangle, redraw the dots
     global RectVer
     w.delete('all')
     RectVer = []
+    rectList.delete(0, END)
     drawsys()
     draw_dots(Dots)
 
@@ -53,6 +56,7 @@ def clearcanvas(event):#clear everything, dots sets = to zero
     global Dots
     global RectVer
     w.delete('all')
+    dotslist.delete(0, END)
     Dots = []
     RectVer = []
     drawsys()
@@ -91,10 +95,9 @@ def getScaleKoef(RectVer, Dots):
 def scale(dot, koef):
     global RectVer
     global Dots
-    
 
-    x = canvasWidth/2 + 5 + dot[0] * koef
-    y = canvasHeight/2 + 5 - dot[1] * koef
+    x = canvasWidth/2 + dot[0] * koef
+    y = canvasHeight/2 - dot[1] * koef
     return [x, y]
 
 def draw_rect(M):#draws the rectangle
@@ -110,6 +113,8 @@ def draw_rect(M):#draws the rectangle
             for i in Dots:
                 scaled = scale(i, newScaleKoef)
                 w.create_oval(scaled[0], scaled[1], scaled[0]+1, scaled[1] + 1, fill='black')
+                w.create_text(scaled[0] + 7, scaled[1], text = '{0}'.format(i + 1))
+
 
         w.create_polygon(scale(M[0], newScaleKoef), scale(M[1], newScaleKoef), scale(M[2], newScaleKoef), scale(M[3], newScaleKoef), outline = 'black', fill = '')
 
@@ -119,14 +124,15 @@ def draw_dots(M):#draws all the dots
     newScaleKoef = getScaleKoef(RectVer, Dots)
     if (newScaleKoef != scaleKoef):
         scaleKoef = newScaleKoef
+        w.delete('all')
+        drawsys()
         if (len(RectVer) == 4):
-            w.delete('all')
-            drawsys()
             w.create_polygon(scale(RectVer[0], newScaleKoef), scale(RectVer[1], newScaleKoef), scale(RectVer[2], newScaleKoef), scale(RectVer[3], newScaleKoef), outline = 'black', fill = '')
 
-    for i in M:
-        scaled = scale(i, newScaleKoef)
+    for i in range (len(M)):
+        scaled = scale(M[i], newScaleKoef)
         w.create_oval(scaled[0], scaled[1], scaled[0]+1, scaled[1] + 1, fill='black')
+        w.create_text(scaled[0] + 7, scaled[1], text = '{0}'.format(i + 1))
 
 def errorMes(message):#shows the error messages
     print('error!', message)
@@ -143,6 +149,17 @@ def isrect(M):#return the boolean if the polygon is a rectangle, gets the center
     dd3=sqrt(abs(cx-M[2][0]))+sqrt(abs(cy-M[2][1]))
     dd4=sqrt(abs(cx-M[3][0]))+sqrt(abs(cy-M[3][1]))
     return dd1==dd2 and dd1==dd3 and dd1==dd4
+
+
+def getLength(dot1, dot2):
+    return sqrt((dot1[0]-dot2[0])**2 + (dot1[1]-dot2[1])**2)
+
+def isTryangle(dot1, dot2, dot3):
+    len1 = getLength(dot1, dot2)
+    len2 = getLength(dot2, dot3)
+    len3 = getLength(dot3, dot1)
+    return len1 + len2 > len3 and len2 + len3 > len1 and len3 + len1 > len2
+    
 
 def add_dot_rect(event):#add the dot to rectVertexs, if 4 of them - do actions
     error.config(text = '')
@@ -166,6 +183,8 @@ def add_dot_rect(event):#add the dot to rectVertexs, if 4 of them - do actions
                 break
         if exist == 0:
             RectVer.append([x,y])
+            strDot = '{0}, {1}'.format(x, y)
+            rectList.insert(END, strDot)
         print(RectVer)
         if (len(RectVer) == 4):
             draw_rect(RectVer)
@@ -179,6 +198,8 @@ def add_dot_rect(event):#add the dot to rectVertexs, if 4 of them - do actions
 
             if (not isrect(RectVer)):
                 errorMes('not a rectangle')
+
+            print(rect_center)
 
 def add_dot_dots(event):#add the dot of the set
     error.config(text = '')
@@ -202,6 +223,8 @@ def add_dot_dots(event):#add the dot of the set
                 break
         if exist == 0:
             Dots.append([x,y])
+            dotsrt = '{2}) {0}, {1}'.format(x, y, len(Dots))
+            dotslist.insert(END, dotsrt)
         print(Dots)
         draw_dots(Dots)
 
@@ -228,24 +251,44 @@ def solve(event):#solves the task
                         dot3 = Dots[k]
                         print('looking at this triangle:')
                         print(dot1,dot2,dot3)
-                        m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
-                        m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
-                        xi, yi = findIntersection(m1, b1, m2, b2)
-                        
-                        print(xi, yi)
+                        if (isTryangle(dot1,dot2,dot3)):
+                            if (dot1[0] == ((dot2[0] + dot3[0]) / 2)):
+                                xi = dot1[0]
+                                m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
+                                yi = m2 * xi + b2
+                                print('one')
+                            elif (dot2[0] == ((dot1[0] + dot3[0]) / 2)):
+                                xi = dot2[0]
+                                m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
+                                yi = m1 * xi + b1
+                                print('two')
+                            else:
+                                m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
+                                m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
+                                xi, yi = findIntersection(m1, b1, m2, b2)
+                                print('three')
+                            
+                            print(xi, yi)
 
-                        mres, bres = getLine(xi, yi, rect_center[0], rect_center[1])
-                        
-                        if (maxm < abs(mres)):
-                            maxm = abs(mres)
-                            xres = xi
-                            yres = yi
-                            triangle = [scale(dot1, scaleKoef), scale(dot2, scaleKoef), scale(dot3, scaleKoef)]
-        scaled1 = scale([xres, yres], scaleKoef)
-        scaled2 = scale(rect_center, scaleKoef)
-        w.create_polygon(triangle, outline = 'black', fill = '')
-        w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
-
+                            mres, bres = getLine(xi, yi, rect_center[0], rect_center[1])
+                            
+                            if (maxm < abs(mres)):
+                                maxm = abs(mres)
+                                xres = xi
+                                yres = yi
+                                triangle = [scale(dot1, scaleKoef), scale(dot2, scaleKoef), scale(dot3, scaleKoef)]
+        if (len(triangle)==0):
+            errorMes('There is no such triangle')
+        else:
+            scaled1 = scale([xres, yres], scaleKoef)
+            scaled2 = scale(rect_center, scaleKoef)
+            print(scaled2)
+            w.create_polygon(triangle, outline = 'black', fill = '')
+            w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
+            for i in triangle:
+                scaled = scale(i, scaleKoef)
+                print(scaled)
+                w.create_text(scaled[0]+ 7, scaled[1], text = '{:3f},{:3f}'.format(i[0], i[1]), fill = 'blue')
 
 def createrect(event):#show the inputs, clears the rect
     clearRect()
@@ -256,6 +299,7 @@ def createrect(event):#show the inputs, clears the rect
     y_rect_lab.grid(row = 4, column = 5)
     inputy_rect.grid(row = 4, column = 6, columnspan = 2)
     add_btn_rect.grid(row = 4, column = 8, columnspan = 2)
+    rectList.grid(row = 3, rowspan = 2, column = 11)
 
 def createdots(event):#shows the inputs, clear the set of dots
     clearDots()
@@ -266,6 +310,7 @@ def createdots(event):#shows the inputs, clear the set of dots
     y_dot_lab.grid(row = 7, column = 5)
     inputy_dots.grid(row = 7, column = 6, columnspan = 2)
     add_btn_dots.grid(row = 7, column = 8, columnspan = 2)
+    dotslist.grid(row = 6, rowspan = 2, column = 11)
 
 #interface
 root = Tk()
@@ -307,6 +352,9 @@ task = Label(root, text = taskMessage)
 
 work = Label(root, text = 'Lab #1', font = '14')
 
+rectList = Listbox(root)
+dotslist = Listbox(root)
+
 #initial packer
 w.grid(row = 1, rowspan = 20, column = 1)
 
@@ -332,5 +380,14 @@ solve_btn.bind('<Button-1>', solve)
 
 add_btn_rect.bind("<Button-1>", add_dot_rect)
 add_btn_dots.bind("<Button-1>", add_dot_dots)
+
+input_rect.bind("<Return>", createrect)
+input_dots.bind("<Return>", createdots)
+
+delete_btn.bind("<Return>", clearcanvas)
+solve_btn.bind('<Return>', solve)
+
+add_btn_rect.bind("<Return>", add_dot_rect)
+add_btn_dots.bind("<Return>", add_dot_dots)
 
 root.mainloop()
