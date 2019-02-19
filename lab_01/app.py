@@ -146,9 +146,13 @@ def isrect(M):#return the boolean if the polygon is a rectangle, gets the center
     rect_center = [cx, cy]
 
     dd1=sqrt(abs(cx-M[0][0]))+sqrt(abs(cy-M[0][1]))
+    dd1 = round(dd1, 7)
     dd2=sqrt(abs(cx-M[1][0]))+sqrt(abs(cy-M[1][1]))
+    dd2 = round(dd2, 7)
     dd3=sqrt(abs(cx-M[2][0]))+sqrt(abs(cy-M[2][1]))
+    dd3 = round(dd3, 7)
     dd4=sqrt(abs(cx-M[3][0]))+sqrt(abs(cy-M[3][1]))
+    dd4 = round(dd4, 7)
     return dd1==dd2 and dd1==dd3 and dd1==dd4
 
 
@@ -330,6 +334,22 @@ def createdots(event):#shows the inputs, clear the set of dots
     add_btn_dots.grid(row = 7, column = 8, columnspan = 2)
     dotslist.grid(row = 6, rowspan = 2, column = 11)
 
+def deletethedot(event):
+    box = event.widget
+    pickedItems = box.curselection()
+    index = pickedItems[0]
+    global Dots
+    Dots.pop(index)
+    box.delete(0, END)
+    w.delete('all')
+    drawsys()
+    draw_dots(Dots)
+    draw_rect(RectVer)
+    for i in range (len(Dots)):
+        dotstr = '{0}) {1},{2}'.format(i+1, Dots[i][0], Dots[i][1])
+        box.insert(END, dotstr)
+    
+
 #interface
 root = Tk()
 
@@ -343,7 +363,7 @@ inputy_rect = Entry(root, width = 10)
 add_btn_rect = Button(root, text = 'add a dot', width = 8, height = 1, bg = 'black', fg = 'white')
 
 input_dots = Button(root, text = 'input new set of dots', width = 20, height = 1, bg = 'black', fg = 'white')
-dots_label = Label(root, text = 'input the coordinats of dots:')
+dots_label = Label(root, text = 'input the coordinats of dots.\nclick one in the list to delete.')
 
 x_dot_lab = Label(root, text = 'x:')
 inputx_dots = Entry(root, width = 10)
@@ -407,5 +427,7 @@ solve_btn.bind('<Return>', solve)
 
 add_btn_rect.bind("<Return>", add_dot_rect)
 add_btn_dots.bind("<Return>", add_dot_dots)
+
+dotslist.bind('<<ListboxSelect>>', deletethedot)
 
 root.mainloop()
