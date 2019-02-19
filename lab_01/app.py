@@ -244,51 +244,64 @@ def solve(event):#solves the task
         yres = 0
         triangle = []
         for i in range(len(Dots)):
-                dot1 = Dots[i]
-                for j in range(i+1, len(Dots)):
-                    dot2 = Dots[j]
-                    for k in range(j+1, len(Dots)):
-                        dot3 = Dots[k]
-                        print('looking at this triangle:')
-                        print(dot1,dot2,dot3)
-                        if (isTryangle(dot1,dot2,dot3)):
-                            if (dot1[0] == ((dot2[0] + dot3[0]) / 2)):
-                                xi = dot1[0]
-                                m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
-                                yi = m2 * xi + b2
-                                print('one')
-                            elif (dot2[0] == ((dot1[0] + dot3[0]) / 2)):
-                                xi = dot2[0]
-                                m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
-                                yi = m1 * xi + b1
-                                print('two')
-                            else:
-                                m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
-                                m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
-                                xi, yi = findIntersection(m1, b1, m2, b2)
-                                print('three')
-                            
-                            print(xi, yi)
+            dot1 = Dots[i]
+            for j in range(i+1, len(Dots)):
+                dot2 = Dots[j]
+                for k in range(j+1, len(Dots)):
+                    dot3 = Dots[k]
+                    print('looking at this triangle:')
+                    print(dot1,dot2,dot3)
+                    if (isTryangle(dot1,dot2,dot3)):
+                        if (dot1[0] == ((dot2[0] + dot3[0]) / 2)):
+                            xi = dot1[0]
+                            m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
+                            yi = m2 * xi + b2
+                            print('one')
+                        elif (dot2[0] == ((dot1[0] + dot3[0]) / 2)):
+                            xi = dot2[0]
+                            m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
+                            yi = m1 * xi + b1
+                            print('two')
+                        else:
+                            m1, b1 = getLine(dot1[0], dot1[1], (dot2[0] + dot3[0]) / 2, (dot2[1] + dot3[1]) / 2)
+                            m2, b2 = getLine(dot2[0], dot2[1], (dot1[0] + dot3[0]) / 2, (dot1[1] + dot3[1]) / 2)
+                            xi, yi = findIntersection(m1, b1, m2, b2)
+                            print('three')
+                        
+                        print(xi, yi)
 
-                            mres, bres = getLine(xi, yi, rect_center[0], rect_center[1])
-                            
-                            if (maxm < abs(mres)):
-                                maxm = abs(mres)
-                                xres = xi
-                                yres = yi
-                                triangle = [scale(dot1, scaleKoef), scale(dot2, scaleKoef), scale(dot3, scaleKoef)]
+                        if (xi == rect_center[0]):
+                            xres = xi
+                            yres = yi
+                            triangle = [dot1, dot2, dot3]
+                            scaled1 = scale([xres, yres], scaleKoef)
+                            scaled2 = scale(rect_center, scaleKoef)
+                            print(scaled2)
+                            scaledTri = [scale(triangle[0], scaleKoef), scale(triangle[1], scaleKoef), scale(triangle[2], scaleKoef)]
+                            w.create_polygon(scaledTri, outline = 'black', fill = '')
+                            w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1], fill = 'blue')
+                            for i in triangle:
+                                w.create_text(scale(i, scaleKoef)[0]+ 7, scale(i, scaleKoef)[1] - 7, text = '{:.3f},{:.3f}'.format(i[0], i[1]), fill = 'blue')
+                            return
+
+                        mres, bres = getLine(xi, yi, rect_center[0], rect_center[1])
+                        
+                        if (maxm < abs(mres)):
+                            maxm = abs(mres)
+                            xres = xi
+                            yres = yi
+                            triangle = [dot1, dot2, dot3]
         if (len(triangle)==0):
             errorMes('There is no such triangle')
         else:
             scaled1 = scale([xres, yres], scaleKoef)
             scaled2 = scale(rect_center, scaleKoef)
             print(scaled2)
-            w.create_polygon(triangle, outline = 'black', fill = '')
+            scaledTri = [scale(triangle[0], scaleKoef), scale(triangle[1], scaleKoef), scale(triangle[2], scaleKoef)]
+            w.create_polygon(scaledTri, outline = 'black', fill = '')
             w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
             for i in triangle:
-                scaled = scale(i, scaleKoef)
-                print(scaled)
-                w.create_text(scaled[0]+ 7, scaled[1], text = '{:3f},{:3f}'.format(i[0], i[1]), fill = 'blue')
+                w.create_text(scale(i, scaleKoef)[0]+ 7, scale(i, scaleKoef)[1] - 7, text = '{:.3f},{:.3f}'.format(i[0], i[1]), fill = 'blue')
 
 def createrect(event):#show the inputs, clears the rect
     clearRect()
