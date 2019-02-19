@@ -57,6 +57,7 @@ def clearcanvas(event):#clear everything, dots sets = to zero
     global RectVer
     w.delete('all')
     dotslist.delete(0, END)
+    rectList.delete(0, END)
     Dots = []
     RectVer = []
     drawsys()
@@ -233,6 +234,10 @@ def solve(event):#solves the task
     global Dots
     global rect_center
     global scaleKoef
+    w.delete('all')
+    drawsys()
+    draw_dots(Dots)
+    draw_rect(RectVer)
 
     if (len(RectVer) != 4 or not len(rect_center) == 2):
         errorMes('input the rectangle first')
