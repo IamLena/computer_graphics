@@ -9,6 +9,7 @@ Dots = []
 RectVer = []
 rectCenter = []
 triangleCenter = []
+triangle = []
 scaleKoef = 1
 
 #functions
@@ -238,6 +239,8 @@ def solve(event):#solves the task
     global Dots
     global rect_center
     global scaleKoef
+    global triangle
+    global triangleCenter
     w.delete('all')
     drawsys()
     draw_dots(Dots)
@@ -303,7 +306,9 @@ def solve(event):#solves the task
         if (len(triangle)==0):
             errorMes('There is no such triangle')
         else:
-            scaled1 = scale([xres, yres], scaleKoef)
+            show_btn.grid(row = 10, column = 2, columnspan = 8)
+            triangleCenter = [xres, yres]
+            scaled1 = scale(triangleCenter, scaleKoef)
             scaled2 = scale(rect_center, scaleKoef)
             print(scaled2)
             scaledTri = [scale(triangle[0], scaleKoef), scale(triangle[1], scaleKoef), scale(triangle[2], scaleKoef)]
@@ -348,7 +353,26 @@ def deletethedot(event):
     for i in range (len(Dots)):
         dotstr = '{0}) {1},{2}'.format(i+1, Dots[i][0], Dots[i][1])
         box.insert(END, dotstr)
-    
+
+def show_res(event):
+    global RectVer
+    global triangle
+    global triangleCenter
+    print(triangleCenter)
+    if ( len(triangleCenter) != 0):
+        w.delete('all')
+        drawsys()
+        draw_rect(RectVer)
+        scaleKoef = getScaleKoef(RectVer, triangle)
+        scaled1 = scale(triangleCenter, scaleKoef)
+        scaled2 = scale(rect_center, scaleKoef)
+        print(scaled2)
+        scaledTri = [scale(triangle[0], scaleKoef), scale(triangle[1], scaleKoef), scale(triangle[2], scaleKoef)]
+        w.create_polygon(scaledTri, outline = 'black', fill = '')
+        w.create_line(scaled1[0], scaled1[1], scaled2[0], scaled2[1])
+        for i in triangle:
+            w.create_text(scale(i, scaleKoef)[0]+ 7, scale(i, scaleKoef)[1] - 7, text = '{:.3f},{:.3f}'.format(i[0], i[1]), fill = 'blue')
+        errorMes('result: ({:.3f};{:.3f}) ({:.3f};{:.3f}) ({:.3f};{:.3f})'.format(triangle[0][0], triangle[0][1], triangle[1][0], triangle[1][1], triangle[2][0], triangle[2][1]))
 
 #interface
 root = Tk()
@@ -393,6 +417,8 @@ work = Label(root, text = 'Lab #1', font = '14')
 rectList = Listbox(root)
 dotslist = Listbox(root)
 
+show_btn = Button(root, text = 'show result', width = 20, height = 1, bg = 'black', fg = 'white')
+
 #initial packer
 w.grid(row = 1, rowspan = 20, column = 1)
 
@@ -404,8 +430,9 @@ input_dots.grid(row = 5, column = 2, columnspan = 8)
 solve_btn.grid(row = 8, column = 2, columnspan = 6)
 delete_btn.grid(row = 8, column = 8, columnspan = 2)
 
-error.grid(row = 10, column = 2, columnspan = 8)
-task.grid(row = 13, rowspan = 7, column = 2, columnspan = 8)
+error.grid(row = 11, column = 2, columnspan = 8)
+#task.grid(row = 13, rowspan = 7, column = 2, columnspan = 8)
+#show_btn.grid(row = 10, column = 2, columnspan = 8)
 
 #event handlers
 drawsys()
@@ -427,6 +454,9 @@ solve_btn.bind('<Return>', solve)
 
 add_btn_rect.bind("<Return>", add_dot_rect)
 add_btn_dots.bind("<Return>", add_dot_dots)
+
+show_btn.bind("<Button-1>", show_res)
+show_btn.bind("<Return>", show_res)
 
 dotslist.bind('<<ListboxSelect>>', deletethedot)
 
