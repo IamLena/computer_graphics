@@ -1,0 +1,7 @@
+canvas {
+    width: 70%;
+    height: 70%;
+    margin: 0;
+    background: pink;
+    border:solid black 1px;
+}
