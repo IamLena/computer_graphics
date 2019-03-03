@@ -97,12 +97,16 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             if (y_to > left_up_corner[1]):
                 y_to = right_down_corner[1]
                 x_to = get_x(y_to, angle, b)
+            
+            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            i += step
     else:
         height = left_up_corner[1] -  right_down_corner[1]
-        add_width = height / tan(radians(angle))
+        add_width = - height / tan(radians(angle))
+        print(add_width)
         i = left_up_corner[0]
         while (i < right_down_corner[0] + add_width):
-            b = get_b(i, left_up_corner[1], angle)
+            b = get_b(i, right_down_corner[1], angle)
             y = get_y(left_up_corner[0], angle, b)
 
             y_to = y
@@ -117,9 +121,10 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             if (y_to > left_up_corner[1]):
                 y_to = left_up_corner[1]
                 x_to = get_x(y_to, angle, b)
-
-    w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
-    i += step
+            
+            print([x_from, y_from], [x_to, y_to])
+            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            i+= step
 
             
 
@@ -255,7 +260,7 @@ back.grid(row = 12, column = 11, columnspan = 4)
 
 #draw_rect([-15, 8], [15, -8])
 draw_rect([-4, 5], [5, -4])
-hash_rect([-4, 5], [5, -4], -60, 1)
+hash_rect([-4, 5], [5, -4], -45, 1)
 # fill_epic()
 # draw_epic()
 
