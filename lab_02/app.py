@@ -54,43 +54,23 @@ def draw_epic():
 def draw_rect():
     w.create_rectangle(scale([-15, 8]), scale([15, -8]))
 
-def hash_rect(left_up_corner, right_down_corner, step, angle):
+def get_b(x, y, angle):
+    b = y - tan(radians(angle)) * x
+    return b
+def get_y(x_border, angle, b):
+    y = tan(radians(angle)) * x_border + b
+    return y
+
+def hash_rect(left_up_corner, right_down_corner, angle, step):
     i = left_up_corner[0]
-    print(i)
-    print(right_down_corner[0])
     while (i < right_down_corner[0]):
-    #while (i < 200):
-        w.create_line(scale([i, left_up_corner[1]]), scale([i,  right_down_corner[1]]))
-        i += 1
+        #w.create_line(scale([i, left_up_corner[1]]), scale([i,  right_down_corner[1]]))
 
-        # print(i)
-        # print(scale([i, left_up_corner[1]]))
-        # print(scale([i, right_down_corner[1]]))
-        # w.create_line(scale([i, left_up_corner[1]]), scale([i, right_down_corner[1]]))
-        # i += step
+        b = get_b(i, left_up_corner[1], angle)
+        y = get_y(left_up_corner[0], angle, b)
+        w.create_line(scale([i, left_up_corner[1]]), scale([left_up_corner[0], y]))
 
-    # i = left_up_corner
-    # print('hey')
-    # print(i[0], right_down_corner[0], i[1], right_down_corner[1])
-    # while (i[0] < right_down_corner[0] and i[1] < right_down_corner[1]):
-    #     print(i[0], right_down_corner[1], i[1], right_down_corner[0])
-    #     w.create_line(scale([i[0], right_down_corner[1]]), scale([i[1], right_down_corner[0]]))
-    #     i[0] += step
-    #     i[1] -= step
-
-    # height = abs(right_down_corner[0] - left_up_corner[0])
-    # width = abs(right_down_corner[1] - left_up_corner[1])
-    # step_d = sqrt(step**2 + step**2)
-    # diagonal = sqrt(height**2 + width**2)
-    # # diagonal = floor(diagonal)
-    # width_run = left_up_corner[0]
-    # height_run = left_up_corner[1]
-    # i = 0
-    # while (i < diagonal):
-    #     w.create_line(scale([width_run, left_up_corner[1]]), scale([height_run, left_up_corner[0]]))
-    #     width_run += step
-    #     height_run -= step
-    #     i += step_d
+        i += step
 
 
 def move(event):
@@ -224,7 +204,7 @@ back.grid(row = 12, column = 11, columnspan = 4)
 
 draw_rect()
 hash_rect([-15, 8], [15, -8], 45, 4)
-fill_epic()
-draw_epic()
+# fill_epic()
+# draw_epic()
 
 root.mainloop()
