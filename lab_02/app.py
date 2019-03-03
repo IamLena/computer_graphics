@@ -6,6 +6,12 @@ from math import *
 # operations.append(['scale', xm, ym, kx, ky])
 # operations.append(['rotate', xm, ym, angle])
 
+canvasWidth = 610
+canvasHeight = 610
+def clearCanvas():
+    w.delete('all')
+    w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
+
 #initial image
 def scale(dot):
     return [canvasWidth/2 + dot[0] * 12, canvasHeight/2 - dot[1] * 12]
@@ -133,7 +139,12 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
             i+= step
 
-            
+def draw_initial(event):
+    clearCanvas()
+    draw_rect([-15, 8], [15, -8])
+    hash_rect([-15, 8], [15, -8], -45, 2)
+    fill_epic()
+    draw_epic()
 
 
 def move(event):
@@ -201,8 +212,6 @@ def rotate_image(event):
 root = Tk()
 
 #widgets
-canvasWidth = 610
-canvasHeight = 610
 w = Canvas(root, width = canvasWidth, height = canvasHeight)
 w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
 w.grid(row = 1, rowspan = 20, column = 1, columnspan = 10, padx=20, pady=20)
@@ -262,6 +271,11 @@ rotate_submit.bind('<Button-1>', rotate_image)
 #back
 back = Button(root, width = 20, height = 1, text = "previous", font = '30', bg = 'green', fg = 'white')
 back.grid(row = 12, column = 11, columnspan = 4)
+
+#initial
+initial_btn = Button(root, width = 20, height = 1, text = "initial image", bg = 'green', fg = 'white', font = '30')
+initial_btn.grid(row = 13, column = 11, columnspan = 4)
+initial_btn.bind('<Button-1>', draw_initial)
 
 #run
 
