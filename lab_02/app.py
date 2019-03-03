@@ -1,8 +1,12 @@
 from Tkinter import *
 from math import *
 
-#initial image
+# operations = []
+# operations.append(['move', dx, dy])
+# operations.append(['scale', xm, ym, kx, ky])
+# operations.append(['rotate', xm, ym, angle])
 
+#initial image
 def scale(dot):
     return [canvasWidth/2 + dot[0] * 12, canvasHeight/2 - dot[1] * 12]
 
