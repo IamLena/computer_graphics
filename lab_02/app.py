@@ -51,8 +51,8 @@ def draw_epic():
         w.create_line(scale(epic[i]), scale(epic[i+1]))
     f.close()
 
-def draw_rect():
-    w.create_rectangle(scale([-15, 8]), scale([15, -8]))
+def draw_rect(lu_corner, rd_corner):
+    w.create_rectangle(scale(lu_corner), scale(rd_corner))
 
 def get_b(x, y, angle):
     b = y - tan(radians(angle)) * x
@@ -74,7 +74,7 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             y_to = i
             w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
             i -= step
-    else:
+    elif (tan(radians(angle)) > 0):
         i = left_up_corner[0]
         height = left_up_corner[1] -  right_down_corner[1]
         add_width = height / tan(radians(angle))
@@ -87,16 +87,40 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             y_to = y
 
             if (i > right_down_corner[0]):
-                y_right = get_y(right_down_corner[0], angle, b)
                 x_from = right_down_corner[0]
-                y_from = y_right
+                y_from =  get_y(right_down_corner[0], angle, b)
                 
             if (y_to < right_down_corner[1]):
                 y_to = right_down_corner[1]
                 x_to = get_x(y_to, angle, b)
 
-            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
-            i += step
+            if (y_to > left_up_corner[1]):
+                y_to = right_down_corner[1]
+                x_to = get_x(y_to, angle, b)
+    else:
+        height = left_up_corner[1] -  right_down_corner[1]
+        add_width = height / tan(radians(angle))
+        i = left_up_corner[0]
+        while (i < right_down_corner[0] + add_width):
+            b = get_b(i, left_up_corner[1], angle)
+            y = get_y(left_up_corner[0], angle, b)
+
+            y_to = y
+            x_to = left_up_corner[0]
+            x_from = i
+            y_from = right_down_corner[1]
+
+            if (i > right_down_corner[0]):
+                x_from = right_down_corner[0]
+                y_from = get_y(x_from, angle, b)
+
+            if (y_to > left_up_corner[1]):
+                y_to = left_up_corner[1]
+                x_to = get_x(y_to, angle, b)
+
+    w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+    i += step
+
             
 
 
@@ -229,8 +253,9 @@ back.grid(row = 12, column = 11, columnspan = 4)
 
 #run
 
-draw_rect()
-hash_rect([-15, 8], [15, -8], 0, 3)
+#draw_rect([-15, 8], [15, -8])
+draw_rect([-4, 5], [5, -4])
+hash_rect([-4, 5], [5, -4], -60, 1)
 # fill_epic()
 # draw_epic()
 
