@@ -60,17 +60,34 @@ def get_b(x, y, angle):
 def get_y(x_border, angle, b):
     y = tan(radians(angle)) * x_border + b
     return y
+def get_x(y_border, angle, b):
+    x = (y_border - b) / tan(radians(angle))
+    return x
 
 def hash_rect(left_up_corner, right_down_corner, angle, step):
     i = left_up_corner[0]
-    while (i < right_down_corner[0]):
-        #w.create_line(scale([i, left_up_corner[1]]), scale([i,  right_down_corner[1]]))
-
+    height = left_up_corner[1] -  right_down_corner[1]
+    add_width = height / tan(radians(angle))
+    while (i < right_down_corner[0] + add_width):
         b = get_b(i, left_up_corner[1], angle)
         y = get_y(left_up_corner[0], angle, b)
-        w.create_line(scale([i, left_up_corner[1]]), scale([left_up_corner[0], y]))
+        x_from = i
+        y_from = left_up_corner[1]
+        x_to = left_up_corner[0]
+        y_to = y
 
+        if (i > right_down_corner[0]):
+            y_right = get_y(right_down_corner[0], angle, b)
+            x_from = right_down_corner[0]
+            y_from = y_right
+            
+        if (y_to < right_down_corner[1]):
+            y_to = right_down_corner[1]
+            x_to = get_x(y_to, angle, b)
+
+        w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
         i += step
+        
 
 
 def move(event):
