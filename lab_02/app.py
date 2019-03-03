@@ -65,29 +65,39 @@ def get_x(y_border, angle, b):
     return x
 
 def hash_rect(left_up_corner, right_down_corner, angle, step):
-    i = left_up_corner[0]
-    height = left_up_corner[1] -  right_down_corner[1]
-    add_width = height / tan(radians(angle))
-    while (i < right_down_corner[0] + add_width):
-        b = get_b(i, left_up_corner[1], angle)
-        y = get_y(left_up_corner[0], angle, b)
-        x_from = i
-        y_from = left_up_corner[1]
-        x_to = left_up_corner[0]
-        y_to = y
+    if (tan(radians(angle)) == 0):
+        i = left_up_corner[1]
+        while (i > right_down_corner[1]):
+            x_from = left_up_corner[0]
+            y_from = i
+            x_to = right_down_corner[0]
+            y_to = i
+            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            i -= step
+    else:
+        i = left_up_corner[0]
+        height = left_up_corner[1] -  right_down_corner[1]
+        add_width = height / tan(radians(angle))
+        while (i < right_down_corner[0] + add_width):
+            b = get_b(i, left_up_corner[1], angle)
+            y = get_y(left_up_corner[0], angle, b)
+            x_from = i
+            y_from = left_up_corner[1]
+            x_to = left_up_corner[0]
+            y_to = y
 
-        if (i > right_down_corner[0]):
-            y_right = get_y(right_down_corner[0], angle, b)
-            x_from = right_down_corner[0]
-            y_from = y_right
+            if (i > right_down_corner[0]):
+                y_right = get_y(right_down_corner[0], angle, b)
+                x_from = right_down_corner[0]
+                y_from = y_right
+                
+            if (y_to < right_down_corner[1]):
+                y_to = right_down_corner[1]
+                x_to = get_x(y_to, angle, b)
+
+            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            i += step
             
-        if (y_to < right_down_corner[1]):
-            y_to = right_down_corner[1]
-            x_to = get_x(y_to, angle, b)
-
-        w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
-        i += step
-        
 
 
 def move(event):
@@ -220,7 +230,7 @@ back.grid(row = 12, column = 11, columnspan = 4)
 #run
 
 draw_rect()
-hash_rect([-15, 8], [15, -8], 45, 4)
+hash_rect([-15, 8], [15, -8], 0, 3)
 # fill_epic()
 # draw_epic()
 
