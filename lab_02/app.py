@@ -65,7 +65,16 @@ def get_x(y_border, angle, b):
     return x
 
 def hash_rect(left_up_corner, right_down_corner, angle, step):
-    if (tan(radians(angle)) == 0):
+    if(angle % 90 == 0 and angle // 90 % 2 == 1):
+        i = left_up_corner[0]
+        while (i < right_down_corner[0]):
+            y_from = left_up_corner[1]
+            x_from = i
+            y_to = right_down_corner[1]
+            x_to = i
+            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            i += step
+    elif (abs(tan(radians(angle)) - 0) < 0.000001 ):
         i = left_up_corner[1]
         while (i > right_down_corner[1]):
             x_from = left_up_corner[0]
@@ -103,7 +112,6 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
     else:
         height = left_up_corner[1] -  right_down_corner[1]
         add_width = - height / tan(radians(angle))
-        print(add_width)
         i = left_up_corner[0]
         while (i < right_down_corner[0] + add_width):
             b = get_b(i, right_down_corner[1], angle)
@@ -121,8 +129,7 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             if (y_to > left_up_corner[1]):
                 y_to = left_up_corner[1]
                 x_to = get_x(y_to, angle, b)
-            
-            print([x_from, y_from], [x_to, y_to])
+
             w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
             i+= step
 
@@ -197,7 +204,7 @@ root = Tk()
 canvasWidth = 610
 canvasHeight = 610
 w = Canvas(root, width = canvasWidth, height = canvasHeight)
-w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green')
+w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
 w.grid(row = 1, rowspan = 20, column = 1, columnspan = 10, padx=20, pady=20)
 
 #move
@@ -258,10 +265,9 @@ back.grid(row = 12, column = 11, columnspan = 4)
 
 #run
 
-#draw_rect([-15, 8], [15, -8])
-draw_rect([-4, 5], [5, -4])
-hash_rect([-4, 5], [5, -4], -45, 1)
-# fill_epic()
-# draw_epic()
+draw_rect([-15, 8], [15, -8])
+hash_rect([-15, 8], [15, -8], -45, 2)
+fill_epic()
+draw_epic()
 
 root.mainloop()
