@@ -8,13 +8,24 @@ from math import *
 
 canvasWidth = 610
 canvasHeight = 610
+
+lu_rect = [-15, 8]
+rd_rect = [15, -8]
+hash_angle = -45
+hash_step = 2
+initial_scaling = 12
+
+cur_lu = [-15, 8]
+cur_rd = [15, -8]
+
+
 def clearCanvas():
     w.delete('all')
     w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
 
 #initial image
 def scale(dot):
-    return [canvasWidth/2 + dot[0] * 12, canvasHeight/2 - dot[1] * 12]
+    return [canvasWidth/2 + dot[0] * initial_scaling, canvasHeight/2 - dot[1] * initial_scaling]
 
 def fill_epic():
     f = open("epicycloid.csv", "r")
@@ -140,14 +151,15 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             i+= step
 
 def draw_initial(event):
+    error_lab.config(text = '')
     clearCanvas()
-    draw_rect([-15, 8], [15, -8])
-    hash_rect([-15, 8], [15, -8], -45, 2)
+    draw_rect(lu_rect, rd_rect)
+    hash_rect(lu_rect, rd_rect, hash_angle, hash_step)
     fill_epic()
     draw_epic()
 
-
 def move(event):
+    error_lab.config(text = '')
     dx_lab.grid(row = 2, column = 11)
     dx_input.grid(row = 2, column = 12)
     dy_lab.grid(row = 2, column = 13)
@@ -155,6 +167,7 @@ def move(event):
     move_submit.grid(row = 3, column = 11, columnspan = 4)
 
 def scale_handler(event):
+    error_lab.config(text = '')
     xm_lab.grid(row = 5, column = 11)
     xm_input.grid(row = 5, column = 12)
     ym_lab.grid(row = 5, column = 13)
@@ -168,6 +181,7 @@ def scale_handler(event):
     scale_submit.grid(row = 7,  column = 11, columnspan = 4)
 
 def rotate(event):
+    error_lab.config(text = '')
     xm_lab_r.grid(row = 9, column = 11)
     xm_input_r.grid(row = 9, column = 12)
     ym_lab_r.grid(row = 9, column = 13)
@@ -179,6 +193,26 @@ def rotate(event):
     rotate_submit.grid(row = 11, column = 11, columnspan = 4)
 
 def move_image(event):
+    error_lab.config(text = '')
+    dx = dx_input.get()
+    dy = dy_input.get()
+    dx_input.delete(0,END)
+    dy_input.delete(0, END)
+    try:
+        dx = float(dx)
+        dy = float(dy)
+        clearCanvas()
+        cur_lu[0] += dx
+        cur_lu[1] += dy
+        cur_rd[0] += dx
+        cur_rd[1] += dy
+        dot1 = [cur_lu[0], cur_lu[1]]
+        dot2 = [cur_rd[0], cur_rd[1]]
+        draw_rect(dot1, dot2)
+        hash_rect(dot1, dot2, hash_angle, hash_step)
+    except:
+        print('input error')
+        error_lab.config(text = 'input error')
     dx_lab.grid_forget()
     dx_input.grid_forget()
     dy_lab.grid_forget()
@@ -186,6 +220,7 @@ def move_image(event):
     move_submit.grid_forget()
 
 def scale_image(event):
+    error_lab.config(text = '')
     xm_lab.grid_forget()
     xm_input.grid_forget()
     ym_lab.grid_forget()
@@ -199,6 +234,7 @@ def scale_image(event):
     scale_submit.grid_forget()
 
 def rotate_image(event):
+    error_lab.config(text = '')
     xm_lab_r.grid_forget()
     xm_input_r.grid_forget()
     ym_lab_r.grid_forget()
@@ -276,6 +312,10 @@ back.grid(row = 12, column = 11, columnspan = 4)
 initial_btn = Button(root, width = 20, height = 1, text = "initial image", bg = 'green', fg = 'white', font = '30')
 initial_btn.grid(row = 13, column = 11, columnspan = 4)
 initial_btn.bind('<Button-1>', draw_initial)
+
+#error
+error_lab = Label(root, font = '12', text = '', fg = 'blue')
+error_lab.grid(row = 14, column = 11, columnspan = 4)
 
 #run
 
