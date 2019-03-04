@@ -3,32 +3,46 @@ from math import *
 
 #params for drawing:
 #rect - 4 dots
-#epic - center
+#epic_a
+#epic_b
+#hash_step
+#hash_angle
 #scale
 #angle
 
-operations = []
-rect = [[-15, 8], [15, 8],[15, -8], [-15, -8]]
-operations.append([rect, [0,0], 12, 0])
+initial_rect = [[-15, 8], [15, 8],[15, -8], [-15, -8]]
+hash_angle = -45
+hash_step = 2
+initial_scale = 12
+initial_angle = 0
+epic_a = 2
+epic_b = 3
 
 canvasWidth = 610
 canvasHeight = 610
 
-lu_rect = [-15, 8]
-rd_rect = [15, -8]
-ru_rect = [15, 8]
-ld_rect = [-15, -8]
+operations = []
 
-hash_angle = -45
-hash_step = 2
-initial_scaling = 12
+def get_center(M):
+    cx = (M[0][0] + M[1][0] + M[2][0] + M[3][0])/4
+    cy = (M[0][1] + M[1][1] + M[2][1] + M[3][1])/4
+    return [cx, cy]
 
-cur_lu = [-15, 8]
-cur_rd = [15, -8]
-cur_ru = [15, 8]
-cur_ld = [-15, -8]
+cur_lu = initial_rect[0][:]
+cur_ru = initial_rect[1][:]
+cur_rd = initial_rect[2][:]
+cur_ld = initial_rect[3][:]
+cur_scale = initial_scale
+cur_angle = initial_angle
 
-epic_center = [0,0]
+operations.append([initial_rect, initial_scale, initial_angle])
+
+def clearCanvas():
+    w.delete('all')
+    w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
+
+def scale(dot, scale):
+    return [canvasWidth/2 + dot[0] * scale, canvasHeight/2 - dot[1] * scale]
 
 def get_epic_dots(a, b, center):
     t = 0
@@ -40,28 +54,21 @@ def get_epic_dots(a, b, center):
         t += 0.2
     return dots
 
-def clearCanvas():
-    w.delete('all')
-    w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
-
-#initial image
-def scale(dot):
-    return [canvasWidth/2 + dot[0] * initial_scaling, canvasHeight/2 - dot[1] * initial_scaling]
-
 def fill_epic(dots, center):
     for i in range(len(dots) - 1):
-        w.create_line(scale(dots[i]), scale(dots[i+1]))
-        w.create_polygon(scale(dots[i]), scale(dots[i+1]), scale(center), fill = 'white')
+        w.create_line(scale(dots[i], cur_scale), scale(dots[i+1], cur_scale))
+        w.create_polygon(scale(dots[i], cur_scale), scale(dots[i+1], cur_scale), scale(center, cur_scale), fill = 'white')
 
 def draw_epic(center):
-    dots = get_epic_dots(2, 3, center)
+    dots = get_epic_dots(epic_a, epic_b, center)
     fill_epic(dots, center)
     for i in range(len(dots) - 1):
-        w.create_line(scale(dots[i]), scale(dots[i+1]))
+        w.create_line(scale(dots[i], cur_scale), scale(dots[i+1], cur_scale))
 
 def draw_rect(lu_corner, ru_corner, rd_corner, ld_corner):
-    w.create_polygon(scale(lu_corner), scale(ru_corner), scale(rd_corner), scale(ld_corner), outline='black', fill = '')
-    #w.create_rectangle(scale(lu_corner), scale(rd_corner))
+    print('draw rect:')
+    print(lu_corner, ru_corner, rd_corner, ld_corner)
+    w.create_polygon(scale(lu_corner, cur_scale), scale(ru_corner, cur_scale), scale(rd_corner, cur_scale), scale(ld_corner, cur_scale), outline='black', fill = '')
 
 def get_b(x, y, angle):
     b = y - tan(radians(angle)) * x
@@ -81,7 +88,7 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             x_from = i
             y_to = right_down_corner[1]
             x_to = i
-            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            w.create_line(scale([x_from, y_from], cur_scale), scale([x_to, y_to], cur_scale))
             i += step
     elif (abs(tan(radians(angle)) - 0) < 0.000001 ):
         i = left_up_corner[1]
@@ -90,7 +97,7 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             y_from = i
             x_to = right_down_corner[0]
             y_to = i
-            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            w.create_line(scale([x_from, y_from], cur_scale), scale([x_to, y_to], cur_scale))
             i -= step
     elif (tan(radians(angle)) > 0):
         i = left_up_corner[0]
@@ -116,7 +123,7 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
                 y_to = right_down_corner[1]
                 x_to = get_x(y_to, angle, b)
             
-            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            w.create_line(scale([x_from, y_from], cur_scale), scale([x_to, y_to], cur_scale))
             i += step
     else:
         height = left_up_corner[1] -  right_down_corner[1]
@@ -139,23 +146,21 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
                 y_to = left_up_corner[1]
                 x_to = get_x(y_to, angle, b)
 
-            w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
+            w.create_line(scale([x_from, y_from], cur_scale), scale([x_to, y_to], cur_scale))
             i+= step
 
 def draw():
     clearCanvas()
     operation = operations[-1]
+    print("drawing")
+    print(operation)
+    epic_center = get_center(operation[0])
     draw_rect(operation[0][0], operation[0][1], operation[0][2], operation[0][3])
     hash_rect(operation[0][0], operation[0][2], -45, 2)
-    draw_epic(operation[1])
+    draw_epic(epic_center)
 
 def draw_initial(event):
     error_lab.config(text = '')
-    # clearCanvas()
-    # draw_rect(lu_rect, ru_rect, rd_rect, ld_rect)
-    # hash_rect(lu_rect, rd_rect, hash_angle, hash_step)
-    # draw_epic([0,0])
-    # epic_center = [0,0]
     draw()
 
 def move(event):
@@ -203,26 +208,25 @@ def move_image(event):
         dx = float(dx)
         dy = float(dy)
         clearCanvas()
-        cur_lu[0] += dx
-        cur_lu[1] += dy
-        cur_rd[0] += dx
-        cur_rd[1] += dy
-        cur_ru[0] += dx
-        cur_ru[1] += dy
-        cur_ld[0] += dx
-        cur_ld[1] += dy
 
-        epic_center[0] += dx
-        epic_center[1] += dy
-        dot1 = [cur_lu[0], cur_lu[1]]
-        dot2 = [cur_rd[0], cur_rd[1]]
-        dot3 = [cur_ru[0], cur_ru[1]]
-        dot4 = [cur_ld[0], cur_ld[1]]
-        # draw_rect(dot1, dot3, dot2, dot4)
-        # hash_rect(dot1, dot2, hash_angle, hash_step)
-        # draw_epic(epic_center)
+        operation = operations[-1]
 
-        operations.append([[dot1, dot3, dot2, dot4], epic_center, 12, 0]) #error! rewriting epic_center
+        dot1 = operation[0][0][:]
+        dot2 = operation[0][1][:]
+        dot3 = operation[0][2][:]
+        dot4 = operation[0][3][:]
+
+        dot1[0] += dx
+        dot1[1] += dy
+        dot2[0] += dx
+        dot2[1] += dy
+        dot3[0] += dx
+        dot3[1] += dy
+        dot4[0] += dx
+        dot4[1] += dy
+
+        rect = [dot1, dot2, dot3, dot4]
+        operations.append([rect, cur_scale, cur_angle])
         draw()
     except:
         print('input error')
@@ -232,6 +236,9 @@ def move_image(event):
     dy_lab.grid_forget()
     dy_input.grid_forget()
     move_submit.grid_forget()
+
+    
+
     print(operations)
 
 def scale_image(event):
@@ -249,9 +256,6 @@ def scale_image(event):
         ym = float(ym)
         kx = float(kx)
         clearCanvas()
-
-
-
     except:
         error_lab.config(text = 'invalid input')
 
@@ -284,6 +288,7 @@ def draw_prev(event):
     if (len(operations) > 1):
         operations.pop()
         draw()
+    print(operations)
 
 root = Tk()
 
