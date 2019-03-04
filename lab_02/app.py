@@ -11,13 +11,30 @@ canvasHeight = 610
 
 lu_rect = [-15, 8]
 rd_rect = [15, -8]
+ru_rect = [15, 8]
+ld_rect = [-15, -8]
+
 hash_angle = -45
 hash_step = 2
 initial_scaling = 12
 
 cur_lu = [-15, 8]
 cur_rd = [15, -8]
+cur_ru = [15, 8]
+cur_ld = [-15, -8]
 
+epic_center = [0,0]
+
+
+def get_epic_dots(a, b, center):
+    t = 0
+    dots =[]
+    while (t < 2 * a * pi):
+        x = (a + b)* cos(t) - a * cos ((a+b) * t / a) + center[0]
+        y = (a + b) * sin(t) - a * sin((a + b) * t / a) + center[1]
+        dots.append([x, y])
+        t += 0.2
+    return dots
 
 def clearCanvas():
     w.delete('all')
@@ -27,49 +44,54 @@ def clearCanvas():
 def scale(dot):
     return [canvasWidth/2 + dot[0] * initial_scaling, canvasHeight/2 - dot[1] * initial_scaling]
 
-def fill_epic():
-    f = open("epicycloid.csv", "r")
-    fileCtx = (f.read())
-    lines = fileCtx.split('\n')
-    epic = []
-    for i in lines:
-        dot = i.split(',')
-        try:
-            x = float(dot[0])
-            y = float(dot[1])
-        except:
-            print('invalid file data')
-            return
-        else:
-            epic.append([x, y])
-    #print(epic)
-    for i in range(len(epic) - 1):
-        w.create_line(scale(epic[i]), scale(epic[i+1]))
-        w.create_polygon(scale(epic[i]), scale(epic[i+1]), scale([0, 0]), fill = 'white')
-        f.close()
+def fill_epic(dots, center):
+    # f = open("epicycloid.csv", "r")
+    # fileCtx = (f.read())
+    # lines = fileCtx.split('\n')
+    # epic = []
+    # for i in lines:
+    #     dot = i.split(',')
+    #     try:
+    #         x = float(dot[0])
+    #         y = float(dot[1])
+    #     except:
+    #         print('invalid file data')
+    #         return
+    #     else:
+    #         epic.append([x, y])
+    # #print(epic)
+    for i in range(len(dots) - 1):
+        w.create_line(scale(dots[i]), scale(dots[i+1]))
+        w.create_polygon(scale(dots[i]), scale(dots[i+1]), scale(center), fill = 'white')
 
-def draw_epic():
-    f = open("epicycloid.csv", "r")
-    fileCtx = (f.read())
-    lines = fileCtx.split('\n')
-    epic = []
-    for i in lines:
-        dot = i.split(',')
-        try:
-            x = float(dot[0])
-            y = float(dot[1])
-        except:
-            print('invalid file data')
-            return
-        else:
-            epic.append([x, y])
-    #print(epic)
-    for i in range(len(epic) - 1):
-        w.create_line(scale(epic[i]), scale(epic[i+1]))
-    f.close()
+def draw_epic(center):
+    dots = get_epic_dots(2, 3, center)
+    fill_epic(dots, center)
+    for i in range(len(dots) - 1):
+        w.create_line(scale(dots[i]), scale(dots[i+1]))
 
-def draw_rect(lu_corner, rd_corner):
-    w.create_rectangle(scale(lu_corner), scale(rd_corner))
+    # f = open("epicycloid.csv", "r")
+    # fileCtx = (f.read())
+    # lines = fileCtx.split('\n')
+    # epic = []
+    # for i in lines:
+    #     dot = i.split(',')
+    #     try:
+    #         x = float(dot[0])
+    #         y = float(dot[1])
+    #     except:
+    #         print('invalid file data')
+    #         return
+    #     else:
+    #         epic.append([x, y])
+    # #print(epic)
+    # for i in range(len(epic) - 1):
+    #     w.create_line(scale(epic[i]), scale(epic[i+1]))
+    # f.close()
+
+def draw_rect(lu_corner, ru_corner, rd_corner, ld_corner):
+    w.create_polygon(scale(lu_corner), scale(ru_corner), scale(rd_corner), scale(ld_corner), outline='black', fill = '')
+    #w.create_rectangle(scale(lu_corner), scale(rd_corner))
 
 def get_b(x, y, angle):
     b = y - tan(radians(angle)) * x
@@ -153,10 +175,10 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
 def draw_initial(event):
     error_lab.config(text = '')
     clearCanvas()
-    draw_rect(lu_rect, rd_rect)
+    draw_rect(lu_rect, ru_rect, rd_rect, ld_rect)
     hash_rect(lu_rect, rd_rect, hash_angle, hash_step)
-    fill_epic()
-    draw_epic()
+    draw_epic([0,0])
+    epic_center = [0,0]
 
 def move(event):
     error_lab.config(text = '')
@@ -198,6 +220,7 @@ def move_image(event):
     dy = dy_input.get()
     dx_input.delete(0,END)
     dy_input.delete(0, END)
+    
     try:
         dx = float(dx)
         dy = float(dy)
@@ -206,10 +229,20 @@ def move_image(event):
         cur_lu[1] += dy
         cur_rd[0] += dx
         cur_rd[1] += dy
+        cur_ru[0] += dx
+        cur_ru[1] += dy
+        cur_ld[0] += dx
+        cur_ld[1] += dy
+
+        epic_center[0] += dx
+        epic_center[1] += dy
         dot1 = [cur_lu[0], cur_lu[1]]
         dot2 = [cur_rd[0], cur_rd[1]]
-        draw_rect(dot1, dot2)
+        dot3 = [cur_ru[0], cur_ru[1]]
+        dot4 = [cur_ld[0], cur_ld[1]]
+        draw_rect(dot1, dot3, dot2, dot4)
         hash_rect(dot1, dot2, hash_angle, hash_step)
+        draw_epic(epic_center)
     except:
         print('input error')
         error_lab.config(text = 'input error')
@@ -221,6 +254,24 @@ def move_image(event):
 
 def scale_image(event):
     error_lab.config(text = '')
+
+    xm = xm_input.get()
+    ym = ym_input.get()
+    xm_input.delete(0,END)
+    ym_input.delete(0, END)
+    kx = kx_input.get()
+    kx_input.delete(0, END)
+
+    try:
+        xm = float(xm)
+        ym = float(ym)
+        kx = float(kx)
+        clearCanvas()
+
+
+    except:
+        error_lab.config(text = 'invalid input')
+
     xm_lab.grid_forget()
     xm_input.grid_forget()
     ym_lab.grid_forget()
@@ -319,9 +370,10 @@ error_lab.grid(row = 14, column = 11, columnspan = 4)
 
 #run
 
-draw_rect([-15, 8], [15, -8])
-hash_rect([-15, 8], [15, -8], -45, 2)
-fill_epic()
-draw_epic()
+draw_initial(1)
+# draw_rect([-15, 8], [15, -8])
+# hash_rect([-15, 8], [15, -8], -45, 2)
+# draw_epic([0,0])
+
 
 root.mainloop()
