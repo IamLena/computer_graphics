@@ -1,10 +1,15 @@
 from Tkinter import *
 from math import *
 
-# operations = []
-# operations.append(['move', dx, dy])
-# operations.append(['scale', xm, ym, kx, ky])
-# operations.append(['rotate', xm, ym, angle])
+#params for drawing:
+#rect - 4 dots
+#epic - center
+#scale
+#angle
+
+operations = []
+rect = [[-15, 8], [15, 8],[15, -8], [-15, -8]]
+operations.append([rect, [0,0], 12, 0])
 
 canvasWidth = 610
 canvasHeight = 610
@@ -25,7 +30,6 @@ cur_ld = [-15, -8]
 
 epic_center = [0,0]
 
-
 def get_epic_dots(a, b, center):
     t = 0
     dots =[]
@@ -45,21 +49,6 @@ def scale(dot):
     return [canvasWidth/2 + dot[0] * initial_scaling, canvasHeight/2 - dot[1] * initial_scaling]
 
 def fill_epic(dots, center):
-    # f = open("epicycloid.csv", "r")
-    # fileCtx = (f.read())
-    # lines = fileCtx.split('\n')
-    # epic = []
-    # for i in lines:
-    #     dot = i.split(',')
-    #     try:
-    #         x = float(dot[0])
-    #         y = float(dot[1])
-    #     except:
-    #         print('invalid file data')
-    #         return
-    #     else:
-    #         epic.append([x, y])
-    # #print(epic)
     for i in range(len(dots) - 1):
         w.create_line(scale(dots[i]), scale(dots[i+1]))
         w.create_polygon(scale(dots[i]), scale(dots[i+1]), scale(center), fill = 'white')
@@ -69,25 +58,6 @@ def draw_epic(center):
     fill_epic(dots, center)
     for i in range(len(dots) - 1):
         w.create_line(scale(dots[i]), scale(dots[i+1]))
-
-    # f = open("epicycloid.csv", "r")
-    # fileCtx = (f.read())
-    # lines = fileCtx.split('\n')
-    # epic = []
-    # for i in lines:
-    #     dot = i.split(',')
-    #     try:
-    #         x = float(dot[0])
-    #         y = float(dot[1])
-    #     except:
-    #         print('invalid file data')
-    #         return
-    #     else:
-    #         epic.append([x, y])
-    # #print(epic)
-    # for i in range(len(epic) - 1):
-    #     w.create_line(scale(epic[i]), scale(epic[i+1]))
-    # f.close()
 
 def draw_rect(lu_corner, ru_corner, rd_corner, ld_corner):
     w.create_polygon(scale(lu_corner), scale(ru_corner), scale(rd_corner), scale(ld_corner), outline='black', fill = '')
@@ -172,13 +142,21 @@ def hash_rect(left_up_corner, right_down_corner, angle, step):
             w.create_line(scale([x_from, y_from]), scale([x_to, y_to]))
             i+= step
 
+def draw():
+    clearCanvas()
+    operation = operations[-1]
+    draw_rect(operation[0][0], operation[0][1], operation[0][2], operation[0][3])
+    hash_rect(operation[0][0], operation[0][2], -45, 2)
+    draw_epic(operation[1])
+
 def draw_initial(event):
     error_lab.config(text = '')
-    clearCanvas()
-    draw_rect(lu_rect, ru_rect, rd_rect, ld_rect)
-    hash_rect(lu_rect, rd_rect, hash_angle, hash_step)
-    draw_epic([0,0])
-    epic_center = [0,0]
+    # clearCanvas()
+    # draw_rect(lu_rect, ru_rect, rd_rect, ld_rect)
+    # hash_rect(lu_rect, rd_rect, hash_angle, hash_step)
+    # draw_epic([0,0])
+    # epic_center = [0,0]
+    draw()
 
 def move(event):
     error_lab.config(text = '')
@@ -240,9 +218,12 @@ def move_image(event):
         dot2 = [cur_rd[0], cur_rd[1]]
         dot3 = [cur_ru[0], cur_ru[1]]
         dot4 = [cur_ld[0], cur_ld[1]]
-        draw_rect(dot1, dot3, dot2, dot4)
-        hash_rect(dot1, dot2, hash_angle, hash_step)
-        draw_epic(epic_center)
+        # draw_rect(dot1, dot3, dot2, dot4)
+        # hash_rect(dot1, dot2, hash_angle, hash_step)
+        # draw_epic(epic_center)
+
+        operations.append([[dot1, dot3, dot2, dot4], epic_center, 12, 0]) #error! rewriting epic_center
+        draw()
     except:
         print('input error')
         error_lab.config(text = 'input error')
@@ -251,6 +232,7 @@ def move_image(event):
     dy_lab.grid_forget()
     dy_input.grid_forget()
     move_submit.grid_forget()
+    print(operations)
 
 def scale_image(event):
     error_lab.config(text = '')
@@ -267,6 +249,7 @@ def scale_image(event):
         ym = float(ym)
         kx = float(kx)
         clearCanvas()
+
 
 
     except:
@@ -295,6 +278,12 @@ def rotate_image(event):
     angle_input.grid_forget()
 
     rotate_submit.grid_forget()
+
+
+def draw_prev(event):
+    if (len(operations) > 1):
+        operations.pop()
+        draw()
 
 root = Tk()
 
@@ -358,6 +347,7 @@ rotate_submit.bind('<Button-1>', rotate_image)
 #back
 back = Button(root, width = 20, height = 1, text = "previous", font = '30', bg = 'green', fg = 'white')
 back.grid(row = 12, column = 11, columnspan = 4)
+back.bind('<Button-1>', draw_prev)
 
 #initial
 initial_btn = Button(root, width = 20, height = 1, text = "initial image", bg = 'green', fg = 'white', font = '30')
