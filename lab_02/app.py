@@ -187,8 +187,7 @@ def hash_rect(angle, step, scale_koef):
 
             hash_dots.append([x_from, y_from, x_to, y_to])
             i += step
-        angle = operations[-1][2] + hash_angle
-        draw_hash_lines(hash_dots, scale_koef, angle)
+        draw_hash_lines(hash_dots, scale_koef, operations[-1][2])
 
 def draw():
     clearCanvas()
@@ -346,14 +345,15 @@ def rotate_image(event):
     operation = operations[-1]
     rect = operation[0]
     angle_prev = operation[2]
-    angle = angle + angle_prev
+    new_angle = angle + angle_prev
 
     new_rect = []
     for i in rect:
         new_rect.append(rotate_dot([xm, ym], i, angle))
         print(new_rect)
 
-    operations.append([new_rect, operation[1], angle])
+    print(new_rect)
+    operations.append([new_rect, operation[1], new_angle])
     draw()
 
 
