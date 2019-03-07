@@ -11,7 +11,7 @@ from math import *
 #angle
 
 initial_rect = [[-15, 8], [15, 8],[15, -8], [-15, -8]]
-hash_angle = 0
+hash_angle = -45
 hash_step = 2
 initial_scale = 12
 initial_angle = 0
@@ -33,10 +33,12 @@ def scale_dot(dot, scale):
     return [canvasWidth/2 + dot[0] * scale, canvasHeight/2 - dot[1] * scale]
 
 def rotate_dot(center, dot, angle):
-    x = dot[0]
-    y = dot[1]
-    x = center[0] + (x - center[0]) * cos(radians(angle)) + (y - center[1]) * sin(radians(angle))
-    y = center[1] - (x - center[0]) * sin(radians(angle)) + (y - center[1]) * cos(radians(angle))
+    x0 = dot[0]
+    y0 = dot[1]
+    cx = center[0]
+    cy = center[1]
+    x = cx + (x0 - cx) * cos(radians(angle)) + (y0 - cy) * sin(radians(angle))
+    y = cy + (y0 - cy) * cos(radians(angle)) - (x0 - cx) * sin(radians(angle))
     return [x, y]
 
 def get_center(M):
@@ -68,7 +70,11 @@ def draw_epic(center, scale_koef):
     angle = operation[2]
     fill_epic(dots, center, scale_koef, angle)
     for i in range(len(dots) - 1):
-        w.create_line(scale_dot(dots[i], scale_koef), scale_dot(dots[i+1], scale_koef))
+        dot1 = dots[i]
+        dot2 = dots[i+1]
+        dot1 = rotate_dot(center, dot1, angle)
+        dot2 = rotate_dot(center, dot2, angle)
+        w.create_line(scale_dot(dot1, scale_koef), scale_dot(dot2, scale_koef))
 
 def draw_rect():
     rect = operations[-1][0]
@@ -103,12 +109,10 @@ def getLength(dot1, dot2):
 def draw_hash_lines(hash_dots, scale_koef, angle):
     center = get_center(operations[-1][0])
     for i in hash_dots:
-        x_from = rotate_dot(center, i[0], angle)
-        y_from = rotate_dot(center, i[1], angle)
-        x_to = rotate_dot(center, i[2], angle)
-        y_to = rotate_dot(center, i[3], angle)
+        from_dot = rotate_dot(center, [i[0], i[1]], angle)
+        to_dot = rotate_dot(center, [i[2], i[3]], angle)
         
-        w.create_line(scale_dot([x_from, y_from], scale_koef), scale_dot([x_to, y_to], scale_koef))
+        w.create_line(scale_dot(from_dot, scale_koef), scale_dot(to_dot, scale_koef))
 
 def hash_rect(angle, step, scale_koef):
     hash_dots = []
@@ -193,13 +197,13 @@ def draw():
     print(operation)
     epic_center = get_center(operation[0])
     scale_koef = operation[1]
-    angle = operation[2]
     draw_rect()
     hash_rect(hash_angle, hash_step, scale_koef)
     draw_epic(epic_center, scale_koef)
 
 def draw_initial(event):
     error_lab.config(text = '')
+    operations.append([initial_rect, initial_scale, initial_angle])
     draw()
 
 def move(event):
