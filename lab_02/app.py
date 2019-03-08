@@ -1,5 +1,6 @@
 from Tkinter import *
 from math import *
+from copy import copy, deepcopy
 
 #params for drawing:
 #rect - 4 dots
@@ -178,6 +179,7 @@ def draw():
     epic_center = get_center(operation[0])
     scale_koef = operation[1]
     hash_lines = operation[3]
+    print(hash_lines[1])
     draw_rect()
     draw_hash_lines(hash_lines, scale_koef)
     draw_epic(epic_center, scale_koef)
@@ -220,14 +222,14 @@ def rotate(event):
     rotate_submit.grid(row = 11, column = 11, columnspan = 4)
 
 def move_nodraw(dx, dy):
-    operation = operations[-1]
-
+    operation = deepcopy(operations[-1])
+    print(operations)
     dot1 = operation[0][0][:]
     dot2 = operation[0][1][:]
     dot3 = operation[0][2][:]
     dot4 = operation[0][3][:]
-    hash_lines = operation[3][:]
-    print(hash_lines)
+    hash_lines = deepcopy(operations[-1][3])
+    print(hash_lines[1])
     dot1[0] += dx
     dot1[1] += dy
     dot2[0] += dx
@@ -238,11 +240,16 @@ def move_nodraw(dx, dy):
     dot4[1] += dy
 
     for i in hash_lines:
-            i[0] += dx
-            i[1] += dy
-            i[2] += dx
-            i[3] += dy
+        # print('line:')
+        # print(i)
+        i[0] += dx
+        i[1] += dy
+        i[2] += dx
+        i[3] += dy
+
     rect = [dot1, dot2, dot3, dot4]
+    print('prev')
+    print(operations[-1][3][1])
     operations.append([rect, operation[1], operation[2], hash_lines])
 
 def move_image(event):
@@ -252,15 +259,15 @@ def move_image(event):
     dx_input.delete(0,END)
     dy_input.delete(0, END)
     
-    try:
-        dx = float(dx)
-        dy = float(dy)
-        clearCanvas()
-        move_nodraw(dx, dy)
-        operation_list.insert(END, 'move, x:{:.2f}, y:{:.2f}'.format(dx, dy))
-        draw()
-    except:
-        error_lab.config(text = 'input error')
+    dx = float(dx)
+    dy = float(dy)
+    clearCanvas()
+    move_nodraw(dx, dy)
+    operation_list.insert(END, 'move, x:{:.2f}, y:{:.2f}'.format(dx, dy))
+    draw()
+    # try:
+    # except:
+    #     error_lab.config(text = 'input error')
     dx_lab.grid_forget()
     dx_input.grid_forget()
     dy_lab.grid_forget()
@@ -440,6 +447,6 @@ operation_list.grid(row = 15, column = 11, columnspan = 4)
 
 
 #run
-draw_initial(1)
+draw()
 
 root.mainloop()
