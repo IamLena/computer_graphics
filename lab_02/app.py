@@ -22,8 +22,8 @@ epic_b = 3
 canvasWidth = 610
 canvasHeight = 610
 
-def scale_dot(dot, scale):
-    return [canvasWidth/2 + dot[0] * scale, canvasHeight/2 - dot[1] * scale]
+def scale_dot(dot, scale, center):
+    return [canvasWidth/2 + (1 - scale) * center[0] + dot[0] * scale, -(1 - scale) * center[1] + canvasHeight/2 - dot[1] * scale]
 
 
 def get_b(x, y, angle):
@@ -149,7 +149,7 @@ def fill_epic(dots, center, scale_koef, angle):
         dot2 = dots[i+1]
         dot1 = rotate_dot(center, dot1, angle)
         dot2 = rotate_dot(center, dot2, angle)
-        w.create_polygon(scale_dot(dot1, scale_koef), scale_dot(dot2, scale_koef), scale_dot(center, scale_koef), fill = 'pink')
+        w.create_polygon(scale_dot(dot1, scale_koef, center), scale_dot(dot2, scale_koef, center), scale_dot(center, scale_koef, center), fill = 'pink')
 
 def draw_epic(center, scale_koef):
     dots = get_epic_dots(epic_a, epic_b, center)
@@ -174,7 +174,7 @@ def draw_hash_lines(hash_dots, scale_koef):
         w.create_line(scale_dot(from_dot, scale_koef), scale_dot(to_dot, scale_koef))
 
 def draw():
-    clearCanvas()
+    # clearCanvas()
     operation = operations[-1]
     epic_center = get_center(operation[0])
     scale_koef = operation[1]
@@ -183,6 +183,7 @@ def draw():
     draw_rect()
     draw_hash_lines(hash_lines, scale_koef)
     draw_epic(epic_center, scale_koef)
+    w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green')
 
 def draw_initial(event):
     error_lab.config(text = '')
@@ -223,13 +224,11 @@ def rotate(event):
 
 def move_nodraw(dx, dy):
     operation = deepcopy(operations[-1])
-    print(operations)
     dot1 = operation[0][0][:]
     dot2 = operation[0][1][:]
     dot3 = operation[0][2][:]
     dot4 = operation[0][3][:]
     hash_lines = deepcopy(operations[-1][3])
-    print(hash_lines[1])
     dot1[0] += dx
     dot1[1] += dy
     dot2[0] += dx
@@ -240,16 +239,12 @@ def move_nodraw(dx, dy):
     dot4[1] += dy
 
     for i in hash_lines:
-        # print('line:')
-        # print(i)
         i[0] += dx
         i[1] += dy
         i[2] += dx
         i[3] += dy
 
     rect = [dot1, dot2, dot3, dot4]
-    print('prev')
-    print(operations[-1][3][1])
     operations.append([rect, operation[1], operation[2], hash_lines])
 
 def move_image(event):
@@ -261,7 +256,6 @@ def move_image(event):
     
     dx = float(dx)
     dy = float(dy)
-    clearCanvas()
     move_nodraw(dx, dy)
     operation_list.insert(END, 'move, x:{:.2f}, y:{:.2f}'.format(dx, dy))
     draw()
@@ -283,30 +277,34 @@ def scale_image(event):
     ym_input.delete(0, END)
     k = kx_input.get()
     kx_input.delete(0, END)
+
+    xm = float(xm)
+    ym = float(ym)
+    k = float(k)
+
+    operation = operations[-1]
+    center = get_center(operation[0])
+    shift_x = xm - center[0]
+    shift_y = ym - center[1]
+
+    move_nodraw(shift_x, shift_y)
+    draw()
+
+    operation = operations[-1]
+    rect = operation[0]
+    hash_lines = operation[3]
+    angle = operation[2]
+    cur_scale = operation[1]
+    cur_scale *= k
+    operations.pop()
     
-    try:
-        xm = float(xm)
-        ym = float(ym)
-        k = float(k)
-
-        operation = operations[-1]
-        center = get_center(operation[0])
-        shift_x = xm - center[0]
-        shift_y = ym - center[1]
-        move_nodraw(shift_x, shift_y)
-
-        operation = operations[-1]
-        rect = operation[0]
-        hash_lines = operation[3]
-        angle = operation[2]
-        cur_scale = operation[1]
-        cur_scale *= k
-        operations.pop()
-        operation_list.insert(END, 'scale, x{:.2f}'.format(k))
-        operations.append([rect, cur_scale, angle, hash_lines])
-        draw()
-    except:
-        error_lab.config(text = 'invalid input')
+    operation_list.insert(END, 'scale, center({:.2f}, {:.2f}) x{:.2f}'.format(xm, ym, k))
+    operations.append([rect, cur_scale, angle, hash_lines])
+    move_nodraw(-1 * shift_x, -1 * shift_y)
+    draw()
+    # try:
+    # except:
+    #     error_lab.config(text = 'invalid input')
 
     xm_lab.grid_forget()
     xm_input.grid_forget()
