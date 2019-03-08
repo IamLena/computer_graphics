@@ -21,16 +21,102 @@ epic_b = 3
 canvasWidth = 610
 canvasHeight = 610
 
-operations = []
+def scale_dot(dot, scale):
+    return [canvasWidth/2 + dot[0] * scale, canvasHeight/2 - dot[1] * scale]
 
-operations.append([initial_rect, initial_scale, initial_angle])
+
+def get_b(x, y, angle):
+    b = y - tan(radians(angle)) * x
+    return b
+def get_y(x_border, angle, b):
+    y = tan(radians(angle)) * x_border + b
+    return y
+def get_x(y_border, angle, b):
+    x = (y_border - b) / tan(radians(angle))
+    return x
+def getLength(dot1, dot2):
+    return sqrt((dot1[0] - dot2[0])**2 + (dot1[1] - dot2[1])**2)
+
+def hash_rect(rect, hash_angle, step):
+    hash_dots = []
+    left_up_corner = rect[0]
+    right_down_corner = rect[2]
+    if(hash_angle % 90 == 0 and hash_angle // 90 % 2 == 1): #pi * n, n = 2k + 1, vertikal lines
+        i = left_up_corner[0]
+        while (i < right_down_corner[0]):
+            y_from = left_up_corner[1]
+            x_from = i
+            y_to = right_down_corner[1]
+            x_to = i
+            hash_dots.append([x_from, y_from, x_to, y_to])
+            i += step
+    elif (abs(tan(radians(hash_angle)) - 0) < 0.000001 ): # tan == 0, horizontal lines
+        i = left_up_corner[1]
+        while (i > right_down_corner[1]):
+            x_from = left_up_corner[0]
+            y_from = i
+            x_to = right_down_corner[0]
+            y_to = i
+            hash_dots.append([x_from, y_from, x_to, y_to])
+            i -= step
+    elif (tan(radians(hash_angle)) > 0): #tan > 0, m > 0
+        i = left_up_corner[0]
+        height = left_up_corner[1] -  right_down_corner[1]
+        add_width = height / tan(radians(hash_angle))
+        while (i < right_down_corner[0] + add_width):
+            b = get_b(i, left_up_corner[1], hash_angle)
+            x_from = i
+            y_from = left_up_corner[1]
+            x_to = left_up_corner[0]
+            y_to = get_y(x_to, hash_angle, b)
+
+            if (i > right_down_corner[0]):
+                x_from = right_down_corner[0]
+                y_from =  get_y(right_down_corner[0], hash_angle, b)
+                
+            if (y_to < right_down_corner[1]):
+                y_to = right_down_corner[1]
+                x_to = get_x(y_to, hash_angle, b)
+
+            if (y_to > left_up_corner[1]):
+                y_to = right_down_corner[1]
+                x_to = get_x(y_to, hash_angle, b)
+            
+            hash_dots.append([x_from, y_from, x_to, y_to])
+            i += step
+    else:
+        height = left_up_corner[1] -  right_down_corner[1]
+        add_width = - height / tan(radians(hash_angle))
+        i = left_up_corner[0]
+        while (i < right_down_corner[0] + add_width):
+            b = get_b(i, right_down_corner[1], hash_angle)
+            y = get_y(left_up_corner[0], hash_angle, b)
+
+            y_to = y
+            x_to = left_up_corner[0]
+            x_from = i
+            y_from = right_down_corner[1]
+
+            if (i > right_down_corner[0]):
+                x_from = right_down_corner[0]
+                y_from = get_y(x_from, hash_angle, b)
+
+            if (y_to > left_up_corner[1]):
+                y_to = left_up_corner[1]
+                x_to = get_x(y_to, hash_angle, b)
+
+            hash_dots.append([x_from, y_from, x_to, y_to])
+            i += step
+        return hash_dots
+
+initial_hash_lines = hash_rect(initial_rect, hash_angle, hash_step) #[x_from, y_from, x_to, y_to]
+
+operations = []
+operations.append([initial_rect, initial_scale, initial_angle, initial_hash_lines])
 
 def clearCanvas():
     w.delete('all')
     w.create_rectangle(2, 2, canvasWidth, canvasHeight, width=2, outline = 'green', fill = 'white')
-
-def scale_dot(dot, scale):
-    return [canvasWidth/2 + dot[0] * scale, canvasHeight/2 - dot[1] * scale]
 
 def rotate_dot(center, dot, angle):
     x0 = dot[0]
@@ -80,129 +166,25 @@ def draw_rect():
     rect = operations[-1][0]
     scale_koef = operations[-1][1]
     w.create_polygon(scale_dot(rect[0], scale_koef), scale_dot(rect[1], scale_koef), scale_dot(rect[2], scale_koef), scale_dot(rect[3], scale_koef), outline='black', fill = '')
-    #w.create_polygon(scale_dot(lu_corner, scale_koef), scale_dot(ru_corner, scale_koef), scale_dot(rd_corner, scale_koef), scale_dot(ld_corner, scale_koef), outline='black', fill = '')
-
-def get_b(x, y, angle):
-    b = y - tan(radians(angle)) * x
-    return b
-def get_y(x_border, angle, b):
-    y = tan(radians(angle)) * x_border + b
-    return y
-def get_x(y_border, angle, b):
-    x = (y_border - b) / tan(radians(angle))
-    return x
-def findIntersection(m1, b1, m2, b2):#get the intersection of two lines by their koefs
-    x = (b2 - b1)/(m1 - m2)
-    y = m1 * x + b1
-    return x, y
-def getLine(dot1, dot2):
-    x1 = dot1[0]
-    y1 = dot1[1]
-    x2 = dot2[0]
-    y2 = dot2[1]
-    m = (y1 - y2)/(x1 - x2)
-    b = y1 - m * x1
-    return m, b
-def getLength(dot1, dot2):
-    return sqrt((dot1[0] - dot2[0])**2 + (dot1[1] - dot2[1])**2)
-
-def draw_hash_lines(hash_dots, scale_koef, angle):
-    center = get_center(operations[-1][0])
+def draw_hash_lines(hash_dots, scale_koef):
     for i in hash_dots:
-        from_dot = rotate_dot(center, [i[0], i[1]], angle)
-        to_dot = rotate_dot(center, [i[2], i[3]], angle)
-        
+        from_dot = [i[0], i[1]]
+        to_dot = [i[2], i[3]]
         w.create_line(scale_dot(from_dot, scale_koef), scale_dot(to_dot, scale_koef))
-
-def hash_rect(angle, step, scale_koef):
-    hash_dots = []
-    rect = operations[0][0]
-    left_up_corner = rect[0]
-    right_down_corner = rect[2]
-    scale_koef = operations[-1][1]
-    if(angle % 90 == 0 and angle // 90 % 2 == 1):
-        i = left_up_corner[0]
-        while (i < right_down_corner[0]):
-            y_from = left_up_corner[1]
-            x_from = i
-            y_to = right_down_corner[1]
-            x_to = i
-            w.create_line(scale_dot([x_from, y_from], scale_koef), scale_dot([x_to, y_to], scale_koef))
-            i += step
-    elif (abs(tan(radians(angle)) - 0) < 0.000001 ):
-        i = left_up_corner[1]
-        while (i > right_down_corner[1]):
-            x_from = left_up_corner[0]
-            y_from = i
-            x_to = right_down_corner[0]
-            y_to = i
-            w.create_line(scale_dot([x_from, y_from], scale_koef), scale_dot([x_to, y_to], scale_koef))
-            i -= step
-    elif (tan(radians(angle)) > 0):
-        i = left_up_corner[0]
-        height = left_up_corner[1] -  right_down_corner[1]
-        add_width = height / tan(radians(angle))
-        while (i < right_down_corner[0] + add_width):
-            b = get_b(i, left_up_corner[1], angle)
-            y = get_y(left_up_corner[0], angle, b)
-            x_from = i
-            y_from = left_up_corner[1]
-            x_to = left_up_corner[0]
-            y_to = y
-
-            if (i > right_down_corner[0]):
-                x_from = right_down_corner[0]
-                y_from =  get_y(right_down_corner[0], angle, b)
-                
-            if (y_to < right_down_corner[1]):
-                y_to = right_down_corner[1]
-                x_to = get_x(y_to, angle, b)
-
-            if (y_to > left_up_corner[1]):
-                y_to = right_down_corner[1]
-                x_to = get_x(y_to, angle, b)
-            
-            w.create_line(scale_dot([x_from, y_from], scale_koef), scale_dot([x_to, y_to], scale_koef))
-            i += step
-    else:
-        height = left_up_corner[1] -  right_down_corner[1]
-        add_width = - height / tan(radians(angle))
-        i = left_up_corner[0]
-        while (i < right_down_corner[0] + add_width):
-            b = get_b(i, right_down_corner[1], angle)
-            y = get_y(left_up_corner[0], angle, b)
-
-            y_to = y
-            x_to = left_up_corner[0]
-            x_from = i
-            y_from = right_down_corner[1]
-
-            if (i > right_down_corner[0]):
-                x_from = right_down_corner[0]
-                y_from = get_y(x_from, angle, b)
-
-            if (y_to > left_up_corner[1]):
-                y_to = left_up_corner[1]
-                x_to = get_x(y_to, angle, b)
-
-            hash_dots.append([x_from, y_from, x_to, y_to])
-            i += step
-        draw_hash_lines(hash_dots, scale_koef, operations[-1][2])
 
 def draw():
     clearCanvas()
     operation = operations[-1]
-    print("drawing")
-    print(operation)
     epic_center = get_center(operation[0])
     scale_koef = operation[1]
+    hash_lines = operation[3]
     draw_rect()
-    hash_rect(hash_angle, hash_step, scale_koef)
+    draw_hash_lines(hash_lines, scale_koef)
     draw_epic(epic_center, scale_koef)
 
 def draw_initial(event):
     error_lab.config(text = '')
-    operations.append([initial_rect, initial_scale, initial_angle])
+    operations.append([initial_rect, initial_scale, initial_angle, initial_hash_lines])
     draw()
 
 def move(event):
@@ -244,7 +226,8 @@ def move_nodraw(dx, dy):
     dot2 = operation[0][1][:]
     dot3 = operation[0][2][:]
     dot4 = operation[0][3][:]
-
+    hash_lines = operation[3][:]
+    print(hash_lines)
     dot1[0] += dx
     dot1[1] += dy
     dot2[0] += dx
@@ -254,8 +237,13 @@ def move_nodraw(dx, dy):
     dot4[0] += dx
     dot4[1] += dy
 
+    for i in hash_lines:
+            i[0] += dx
+            i[1] += dy
+            i[2] += dx
+            i[3] += dy
     rect = [dot1, dot2, dot3, dot4]
-    operations.append([rect, operation[1], operation[2]])
+    operations.append([rect, operation[1], operation[2], hash_lines])
 
 def move_image(event):
     error_lab.config(text = '')
@@ -269,17 +257,15 @@ def move_image(event):
         dy = float(dy)
         clearCanvas()
         move_nodraw(dx, dy)
+        operation_list.insert(END, 'move, x:{:.2f}, y:{:.2f}'.format(dx, dy))
         draw()
     except:
-        print('input error')
         error_lab.config(text = 'input error')
     dx_lab.grid_forget()
     dx_input.grid_forget()
     dy_lab.grid_forget()
     dy_input.grid_forget()
     move_submit.grid_forget()
-
-    print(operations)
 
 def scale_image(event):
     error_lab.config(text = '')
@@ -295,22 +281,22 @@ def scale_image(event):
         xm = float(xm)
         ym = float(ym)
         k = float(k)
-        clearCanvas()
 
         operation = operations[-1]
-        
         center = get_center(operation[0])
         shift_x = xm - center[0]
         shift_y = ym - center[1]
-
         move_nodraw(shift_x, shift_y)
-        draw()
 
         operation = operations[-1]
+        rect = operation[0]
+        hash_lines = operation[3]
+        angle = operation[2]
         cur_scale = operation[1]
         cur_scale *= k
         operations.pop()
-        operations.append([operation[0], cur_scale, operation[2]])
+        operation_list.insert(END, 'scale, x{:.2f}'.format(k))
+        operations.append([rect, cur_scale, angle, hash_lines])
         draw()
     except:
         error_lab.config(text = 'invalid input')
@@ -319,16 +305,11 @@ def scale_image(event):
     xm_input.grid_forget()
     ym_lab.grid_forget()
     ym_input.grid_forget()
-
     kx_lab.grid_forget()
     kx_input.grid_forget()
-
     scale_submit.grid_forget()
 
-
-
 def rotate_image(event):
-    
     error_lab.config(text = '')
 
     xm = xm_input_r.get()
@@ -338,29 +319,33 @@ def rotate_image(event):
     angle = angle_input.get()
     angle_input.delete(0, END)
 
-    xm = float(xm)
-    ym = float(ym)
-    angle = float(angle)
+    try:
+        xm = float(xm)
+        ym = float(ym)
+        angle = float(angle)
 
-    operation = operations[-1]
-    rect = operation[0]
-    angle_prev = operation[2]
-    new_angle = angle + angle_prev
+        operation = operations[-1]
+        rect = operation[0]
+        hash_lines = operation[3][:]
+        angle_prev = operation[2]
+        new_angle = angle + angle_prev
 
-    new_rect = []
-    for i in rect:
-        new_rect.append(rotate_dot([xm, ym], i, angle))
-        print(new_rect)
+        new_rect = []
+        for i in rect:
+            new_rect.append(rotate_dot([xm, ym], i, angle))
+        for i in hash_lines:
+            rot1 = rotate_dot([xm, ym], [i[0], i[1]], angle)
+            rot2 = rotate_dot([xm, ym], [i[2], i[3]], angle)
+            i[0] = rot1[0]
+            i[1] = rot1[1]
+            i[2] = rot2[0]
+            i[3] = rot2[1]
 
-    print(new_rect)
-    operations.append([new_rect, operation[1], new_angle])
-    draw()
-
-
-    # try:
-    # except:
-    #     print('invalid input')
-    #     error_lab.config(text = 'invalid input')
+        operation_list.insert(END, 'rotate, {:.2f}'.format(angle))
+        operations.append([new_rect, operation[1], new_angle, hash_lines])
+        draw()
+    except:
+        error_lab.config(text = 'invalid input')
 
     xm_lab_r.grid_forget()
     xm_input_r.grid_forget()
@@ -372,13 +357,12 @@ def rotate_image(event):
 
     rotate_submit.grid_forget()
 
-
 def draw_prev(event):
     error_lab.config(text = '')
     if (len(operations) > 1):
         operations.pop()
+        operation_list.delete(len(operations) - 2, END)
         draw()
-    print(operations)
 
 root = Tk()
 
@@ -450,12 +434,12 @@ initial_btn.bind('<Button-1>', draw_initial)
 error_lab = Label(root, font = '12', text = '', fg = 'blue')
 error_lab.grid(row = 14, column = 11, columnspan = 4)
 
+#operation list
+operation_list = Listbox(root, width = 25, height = 15)
+operation_list.grid(row = 15, column = 11, columnspan = 4)
+
+
 #run
-
 draw_initial(1)
-# draw_rect([-15, 8], [15, -8])
-# hash_rect([-15, 8], [15, -8], -45, 2)
-# draw_epic([0,0])
-
 
 root.mainloop()
