@@ -1,3 +1,6 @@
+// update cur when initial
+// back function
+
 function Operation(action = 'initial', dx = 0, dy = 0, kx = 1, ky = 1, centerScale = [0, 0], angle = 0, centerRotate = [0,0]) {
     this.action = action
     this.dx = dx
@@ -151,7 +154,6 @@ curImage = {
     a: 2,
     b: 3,
     epicDots: function() {
-        console.log(`center ${this.center()}`)
         let dots = getEpicDots(this.a, this.b, this.center())
         for (let i = 0; i < dots.length; i++) {
             dots[i] = scale(dots[i], 20, 20, [500, 500])
@@ -159,26 +161,40 @@ curImage = {
         console.log(dots)
         return dots
     },
+    
+    dots: [],
     hashAngle: -45,
     hashStep: 40,
     hashLines: function() {
         return getHashLines([this.lu, this.ru, this.rd, this.ld], this.hashAngle, this.hashStep)
     },
+    hash: [],
+
+    setArrays: function() {
+        this.dots = this.epicDots()
+        this.hash = this.hashLines()
+    },
 
     draw: function(operation) {
+        console.log('dots')
+        console.log(this.dots)
+        console.log('hash')
+        console.log(this.hash)
         const canvas = document.querySelector('canvas')
+
         if (canvas.getContext) {
             const  ctx = canvas.getContext('2d')
             
-            let rect = [this.lu, this.ru, this.rd, this.ld]
-            let lines = this.hashLines()
-            let dots = this.epicDots()
-            let center = this.center()
+            ctx.clearRect(0, 0, 1000, 1000);
 
-            this.lu = move
+            let lines = this.hash
+            let dots = this.dots
+
             if (operation.action === 'move') {
-                for (let i = 0; i < rect.length; i++)
-                    rect[i] = move(rect[i], dx, dy)
+                this.lu = move(this.lu, dx, dy)
+                this.ru = move(this.ru, dx, dy)
+                this.rd = move(this.rd, dx, dy)
+                this.ld = move(this.ld, dx, dy)
 
                 for (let i = 0; i < lines.length; i++) {
                     lines[i][0] += dx
@@ -186,20 +202,69 @@ curImage = {
                     lines[i][2] += dx
                     lines[i][3] += dy
                 }
+                this.hash = lines
 
                 for (let i = 0; i < dots.length; i++)
                     dots[i] = move(dots[i], dx, dy)
 
-                center[0] += dx
-                center[1] += dy
+                this.dots = dots
+            }
+
+            if (operation.action === 'scale') {
+                this.lu = scale(this.lu, kx, ky, operation.centerScale)
+                this.ru = scale(this.ru, kx, ky, operation.centerScale)
+                this.rd = scale(this.rd, kx, ky, operation.centerScale)
+                this.ld = scale(this.ld, kx, ky, operation.centerScale)
+
+                for (let i = 0; i < lines.length; i++) {
+                    console.log(`was ${lines[i]}`)
+                    scaled1 = scale( [lines[i][0], lines[i][1]], kx, ky, operation.centerScale)
+                    scaled2 = scale( [lines[i][2], lines[i][3]], kx, ky, operation.centerScale)
+                    lines[i][0] = scaled1[0]
+                    lines[i][1] = scaled1[1]
+                    lines[i][2] = scaled2[0]
+                    lines[i][3] = scaled2[1]
+                    console.log(lines[i])
+                }
+                this.hash = lines
+
+                for (let i = 0; i < dots.length; i++)
+                    dots[i] = scale(dots[i], kx, ky, operation.centerScale)
+
+                this.dots = dots
+            }
+
+            if (operation.action === 'rotate') {
+                this.lu = rotate(this.lu, operation.angle, operation.centerRotate)
+                this.ru = rotate(this.ru, operation.angle, operation.centerRotate)
+                this.rd = rotate(this.rd, operation.angle, operation.centerRotate)
+                this.ld = rotate(this.ld, operation.angle, operation.centerRotate)
+
+                for (let i = 0; i < lines.length; i++) {
+                    console.log(`was ${lines[i]}`)
+                    rotated1 = rotate( [lines[i][0], lines[i][1]], operation.angle, operation.centerRotate)
+                    rotated2 = rotate( [lines[i][2], lines[i][3]], operation.angle, operation.centerRotate)
+                    lines[i][0] = rotated1[0]
+                    lines[i][1] = rotated1[1]
+                    lines[i][2] = rotated2[0]
+                    lines[i][3] = rotated2[1]
+                }
+                this.hash = lines
+
+                for (let i = 0; i < dots.length; i++)
+                    dots[i] = rotate(dots[i], operation.angle, operation.centerRotate)
+
+                this.dots = dots
+                console.log('done')
             }
 
             //draw rectangle
+            console.log(this.lu, this.ru, this.rd, this.ld)
             ctx.beginPath()
-            ctx.moveTo(rect[0][0], rect[0][1])
-            ctx.lineTo(rect[1][0], rect[1][1])
-            ctx.lineTo(rect[2][0], rect[2][1])
-            ctx.lineTo(rect[3][0], rect[3][1])
+            ctx.moveTo(this.lu[0], this.lu[1])
+            ctx.lineTo(this.ru[0], this.ru[1])
+            ctx.lineTo(this.rd[0], this.rd[1])
+            ctx.lineTo(this.ld[0], this.ld[1])
             ctx.closePath();
             ctx.stroke();
 
@@ -218,12 +283,11 @@ curImage = {
             for (let i = 1; i < dots.length - 1; i++){
                 ctx.lineTo(dots[i][0], dots[i][1])
                 ctx.lineTo(dots[i + 1][0], dots[i + 1][1])
-                ctx.lineTo(center[0], center[1])
-                ctx.lineTo(dots[i][0], dots[i][1])
+                ctx.lineTo(this.center[0], this.center[1])
                 ctx.closePath();
-                ctx.strokeStyle = 'white'
+                ctx.strokeStyle = 'green'
                 ctx.stroke();
-                ctx.fillStyle = 'white'
+                ctx.fillStyle = 'green'
                 ctx.fill();
             }
 
@@ -258,20 +322,25 @@ origin = {
         console.log(dots)
         return dots
     },
+    dots: [],
     hashAngle: -45,
     hashStep: 40,
     hashLines: function() {
         return getHashLines([this.lu, this.ru, this.rd, this.ld], this.hashAngle, this.hashStep)
     },
+    hash: [],
 
     draw: function(operation) {
+        ctx.clearRect(0, 0, 1000, 1000);
         const canvas = document.querySelector('canvas')
         if (canvas.getContext) {
             const  ctx = canvas.getContext('2d')
             
             let rect = [this.lu, this.ru, this.rd, this.ld]
             let lines = this.hashLines()
+            this.lines = lines
             let dots = this.epicDots()
+            this.dots = dots
             let center = this.center()
 
             //draw rectangle
@@ -319,6 +388,7 @@ origin = {
     }
 }
 origin.draw(operations[0])
+curImage.setArrays()
 
 function move (dot, dx, dy) {
     return [dot[0] + dx, dot[1] + dy]
@@ -330,10 +400,11 @@ function scale(dot, kx, ky, center) {
     return [x, y]
 }
 
-function rotate(x, angle, center) {
-    const x = center[0] + (x - center[0]) * Math.cos(angle * Math.PI / 180) + (y - center[1]) * Math.sin(angle * Math.PI / 180)
-    const y = center[1] - (x - center[0]) * Math.sin(angle * Math.PI / 180) + (y - center[1]) * Math.cos(angle * Math.PI / 180)
-    return [x, y]
+function rotate(dot, angle, center) {
+    // console.log(dot, angle, center)
+    const newx = center[0] + (dot[0] - center[0]) * Math.cos(angle * Math.PI / 180) + (dot[1] - center[1]) * Math.sin(angle * Math.PI / 180)
+    const newy = center[1] - (dot[0] - center[0]) * Math.sin(angle * Math.PI / 180) + (dot[1] - center[1]) * Math.cos(angle * Math.PI / 180)
+    return [newx, newy]
 }
 
 document.querySelector('.scale').addEventListener('submit', (e) => {
@@ -354,7 +425,9 @@ document.querySelector('.scale').addEventListener('submit', (e) => {
     xm = parseFloat(xm)
     ym = parseFloat(ym)
 
-    operations.push(new Operation('scale', undefined, undefined, kx, ky, [xm, ym]))
+    operation = new Operation('scale', undefined, undefined, kx, ky, [xm, ym])
+    operations.push(operation)
+    curImage.draw(operation)
     console.log(operations)
     // try {
     // }
@@ -400,7 +473,9 @@ document.querySelector('.rotate').addEventListener('submit', (e) => {
     xm = parseFloat(xm)
     ym = parseFloat(ym)
 
-    operations.push(new Operation('rotate', undefined, undefined, undefined, undefined, undefined, angle, [xm, ym]))
+    operation = new Operation('rotate', undefined, undefined, undefined, undefined, undefined, angle, [xm, ym])
+    operations.push(operation)
+    curImage.draw(operation)
     console.log(operations)
     // try {
     // }

@@ -22,8 +22,8 @@ epic_b = 3
 canvasWidth = 610
 canvasHeight = 610
 
-def scale_dot(dot, scale, center):
-    return [canvasWidth/2 + (1 - scale) * center[0] + dot[0] * scale, -(1 - scale) * center[1] + canvasHeight/2 - dot[1] * scale]
+def scale_dot(dot, scale):
+    return [canvasWidth/2 + dot[0] * scale, canvasHeight/2 - dot[1] * scale]
 
 
 def get_b(x, y, angle):
@@ -149,7 +149,7 @@ def fill_epic(dots, center, scale_koef, angle):
         dot2 = dots[i+1]
         dot1 = rotate_dot(center, dot1, angle)
         dot2 = rotate_dot(center, dot2, angle)
-        w.create_polygon(scale_dot(dot1, scale_koef, center), scale_dot(dot2, scale_koef, center), scale_dot(center, scale_koef, center), fill = 'pink')
+        w.create_polygon(scale_dot(dot1, scale_koef), scale_dot(dot2, scale_koef), scale_dot(center, scale_koef), fill = 'pink')
 
 def draw_epic(center, scale_koef):
     dots = get_epic_dots(epic_a, epic_b, center)
@@ -287,8 +287,8 @@ def scale_image(event):
     shift_x = xm - center[0]
     shift_y = ym - center[1]
 
-    move_nodraw(shift_x, shift_y)
-    draw()
+    # move_nodraw(shift_x, shift_y)
+    # draw()
 
     operation = operations[-1]
     rect = operation[0]
@@ -296,11 +296,11 @@ def scale_image(event):
     angle = operation[2]
     cur_scale = operation[1]
     cur_scale *= k
-    operations.pop()
+    # operations.pop()
     
     operation_list.insert(END, 'scale, center({:.2f}, {:.2f}) x{:.2f}'.format(xm, ym, k))
     operations.append([rect, cur_scale, angle, hash_lines])
-    move_nodraw(-1 * shift_x, -1 * shift_y)
+    move_nodraw(shift_x * (1 / k), shift_y * (1 / k))
     draw()
     # try:
     # except:
