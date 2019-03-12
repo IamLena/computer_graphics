@@ -1,17 +1,6 @@
 // update cur when initial
 // back function
 
-// function Operation(action = 'initial', dx = 0, dy = 0, kx = 1, ky = 1, centerScale = [0, 0], angle = 0, centerRotate = [0,0]) {
-//     this.action = action
-//     this.dx = dx
-//     this.dy = dy
-//     this.kx = kx
-//     this.ky = ky
-//     this.centerScale = centerScale
-//     this.angle = angle
-//     this.centerRotate = centerRotate
-// }
-
 function getCenter(M = []) {
     let x = 0
     let y = 0
@@ -141,10 +130,10 @@ function getHashLines (rect, hashAngle, hashStep) {
 historyArray = []
 
 curImage = {
-    lu: [200, 660],
-    ru: [800, 660],
-    rd: [800, 340],
-    ld: [200, 340],
+    lu: [260, 628],
+    ru: [740, 628],
+    rd: [740, 372],
+    ld: [260, 372],
     center: function() {
         return getCenter([this.lu, this.ru, this.rd, this.ld])
     },
@@ -153,7 +142,7 @@ curImage = {
     epicDots: function() {
         let dots = getEpicDots(this.a, this.b, this.center())
         for (let i = 0; i < dots.length; i++) {
-            dots[i] = scale(dots[i], 20, 20, [500, 500])
+            dots[i] = scale(dots[i], 16, 16, [500, 500])
         }
         console.log(dots)
         return dots
@@ -173,6 +162,7 @@ curImage = {
     },
 
     moveImage: function(dx, dy) {
+        debugger
         this.lu = move(this.lu, dx, dy)
         this.ru = move(this.ru, dx, dy)
         this.rd = move(this.rd, dx, dy)
@@ -180,10 +170,12 @@ curImage = {
 
         let lines = this.hash
         for (let i = 0; i < lines.length; i++) {
-            lines[i][0] += dx
-            lines[i][1] += dy
-            lines[i][2] += dx
-            lines[i][3] += dy
+            moved1 = move( [lines[i][0], lines[i][1]], dx, dy)
+            moved2 = move( [lines[i][2], lines[i][3]], dx, dy)
+            lines[i][0] = moved1[0]
+            lines[i][1] = moved1[1]
+            lines[i][2] = moved2[0]
+            lines[i][3] = moved2[1]
         }
         this.hash = lines
 
@@ -192,7 +184,8 @@ curImage = {
             dots[i] = move(dots[i], dx, dy)
 
         this.dots = dots
-        historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+        // historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+        historyArray.push([this.lu.slice(), this.ru.slice(), this.rd.slice(), this.ld.slice(), this.dots.slice(), this.hash.slice()])
     },
 
     scaleImage: function(kx, ky, xm, ym) {
@@ -218,7 +211,9 @@ curImage = {
 
         this.dots = dots
 
-        historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+        // historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+        historyArray.push([this.lu.slice(), this.ru.slice(), this.rd.slice(), this.ld.slice(), this.dots.slice(), this.hash.slice()])
+        console.log(this.lu, this.ru, this.rd, this.ld)
     },
 
     rotateImage: function(angle, xm, ym) {
@@ -244,7 +239,9 @@ curImage = {
             dots[i] = rotate(dots[i], angle, [xm, ym])
 
         this.dots = dots
-        historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+        // historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+        historyArray.push([this.lu.slice(), this.ru.slice(), this.rd.slice(), this.ld.slice(), this.dots.slice(), this.hash.slice()])
+
     },
 
     draw: function() {
@@ -265,13 +262,20 @@ curImage = {
             ctx.stroke();
 
             //hash rectangle
-            let lines = this.hash
-            lines.forEach((item) => {
+
+            this.hash.forEach((item) => {
                 ctx.beginPath()
                 ctx.moveTo(item[0], item[1])
                 ctx.lineTo(item[2], item[3])
                 ctx.stroke()
             })
+            // let lines = this.hash
+            // lines.forEach((item) => {
+            //     ctx.beginPath()
+            //     ctx.moveTo(item[0], item[1])
+            //     ctx.lineTo(item[2], item[3])
+            //     ctx.stroke()
+            // })
 
             //fill epic
             let dots = this.dots
@@ -302,10 +306,10 @@ curImage = {
 }
 
 origin = {
-    lu: [200, 660],
-    ru: [800, 660],
-    rd: [800, 340],
-    ld: [200, 340],
+    lu: [260, 628],
+    ru: [740, 628],
+    rd: [740, 372],
+    ld: [260, 372],
     center: function() {
         return getCenter([this.lu, this.ru, this.rd, this.ld])
     },
@@ -315,7 +319,7 @@ origin = {
         console.log(`center ${this.center()}`)
         let dots = getEpicDots(this.a, this.b, this.center())
         for (let i = 0; i < dots.length; i++) {
-            dots[i] = scale(dots[i], 20, 20, [500, 500])
+            dots[i] = scale(dots[i], 16, 16, [500, 500])
         }
         console.log(dots)
         return dots
@@ -342,7 +346,7 @@ origin = {
             let dots = this.epicDots()
             this.dots = dots
 
-            historyArray.push([this.lu, this.ru, this.rd, this.ld, this.dots, this.hash])
+            historyArray.push([this.lu.slice(), this.ru.slice(), this.rd.slice(), this.ld.slice(), this.dots.slice(), this.hash.slice()])
 
             let center = this.center()
 
@@ -484,11 +488,14 @@ document.querySelector('.rotate').addEventListener('submit', (e) => {
 })
 
 document.querySelector('#back').addEventListener('click', (e) => {
+    console.log("historyArray")
+    console.log(historyArray)
+    debugger
     if (historyArray.length > 1) {
+
         historyArray.pop()
-        console.log(historyArray)
         const index = historyArray.length -1
-        operation = historyArray[index]
+        const operation = historyArray[index]
         console.log(operation)
 
         curImage.lu = operation[0]
@@ -504,10 +511,10 @@ document.querySelector('#back').addEventListener('click', (e) => {
 })
 
 document.querySelector('#initial').addEventListener('click', (e) => {
-    origin.draw(operations[0])
+    origin.draw()
 
     const index = historyArray.length -1
-    operation = historyArray[index]
+    const operation = historyArray[index]
     console.log(operation)
 
     curImage.lu = operation[0]
