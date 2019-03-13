@@ -275,7 +275,6 @@ curImage = {
         debugger
         historyArray.pop()
         operation = historyArray[historyArray.length - 1]
-        console.log(operation)
         this.lu = operation[0].slice()
         this.ru = operation[1].slice()
         this.rd = operation[2].slice()
@@ -286,103 +285,8 @@ curImage = {
     }
 }
 
-// origin = {
-//     lu: [260, 628],
-//     ru: [740, 628],
-//     rd: [740, 372],
-//     ld: [260, 372],
-//     center: function() {
-//         return getCenter([this.lu, this.ru, this.rd, this.ld])
-//     },
-//     a: 2,
-//     b: 3,
-//     epicDots: function() {
-//         console.log(`center ${this.center()}`)
-//         let dots = getEpicDots(this.a, this.b, this.center())
-//         for (let i = 0; i < dots.length; i++) {
-//             dots[i] = scale(dots[i], 16, 16, [500, 500])
-//         }
-//         console.log(dots)
-//         return dots
-//     },
-//     dots: [],
-//     hashAngle: -45,
-//     hashStep: 40,
-//     hashLines: function() {
-//         return getHashLines([this.lu, this.ru, this.rd, this.ld], this.hashAngle, this.hashStep)
-//     },
-//     hash: [],
-
-//     draw: function() {
-        
-//         const canvas = document.querySelector('canvas')
-//         if (canvas.getContext) {
-//             const  ctx = canvas.getContext('2d')
-            
-//             ctx.clearRect(0, 0, 1000, 1000);
-
-//             let rect = [this.lu, this.ru, this.rd, this.ld]
-//             let lines = this.hashLines()
-//             this.hash = lines
-//             let dots = this.epicDots()
-//             this.dots = dots
-
-//             historyArray.push([this.lu.slice(), this.ru.slice(), this.rd.slice(), this.ld.slice(), this.dots.slice(), this.hash.slice()])
-
-//             let center = this.center()
-
-//             //draw rectangle
-//             ctx.beginPath()
-//             ctx.moveTo(this.lu[0], this.lu[1])
-//             ctx.lineTo(this.ru[0], this.ru[1])
-//             ctx.lineTo(this.rd[0], this.rd[1])
-//             ctx.lineTo(this.ld[0], this.ld[1])
-//             ctx.closePath();
-//             ctx.stroke();
-
-//             //hash rectangle
-//             lines.forEach((item) => {
-//                 ctx.beginPath()
-//                 ctx.moveTo(item[0], item[1])
-//                 ctx.lineTo(item[2], item[3])
-//                 ctx.stroke()
-//             })
-
-//             //fill epic
-//             ctx.moveTo(dots[0][0], dots[0][1])
-//             ctx.beginPath();
-            
-//             for (let i = 1; i < dots.length - 1; i++){
-//                 ctx.lineTo(dots[i][0], dots[i][1])
-//                 ctx.lineTo(dots[i + 1][0], dots[i + 1][1])
-//                 ctx.lineTo(center[0], center[1])
-//                 ctx.lineTo(dots[i][0], dots[i][1])
-//                 ctx.closePath();
-//                 ctx.strokeStyle = 'white'
-//                 ctx.stroke();
-//                 ctx.fillStyle = 'white'
-//                 ctx.fill();
-//             }
-
-//             //draw epic
-//             ctx.moveTo(dots[0][0], dots[0][1])
-//             ctx.beginPath();
-//             ctx.strokeStyle = 'black'
-//             for (let i = 1; i < dots.length; i++){
-//                 ctx.lineTo(dots[i][0], dots[i][1])
-//                 ctx.stroke();
-//             }
-//         }
-//     }
-// }
-
-// origin.draw()
-
 curImage.initial()
 curImage.draw()
-
-// curImage.setArrays()
-
 
 function move (dot, dx, dy) {
     return [dot[0] + dx, dot[1] + dy]
@@ -395,7 +299,6 @@ function scale(dot, kx, ky, center) {
 }
 
 function rotate(dot, angle, center) {
-    // console.log(dot, angle, center)
     const newx = center[0] + (dot[0] - center[0]) * Math.cos(angle * Math.PI / 180) + (dot[1] - center[1]) * Math.sin(angle * Math.PI / 180)
     const newy = center[1] - (dot[0] - center[0]) * Math.sin(angle * Math.PI / 180) + (dot[1] - center[1]) * Math.cos(angle * Math.PI / 180)
     return [newx, newy]
@@ -413,19 +316,21 @@ document.querySelector('.scale').addEventListener('submit', (e) => {
     e.target.elements.ky.value = '';
     e.target.elements.xmScale.value = '';
     e.target.elements.ymScale.value = '';
-
-    kx = parseFloat(kx)
-    ky = parseFloat(ky)
-    xm = parseFloat(xm)
-    ym = parseFloat(ym)
-
-    curImage.scaleImage(kx, ky, xm, ym)
-    curImage.draw()
-    // try {
-    // }
-    // catch {
-    //     alert('invalid input')
-    // }
+    if (isNaN(kx) || (kx == '') || isNaN(ky) || (ky == '')
+    || isNaN(xm) || (xm == '') || isNaN(ym) || (ym == '')) {
+        console.log('invalid')
+        alert('invalid input')
+    }
+    else {
+        kx = parseFloat(kx)
+        ky = parseFloat(ky)
+        xm = parseFloat(xm)
+        ym = parseFloat(ym)
+    
+        console.log(kx, ky, xm, ym)
+        curImage.scaleImage(kx, ky, xm, ym)
+        curImage.draw()  
+    }
 })
 
 document.querySelector('.move').addEventListener('submit', (e) => {
@@ -435,17 +340,17 @@ document.querySelector('.move').addEventListener('submit', (e) => {
 
     e.target.elements.dx.value = '';
     e.target.elements.dy.value = '';
-
-    dx = parseFloat(dx)
-    dy = parseFloat(dy)
-
-    curImage.moveImage(dx, dy)
-    curImage.draw()
-    // try {
-    // }
-    // catch {
-    //     alert('invalid input')
-    // }
+    if (isNaN(dx) || (dx == '') || isNaN(dy) || (dy == '')) {
+        console.log('invalid')
+        alert('invalid input')
+    }
+    else {
+        dx = parseFloat(dx)
+        dy = parseFloat(dy)
+    
+        curImage.moveImage(dx, dy)
+        curImage.draw()
+    }
 })
 
 document.querySelector('.rotate').addEventListener('submit', (e) => {
@@ -457,58 +362,29 @@ document.querySelector('.rotate').addEventListener('submit', (e) => {
     e.target.elements.angle.value = '';
     e.target.elements.xmRotate.value = '';
     e.target.elements.ymRotate.value = '';
-
-    angle = parseFloat(angle)
-    xm = parseFloat(xm)
-    ym = parseFloat(ym)
-
-    curImage.rotateImage(angle, xm, ym)
-    curImage.draw()
-    // try {
-    // }
-    // catch {
-    //     alert('invalid input')
-    // }
+    if (isNaN(angle) || (angle == '')
+    || isNaN(xm) || (xm == '') || isNaN(ym) || (ym == '')) {
+        console.log('invalid')
+        alert('invalid input')
+    }
+    else {
+        angle = parseFloat(angle)
+        xm = parseFloat(xm)
+        ym = parseFloat(ym)
+    
+        curImage.rotateImage(angle, xm, ym)
+        curImage.draw()
+    }
 })
 
 document.querySelector('#back').addEventListener('click', (e) => {
-    // debugger
     if (historyArray.length > 1) {
-
         curImage.prev()
         curImage.draw()
-
-        // historyArray.pop()
-        // const index = historyArray.length -1
-        // const operation = historyArray[index]
-        // console.log(operation)
-
-        // curImage.lu = operation[0]
-        // curImage.ru = operation[1]
-        // curImage.rd = operation[2]
-        // curImage.ld = operation[3]
-
-        // curImage.dots = operation[4]
-        // curImage.hash = operation[5]
-
-        // curImage.draw()
     }
 })
 
 document.querySelector('#initial').addEventListener('click', (e) => {
     curImage.initial()
     curImage.draw()
-    // origin.draw()
-
-    // const index = historyArray.length -1
-    // const operation = historyArray[index]
-    // console.log(operation)
-
-    // curImage.lu = operation[0]
-    // curImage.ru = operation[1]
-    // curImage.rd = operation[2]
-    // curImage.ld = operation[3]
-
-    // curImage.dots = operation[4]
-    // curImage.hash = operation[5]
 })
