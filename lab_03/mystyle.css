@@ -1,7 +1,47 @@
 canvas {
-    width: 70%;
-    height: 70%;
+    grid-column: 1;
+    grid-row-start: 1;
+    grid-row-end: 10;
+    width: 100%;
     margin: 0;
-    background: pink;
     border:solid black 1px;
+}
+
+.container{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 10px;
+}
+
+form {
+    display: inline-block;
+    border: 2px solid black;
+    width: 48%;
+    /* height: 200px; */
+}
+
+div#color{
+    display: inline-block;
+    border: 2px solid black;
+    width: 48%;
+}
+
+#submit {
+    margin: 2px;
+    width: 60%;
+}
+
+.coords {
+    width: 46%;
+    margin: 2px;
+}
+
+.algorithm {
+    width: 47%;
+    margin: 3px;
+    padding: 3px;
+}
+
+#algorithms {
+    border: 2px solid black;
 }

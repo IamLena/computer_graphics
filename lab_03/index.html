@@ -8,7 +8,33 @@
     <link rel="stylesheet" type="text/css" href="mystyle.css">
 </head>
 <body>
-    <canvas height = 1500 width = 2000></canvas>
-    <script src="app.js"></script>
+    <h1>Исследование алгоритмов разложения отрезков в растр</h1>
+    <div class="container">
+        <canvas height = 1500 width = 2000></canvas>
+        <div>
+            <form>
+                <p>введите координаты начала и конца отрезка:</p>
+                <input class="coords" name="xn" placeholder="xn">
+                <input class="coords" name="yn" placeholder="yn">
+                <input class="coords" name="xk" placeholder="xk">
+                <input class="coords" name="yk" placeholder="yk">
+                <button id="submit">submit</button>
+            </form>
+            <div id="color">
+                You can chose the color
+            </div>
+        </div>
+
+        <div id="algorithms">
+            <p>выберете алгоритм:</p>
+            <button class="algorithm" id="op1">метод цифрового дифференциального анализатор</button>
+            <button class="algorithm" id="op2">алгоритм Брезенхема с действительными числами</button>
+            <button class="algorithm" id="op4">алгоритм Брезенхема с целыми числами</button>
+            <button class="algorithm" id="op3">алгоритм Брезенхема с устранением ступенчатости</button>
+            <button class="algorithm" id="op5">алгоритм Ву</button>
+            <button class="algorithm" id="op6">библиотечная графика</button>
+        </div>
+    </div>
+    <!-- <script src="app.js"></script> -->
 </body>
 </html>
