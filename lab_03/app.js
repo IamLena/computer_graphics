@@ -1,4 +1,5 @@
 console.log('hey')
+const pixelsize = 20
 
 function calcStraightLine (startCoordinates, endCoordinates) {
     var coordinatesArray = new Array();
@@ -33,36 +34,6 @@ function calcStraightLine (startCoordinates, endCoordinates) {
     return coordinatesArray;
   }
 
-//const canvas = document.querySelector('canvas')
-// if (canvas.getContext) {
-//     context = canvas.getContext('2d')
-
-//     const step = 40
-//     for (let i = 0; i <= 2000; i += step) {
-//         context.beginPath()
-//         context.strokeStyle = 'black'
-//         context.moveTo(i, 0)
-//         context.lineTo(i, 1500)
-//         context.stroke()
-//     }
-
-//     for (let i = 0; i <= 2000; i += step) {
-//         context.beginPath()
-//         context.strokeStyle = 'black'
-//         context.moveTo(0, i)
-//         context.lineTo(2000, i)
-//         context.stroke()
-//     }
-
-
-//     const dots = calcStraightLine([10, 10], [50, 70])
-//     console.log(dots)
-
-//     context.rect(40, 20, 1, 1)
-//     context.stroke()
-// }
-// else {console.log('can not get context')}
-
 function notValid(x) {
   return x == '' || isNaN(x)
 }
@@ -72,6 +43,8 @@ function getLength(xn, yn, xk, yk) {
 
 }
 
+let dots = []
+
 document.querySelector('form').addEventListener('submit', (e) => {
   e.preventDefault()
   let xn = e.target.elements.xn.value;
@@ -79,11 +52,6 @@ document.querySelector('form').addEventListener('submit', (e) => {
 
   let xk = e.target.elements.xk.value;
   let yk = e.target.elements.yk.value;
-
-  e.target.elements.xn.value = ''
-  e.target.elements.yn.value = ''
-  e.target.elements.xk.value = ''
-  e.target.elements.yk.value = ''
 
   console.log(xn, yn, xk, yk)
   if (notValid(xn) || notValid(yn) || notValid(xk) || notValid(yk)) {
@@ -98,29 +66,31 @@ document.querySelector('form').addEventListener('submit', (e) => {
     alert('that is a dot')
     return
   }
-  let dots = []
   const length = getLength(xn, yn, xk, yk)
-  const dx = (xk - xn) / length * 10
-  const dy = (yk - yn) / length * 10
+  const dx = (xk - xn) / length * pixelsize
+  const dy = (yk - yn) / length * pixelsize
   
   console.log(dx, dy)
   let x = xn
   let y = yn
   dots.push([x, y])
-  for (let i = 0; i < length; i += 10) {
+  for (let i = 0; i < length; i += pixelsize) {
     x += dx
     y += dy
     console.log(`dot: ${x}, ${y}`)
     dots.push([round(x), round(y)])
   }
+})
+
+document.querySelector('#op1').addEventListener('click', (e) => {
   drawLine(dots)
 })
 
 function round(x) {
   console.log(x)
-  x /= 10
+  x /= pixelsize
   x = Math.round(x)
-  x *= 10
+  x *= pixelsize
   console.log(x)
   return x
 }
@@ -132,8 +102,8 @@ function drawLine(dots) {
 
       console.log(dots.length)
       for (let i = 0; i < dots.length; i++) {
-        ctx.rect(dots[i][0], dots[i][1], 10, 10)
-        ctx.fillRect(dots[i][0], dots[i][1], 10, 10)
+        ctx.rect(dots[i][0], dots[i][1], pixelsize, pixelsize)
+        ctx.fillRect(dots[i][0], dots[i][1], pixelsize, pixelsize)
         ctx.stroke()
       }
   }
