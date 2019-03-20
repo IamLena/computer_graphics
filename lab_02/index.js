@@ -146,7 +146,7 @@ curImage = {
     },
     
     dots: [],
-    hashAngle: -45,
+    hashAngle: 45,
     hashStep: 40,
     hashLines: function() {
         return getHashLines([this.lu, this.ru, this.rd, this.ld], this.hashAngle, this.hashStep)
@@ -246,9 +246,9 @@ curImage = {
                 ctx.lineTo(this.dots[i + 1][0], this.dots[i + 1][1])
                 ctx.lineTo(this.center[0], this.center[1])
                 ctx.closePath();
-                ctx.strokeStyle = 'green'
+                ctx.strokeStyle = 'white'
                 ctx.stroke();
-                ctx.fillStyle = 'green'
+                ctx.fillStyle = 'white'
                 ctx.fill();
             }
 
@@ -312,10 +312,10 @@ document.querySelector('.scale').addEventListener('submit', (e) => {
     xm = e.target.elements.xmScale.value;
     ym = e.target.elements.ymScale.value;
     
-    e.target.elements.kx.value = '';
-    e.target.elements.ky.value = '';
-    e.target.elements.xmScale.value = '';
-    e.target.elements.ymScale.value = '';
+    // e.target.elements.kx.value = '';
+    // e.target.elements.ky.value = '';
+    // e.target.elements.xmScale.value = '';
+    // e.target.elements.ymScale.value = '';
     if (isNaN(kx) || (kx == '') || isNaN(ky) || (ky == '')
     || isNaN(xm) || (xm == '') || isNaN(ym) || (ym == '')) {
         console.log('invalid')
@@ -338,8 +338,8 @@ document.querySelector('.move').addEventListener('submit', (e) => {
     dx = e.target.elements.dx.value;
     dy = e.target.elements.dy.value;
 
-    e.target.elements.dx.value = '';
-    e.target.elements.dy.value = '';
+    // e.target.elements.dx.value = '';
+    // e.target.elements.dy.value = '';
     if (isNaN(dx) || (dx == '') || isNaN(dy) || (dy == '')) {
         console.log('invalid')
         alert('invalid input')
@@ -359,9 +359,9 @@ document.querySelector('.rotate').addEventListener('submit', (e) => {
     xm = e.target.elements.xmRotate.value;
     ym = e.target.elements.ymRotate.value;
     
-    e.target.elements.angle.value = '';
-    e.target.elements.xmRotate.value = '';
-    e.target.elements.ymRotate.value = '';
+    // e.target.elements.angle.value = '';
+    // e.target.elements.xmRotate.value = '';
+    // e.target.elements.ymRotate.value = '';
     if (isNaN(angle) || (angle == '')
     || isNaN(xm) || (xm == '') || isNaN(ym) || (ym == '')) {
         console.log('invalid')
