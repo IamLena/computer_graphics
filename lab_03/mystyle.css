@@ -1,47 +1,25 @@
+h1 {
+    text-align: center;
+}
 canvas {
-    grid-column: 1;
-    grid-row-start: 1;
-    grid-row-end: 10;
-    width: 100%;
-    margin: 0;
-    border:solid black 1px;
-}
-
-.container{
-    display: grid;
-    grid-template-columns: 50% 50%;
-    grid-gap: 10px;
-}
-
-form {
+    vertical-align: top;
     display: inline-block;
-    border: 2px solid black;
-    width: 48%;
-    /* height: 200px; */
+    border:solid black 3px;
 }
-
-div#color{
+#userfield{
+    vertical-align: top;
     display: inline-block;
-    border: 2px solid black;
-    width: 48%;
+    width: 450px;
+    /* margin: 5px; */
 }
-
-#submit {
-    margin: 2px;
-    width: 60%;
+#input{
+    border:solid black 2px;
+    margin: 7px;
 }
-
-.coords {
-    width: 46%;
-    margin: 2px;
+.field{
+    border:solid black 2px;
+    margin: 7px;
 }
-
-.algorithm {
-    width: 47%;
-    margin: 3px;
-    padding: 3px;
-}
-
-#algorithms {
-    border: 2px solid black;
+#submit{
+    margin: 7px;
 }

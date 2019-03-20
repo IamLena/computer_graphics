@@ -2,39 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Lab-03</title>
     <link rel="stylesheet" type="text/css" href="mystyle.css">
 </head>
-<body>
-    <h1>Исследование алгоритмов разложения отрезков в растр</h1>
-    <div class="container">
-        <canvas height = 1500 width = 2000></canvas>
-        <div>
-            <form>
+<body>     
+    <h1>Исследование алгоритмов разложения отрезка в растр</h1>
+    <canvas width="700" height="450"></canvas>
+    <div id="userfield">
+        <form id='input'>
+            <div class="field">
                 <p>введите координаты начала и конца отрезка:</p>
-                <input class="coords" name="xn" placeholder="xn">
-                <input class="coords" name="yn" placeholder="yn">
-                <input class="coords" name="xk" placeholder="xk">
-                <input class="coords" name="yk" placeholder="yk">
-                <button id="submit">submit</button>
-            </form>
-            <div id="color">
-                You can chose the color
+                <input name="xn" placeholder="x начальная">
+                <input name="yn" placeholder="y начальная">
+                <input name="xk" placeholder="x конечная">
+                <input name="yk" placeholder="y конечная">
             </div>
-        </div>
-
-        <div id="algorithms">
-            <p>выберете алгоритм:</p>
-            <button class="algorithm" id="op1">метод цифрового дифференциального анализатор</button>
-            <button class="algorithm" id="op2">алгоритм Брезенхема с действительными числами</button>
-            <button class="algorithm" id="op4">алгоритм Брезенхема с целыми числами</button>
-            <button class="algorithm" id="op3">алгоритм Брезенхема с устранением ступенчатости</button>
-            <button class="algorithm" id="op5">алгоритм Ву</button>
-            <button class="algorithm" id="op6">библиотечная графика</button>
-        </div>
+            <div class="field">
+                <label for="line">Выберите цвет линий</label>
+                <input id="line" type="color" value="#000000"><br>
+                <label for="background">Выберите цвет фона</label>
+                <input id="background" type="color" value="#ffffff">
+            </div>
+            <div class="field">
+                <p>выберете алгоритм:</p>
+                <input type='radio' name="algorithm" id="op1">метод цифрового дифференциального анализаторa<br>
+                <input type='radio' name="algorithm" id="op2">алгоритм Брезенхема с действительными числами<br>
+                <input type='radio' name="algorithm" id="op4">алгоритм Брезенхема с целыми числами<br>
+                <input type='radio' name="algorithm" id="op3">алгоритм Брезенхема с устранением ступенчатости<br>
+                <input type='radio' name="algorithm" id="op5">алгоритм Ву<br>
+                <input type='radio' name="algorithm" id="op6">библиотечная графика<br>
+            </div>
+            <button id="submit">отрисовать</button>
+        </form>
+        <!-- <button>очистить</button> -->
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
