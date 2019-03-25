@@ -54,9 +54,9 @@ function solve(alg, xn, yn, xk, yk, lineColor, bgColor) {
         if (alg == 'op1'){
             cda(xn, yn, xk, yk)
         }else if (alg == 'op2') {
-            brezenR(xn, yn, xk, yk, lineColor)
+            brezenR(xn, yn, xk, yk)
         }else if (alg == 'op3') {
-            //brezenInt(xn, yn, xk, yk, lineColor)
+            brezenInt(xn, yn, xk, yk)
         }else if (alg == 'op4') {
             //brezenStep(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op5') {
@@ -101,7 +101,10 @@ function brezenR(xn, yn, xk, yk) {
     let swapFlag
     if (m > 1) {
         m = 1 / m
-        let t=dx, dx=dy, dy=t //swap
+        //swap
+        let t = dx
+        dx = dy
+        dy = t 
         swapFlag = 1
     }
     if (m < 1) {
@@ -123,6 +126,45 @@ function brezenR(xn, yn, xk, yk) {
             else {x += sx}
         }
         er += m
+    }
+}
+
+function brezenInt(xn, yn, xk, yk) {
+    let dx = xk - xn
+    let dy = yk - yn
+    const sx = Math.sign(dx)
+    const sy = Math.sign(dy)
+    dx = Math.abs(dx)
+    dy = Math.abs(dy)
+    let m = dy / dx
+    let swapFlag
+    if (m > 1) {
+        m = 1 / m
+        //swap
+        let t = dx
+        dx = dy
+        dy = t 
+        swapFlag = 1
+    }
+    if (m < 1) {
+        swapFlag = 0
+    }
+    let er = 2 * dy - dx
+
+    let x = xn
+    let y = yn
+    for (let i = 1; i < dx + 1; i++) {
+        ctx.fillRect(x, y, 1, 1)
+        if (er >= 0) {
+            if (!swapFlag) { y += sy} 
+            else {x += sx}
+            er = er - 2 * dx
+        }
+        else {
+            if (swapFlag == 1) { y += sy}
+            else {x += sx}
+        }
+        er += 2 * dy
     }
 }
 
