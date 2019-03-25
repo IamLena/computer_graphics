@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab-03</title>
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+</head>
+<body>     
+    <h1>Исследование алгоритмов разложения отрезка в растр</h1>
+    <canvas width="700" height="450" backgroundColor="white"></canvas>
+    <div id="userfield">
+        <form id='input'>
+            <div class="field">
+                <p>введите координаты центра вращения, длину отрезка и шаг изменения угла:</p>
+                <input id="xm" name="xm" placeholder="x центра">
+                <input id="ym" name="ym" placeholder="y центра">
+                <input id="len" name="len" placeholder="длина отрезка">
+                <input id="step" name="step" placeholder="шаг угла">
+            </div>
+            <div class="field">
+                <label for="line">Выберите цвет линий</label>
+                <input id="line" type="color" value="#000000"><br>
+                <label for="background">Выберите цвет фона</label>
+                <input id="background" type="color" value="#ffffff">
+            </div>
+            <div class="field">
+                <p>выберете алгоритм:</p>
+                <input type='radio' name="algorithm" id="op1">метод цифрового дифференциального анализаторa<br>
+                <input type='radio' name="algorithm" id="op2">алгоритм Брезенхема с действительными числами<br>
+                <input type='radio' name="algorithm" id="op3">алгоритм Брезенхема с целыми числами<br>
+                <input type='radio' name="algorithm" id="op4">алгоритм Брезенхема с устранением ступенчатости<br>
+                <input type='radio' name="algorithm" id="op5">алгоритм Ву<br>
+                <input type='radio' name="algorithm" id="op6">библиотечная графика<br>
+            </div>
+            <button id="submit">отрисовать</button>
+        </form>
+        <button id="clean">очистить</button>
+        <a href="./index.html">назад</a>
+        <!-- <button>очистить</button> -->
+    </div>
+
+    <script src="app2.js"></script>
+</body>
+</html>
