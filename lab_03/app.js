@@ -45,12 +45,10 @@ function notValid(x) {
 }
 
 function solve(alg, xn, yn, xk, yk, lineColor, bgColor) {
-    const canvas = document.querySelector('canvas')
+    const canvas = document.querySelector('canvas')   
+    canvas.style.background = bgColor
     if (canvas.getContext) {
         ctx = canvas.getContext('2d')
-        ctx.fillStyle = bgColor
-        ctx.fillRect(0, 0, 700, 450)
-
         ctx.fillStyle = lineColor
 
         if (alg == 'op1'){
@@ -64,7 +62,7 @@ function solve(alg, xn, yn, xk, yk, lineColor, bgColor) {
         }else if (alg == 'op5') {
             //By(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op6') {
-            //bibl(xn, yn, xk, yk, lineColor)
+            bibl(xn, yn, xk, yk, lineColor)
         }else {
             alert('invalid parameters')
         }
@@ -90,17 +88,12 @@ function cda(xn, yn, xk, yk) {
         x += dx
         y += dy
     }
+}
 
-    // ctx.beginPath();
-    // ctx.moveTo(xn, yn);
-    // ctx.lineTo(xk, yk);
-    // ctx.stroke();
-    
-
-    // console.log(dots.length)
-    // for (let i = 0; i < dots.length; i++) {
-    //     ctx.rect(dots[i][0], dots[i][1], 1, 1)
-    //     ctx.fillRect(dots[i][0], dots[i][1], 1, 1)
-    //     ctx.stroke()
-    // }
+function bibl(xn, yn, xk, yk, lineColor) {
+    ctx.beginPath();
+    ctx.moveTo(xn, yn);
+    ctx.lineTo(xk, yk);
+    ctx.strokeStyle = lineColor
+    ctx.stroke();
 }
