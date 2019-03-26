@@ -68,6 +68,7 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 const dot = rotate([xm + len, ym], angle, [xm, ym])
                 xn = dot[0]
                 yn = dot[1]
+                console.log(xn, yn, xm, ym)
                 brezenR(xn, yn, xm, ym)
                 angle += step
             }   
@@ -113,19 +114,18 @@ function brezenR(xn, yn, xk, yk) {
     const sy = Math.sign(dy)
     dx = Math.abs(dx)
     dy = Math.abs(dy)
-    let m = dy / dx
     let swapFlag
-    if (m > 1) {
-        m = 1 / m
-        //swap
+    if (dy > dx) {
         let t = dx
         dx = dy
         dy = t 
         swapFlag = 1
     }
-    if (m < 1) {
+    else {
         swapFlag = 0
     }
+    let m = dy / dx
+    
     let er = m - 0.5
 
     let x = xn
@@ -135,17 +135,16 @@ function brezenR(xn, yn, xk, yk) {
         if (er >= 0) {
             if (!swapFlag) { y += sy} 
             else {x += sx}
-            er = er - 1
+            er -= 1
         }
-        else {
-            if (swapFlag == 1) { y += sy}
-            else {x += sx}
-        }
+        if (swapFlag == 1) { y += sy}
+        else {x += sx}
         er += m
     }
 }
 
 function brezenInt(xn, yn, xk, yk) {
+    console.log(xn, yn, xk, yk)
     let dx = xk - xn
     let dy = yk - yn
     const sx = Math.sign(dx)
