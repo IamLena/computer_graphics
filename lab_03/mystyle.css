@@ -5,7 +5,7 @@ canvas {
     vertical-align: top;
     display: inline-block;
     border:solid black 3px;
-    background: white;
+    background-color: white;
 }
 #userfield{
     vertical-align: top;

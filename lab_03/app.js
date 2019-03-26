@@ -176,17 +176,17 @@ function bibl(xn, yn, xk, yk, lineColor) {
     ctx.stroke();
 }
 
-document.querySelector('#clean').addEventListener('click', (e) => {
-    const canvas = document.querySelector('canvas')   
-    if (canvas.getContext) {
-        ctx = canvas.getContext('2d')
-        // console.log(canvas.style.background)
-        // const color = canvas.style.background
-        // console.log(color)
-        ctx.fillStyle = canvas.style.backgroundColor
-        ctx.fillRect(0, 0, 700, 450)
-    }
-    else {
-        console.log('not available get context')
-    }
-})
+// document.querySelector('#clean').addEventListener('click', (e) => {
+//     const canvas = document.querySelector('canvas')   
+//     if (canvas.getContext) {
+//         ctx = canvas.getContext('2d')
+//         // console.log(canvas.style.background)
+//         // const color = canvas.style.background
+//         // console.log(color)
+//         ctx.fillStyle = canvas.style.backgroundColor
+//         ctx.fillRect(0, 0, 700, 450)
+//     }
+//     else {
+//         console.log('not available get context')
+//     }
+// })

@@ -64,7 +64,13 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 angle += step
             }
         }else if (alg == 'op2') {
-            brezenR(xn, yn, xk, yk)
+            while (angle <= 360) {
+                const dot = rotate([xm + len, ym], angle, [xm, ym])
+                xn = dot[0]
+                yn = dot[1]
+                brezenR(xn, yn, xm, ym)
+                angle += step
+            }   
         }else if (alg == 'op3') {
             brezenInt(xn, yn, xk, yk)
         }else if (alg == 'op4') {
@@ -190,11 +196,7 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     const canvas = document.querySelector('canvas')   
     if (canvas.getContext) {
         ctx = canvas.getContext('2d')
-        // console.log(canvas.style.background)
-        // const color = canvas.style.background
-        // console.log(color)
-        ctx.fillStyle = canvas.style.backgroundColor
-        ctx.fillRect(0, 0, 700, 450)
+        ctx.clearRect(0, 0, 700, 450)
     }
     else {
         console.log('not available get context')
