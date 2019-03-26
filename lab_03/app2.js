@@ -68,12 +68,17 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 const dot = rotate([xm + len, ym], angle, [xm, ym])
                 xn = dot[0]
                 yn = dot[1]
-                console.log(xn, yn, xm, ym)
                 brezenR(xn, yn, xm, ym)
                 angle += step
             }   
         }else if (alg == 'op3') {
-            brezenInt(xn, yn, xk, yk)
+            while (angle <= 360) {
+                const dot = rotate([xm + len, ym], angle, [xm, ym])
+                xn = dot[0]
+                yn = dot[1]
+                brezenInt(xn, yn, xm, ym)
+                angle += step
+            }
         }else if (alg == 'op4') {
             //brezenStep(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op5') {

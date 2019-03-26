@@ -36,13 +36,11 @@ function brezenR(xn, yn, xk, yk) {
         swapFlag = 0
     }
     let m = dy / dx
-    
     let er = m - 0.5
 
     let x = xn
     let y = yn
     for (let i = 1; i < dx + 1; i++) {
-        console.log(x, y)
         ctx.fillRect(x, y, 1, 1)
         if (er >= 0) {
             if (!swapFlag) { y += sy} 
@@ -56,43 +54,36 @@ function brezenR(xn, yn, xk, yk) {
 }
 
 function brezenInt(xn, yn, xk, yk) {
-    console.log(xn, yn, xk, yk)
     let dx = xk - xn
     let dy = yk - yn
     const sx = Math.sign(dx)
     const sy = Math.sign(dy)
     dx = Math.abs(dx)
     dy = Math.abs(dy)
-    let m = dy / dx
     let swapFlag
-    if (m > 1) {
-        m = 1 / m
-        //swap
+    if (dy > dx) {
         let t = dx
         dx = dy
         dy = t 
         swapFlag = 1
     }
-    if (m < 1) {
+    else {
         swapFlag = 0
     }
     let er = 2 * dy - dx
 
     let x = xn
     let y = yn
-    while (x < xk) {
-    // for (let i = 1; i < dx + 1; i++) {
-        console.log(x, y)
+    for (let i = 1; i < dx + 1; i++) {
         ctx.fillRect(x, y, 1, 1)
         if (er >= 0) {
             if (!swapFlag) { y += sy} 
             else {x += sx}
-            er = er - 2 * dx
+            er -= 2 * dx
         }
-        else {
-            if (swapFlag == 1) { y += sy}
-            else {x += sx}
-        }
+        if (swapFlag == 1) { y += sy}
+        else {x += sx}
+        
         er += 2 * dy
     }
 }
