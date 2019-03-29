@@ -58,7 +58,7 @@ function solve(alg, xn, yn, xk, yk, lineColor, bgColor) {
         }else if (alg == 'op3') {
             brezenInt(xn, yn, xk, yk)
         }else if (alg == 'op4') {
-            //brezenStep(xn, yn, xk, yk, lineColor)
+            brezenStep(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op5') {
             //By(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op6') {
@@ -80,3 +80,5 @@ document.querySelector('#clean').addEventListener('click', (e) => {
         console.log('not available get context')
     }
 })
+
+console.log(HEXtoHSV('#e5f7af'))
