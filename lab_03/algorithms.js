@@ -97,7 +97,7 @@ function bibl(xn, yn, xk, yk, lineColor) {
 }
 
 function brezenStep(xn, yn, xk, yk, color) {
-    const intensity = 0.5//10
+    const intensity = 100 //levels of intensity
     let dx = xk - xn
     let dy = yk - yn
     const sx = Math.sign(dx)
@@ -138,17 +138,13 @@ function brezenStep(xn, yn, xk, yk, color) {
 }
 
 function changeColor(color, intensity) {
-    var hsv= HEXtoHSV (color);
-    console.log(hsv)
-    hsv[1] *= intensity;
-    console.log(hsv)
-    var rgb= HSVtoRGB(hsv);
-    alert(rgb); //new color
-    return rgb
+    const hsv= HEXtoHSV (color);
+    hsv[1] *= intensity / 100;
+    const hex = HSVtoHEX(hsv)
+    return hex
 }
 
-HEXtoHSV = function(hex, color) {
-    debugger
+HEXtoHSV = function(hex) {
     hex = hex.split('')
     
     var r,g,b,h,s,v;
@@ -156,22 +152,19 @@ HEXtoHSV = function(hex, color) {
     g = "0x" + hex[3] + hex[4];
     b = "0x" + hex[5] + hex[6];
 
-    // r= color[0];
-    // g= color[1];
-    // b= color[2];
     min = Math.min( r, g, b );
     max = Math.max( r, g, b );
 
 
-    v = max;
+    v = Math.round(max * 100 / 255)
     delta = max - min;
     if( max != 0 )
-        s = delta / max;        // s
+        s = delta / max;
     else {
         // r = g = b = 0        // s = 0, v is undefined
         s = 0;
-        h = -1;
-        return [h, s, undefined];
+        h = 0;
+        return [h, s, v];
     }
     if( r == max )
         h = ( g - b ) / delta;      // between yellow & magenta
@@ -184,80 +177,49 @@ HEXtoHSV = function(hex, color) {
         h += 360;
     if ( isNaN(h) )
         h = 0;
-    v = Math.round(v * 100 / 255)
+    
     s *= 100
     s = Math.round(s)
     return [h,s,v];
 };
 
-HSVtoRGB= function(color) {
-    var i;
-    var h,s,v,r,g,b;
-    h= color[0];
-    s= color[1];
-    v= color[2];
-    if(s === 0 ) {
-        // achromatic (grey)
-        r = g = b = v;
-        return [r,g,b];
+function HSVtoHEX (hsv) {
+    let r, g, b
+    let h = hsv[0]
+    let s = hsv[1] / 100
+    let v = hsv[2] / 100
+
+    let c = s * v
+    let x = c * (1 - Math.abs((h / 60) % 2 - 1))
+    let m = v - c
+
+    if (h < 60) {
+        r = c
+        g = x
+        b = 0
     }
-    h /= 60;            // sector 0 to 5
-    i = Math.floor( h );
-    f = h - i;          // factorial part of h
-    p = v * ( 1 - s );
-    q = v * ( 1 - s * f );
-    t = v * ( 1 - s * ( 1 - f ) );
-    switch( i ) {
-        case 0:
-            r = v;
-            g = t;
-            b = p;
-            break;
-        case 1:
-            r = q;
-            g = v;
-            b = p;
-            break;
-        case 2:
-            r = p;
-            g = v;
-            b = t;
-            break;
-        case 3:
-            r = p;
-            g = q;
-            b = v;
-            break;
-        case 4:
-            r = t;
-            g = p;
-            b = v;
-            break;
-        default:        // case 5:
-            r = v;
-            g = p;
-            b = q;
-            break;
+    else if (h < 120) {
+        r = x
+        g = c
+        b = 0
     }
-    return [r,g,b];
+    else if (h < 180) {
+        r = 0; g = c; b = x
+    }
+    else if (h < 240) {
+        r = 0; g = x; b = c
+    }
+    else if (h < 300) {
+        r = x; g = 0; b = c
+    }
+    else {
+        r = c; g = 0; b = x
+    }
+
+    r = Math.round((r + m) * 255)
+    g = Math.round((g + m) * 255)
+    b = Math.round((b + m) * 255)
+
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+    //return [r, g, b]
 }
-
-function ColorLuminance(hex, lum) {
-	// validate hex string
-	hex = String(hex).replace(/[^0-9a-f]/gi, '');
-	if (hex.length < 6) {
-		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-	}
-	lum = lum || 0;
-
-	// convert to decimal and change luminosity
-	var rgb = "#", c, i;
-	for (i = 0; i < 3; i++) {
-		c = parseInt(hex.substr(i*2,2), 16);
-		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-		rgb += ("00"+c).substr(c.length);
-	}
-
-	return rgb;
-}
-

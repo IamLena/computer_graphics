@@ -80,11 +80,31 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 angle += step
             }
         }else if (alg == 'op4') {
-            //brezenStep(xn, yn, xk, yk, lineColor)
+            while (angle <= 360) {
+                const dot = rotate([xm + len, ym], angle, [xm, ym])
+                xn = dot[0]
+                yn = dot[1]
+                //brezenInt(xn, yn, xm, ym)
+                brezenStep(xn, yn, xm, ym, lineColor)
+                angle += step
+            }
         }else if (alg == 'op5') {
-            //By(xn, yn, xk, yk, lineColor)
+            while (angle <= 360) {
+                const dot = rotate([xm + len, ym], angle, [xm, ym])
+                xn = dot[0]
+                yn = dot[1]
+                brezenInt(xn, yn, xm, ym)
+                //By(xn, yn, xk, yk, lineColor)
+                angle += step
+            }
         }else if (alg == 'op6') {
-            bibl(xn, yn, xk, yk, lineColor)
+            while (angle <= 360) {
+                const dot = rotate([xm + len, ym], angle, [xm, ym])
+                xn = dot[0]
+                yn = dot[1]
+                bibl(xn, yn, xk, yk, lineColor)
+                angle += step
+            }
         }else {
             alert('invalid parameters')
         }
