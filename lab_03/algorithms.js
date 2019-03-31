@@ -223,3 +223,49 @@ function HSVtoHEX (hsv) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
     //return [r, g, b]
 }
+
+function By(xn, yn, xk, yk, color) {
+    const intensity = 100 //levels of intensity
+    let dx = xk - xn
+    let dy = yk - yn
+    const sx = Math.sign(dx)
+    const sy = Math.sign(dy)
+    dx = Math.abs(dx)
+    dy = Math.abs(dy)
+    let swapFlag
+    if (dy > dx) {
+        let t = dx
+        dx = dy
+        dy = t 
+        swapFlag = 1
+    }
+    else {
+        swapFlag = 0
+    }
+    let m = dy / dx * intensity
+    let w = intensity - m
+    let er = intensity / 2
+    let x = xn
+    let y = yn
+    for (let i = 0; i <= dx; i++) {
+        let newColor = changeColor(color, er)
+        ctx.fillStyle = newColor
+        ctx.fillRect(x, y, 1, 1)
+
+        newColor = changeColor(color, intensity - er)
+        ctx.fillStyle = newColor
+        ctx.fillRect(x, y + 1, 1, 1)
+
+        if (er < w) {
+            if (!swapFlag) { x += sx }
+            else { y += sy }
+            er += m
+        }
+        else {
+            x += sx
+            y += sy
+            er -= w
+        }
+    }
+
+}

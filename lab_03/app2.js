@@ -84,7 +84,6 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 const dot = rotate([xm + len, ym], angle, [xm, ym])
                 xn = dot[0]
                 yn = dot[1]
-                //brezenInt(xn, yn, xm, ym)
                 brezenStep(xn, yn, xm, ym, lineColor)
                 angle += step
             }
@@ -93,8 +92,7 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 const dot = rotate([xm + len, ym], angle, [xm, ym])
                 xn = dot[0]
                 yn = dot[1]
-                brezenInt(xn, yn, xm, ym)
-                //By(xn, yn, xk, yk, lineColor)
+                By(xn, yn, xm, ym, lineColor)
                 angle += step
             }
         }else if (alg == 'op6') {
@@ -102,7 +100,7 @@ function solve(alg, xm, ym, len, step, lineColor, bgColor) {
                 const dot = rotate([xm + len, ym], angle, [xm, ym])
                 xn = dot[0]
                 yn = dot[1]
-                bibl(xn, yn, xk, yk, lineColor)
+                bibl(xn, yn, xm, ym, lineColor)
                 angle += step
             }
         }else {

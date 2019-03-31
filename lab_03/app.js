@@ -60,7 +60,7 @@ function solve(alg, xn, yn, xk, yk, lineColor, bgColor) {
         }else if (alg == 'op4') {
             brezenStep(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op5') {
-            //By(xn, yn, xk, yk, lineColor)
+            By(xn, yn, xk, yk, lineColor)
         }else if (alg == 'op6') {
             bibl(xn, yn, xk, yk, lineColor)
         }else {
