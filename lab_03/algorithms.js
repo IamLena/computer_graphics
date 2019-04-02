@@ -139,7 +139,12 @@ function brezenStep(xn, yn, xk, yk, color) {
 
 function changeColor(color, intensity) {
     const hsv= HEXtoHSV (color);
-    hsv[1] *= intensity / 100;
+    if (hsv[1] == 0) {
+        hsv[2] = 100 - intensity
+    }
+    else {
+        hsv[1] *= intensity / 100;
+    }
     const hex = HSVtoHEX(hsv)
     return hex
 }
@@ -224,48 +229,163 @@ function HSVtoHEX (hsv) {
     //return [r, g, b]
 }
 
+//foo
 function By(xn, yn, xk, yk, color) {
+    // xn = 10 
+    // yn = 300
+    // xk = 30
+    // yk = 305
+    const pixelsize = 20
+
+    let m
+    let xi
+    let yi    
     const intensity = 100 //levels of intensity
-    let dx = xk - xn
-    let dy = yk - yn
-    const sx = Math.sign(dx)
-    const sy = Math.sign(dy)
-    dx = Math.abs(dx)
-    dy = Math.abs(dy)
-    let swapFlag
-    if (dy > dx) {
-        let t = dx
-        dx = dy
-        dy = t 
-        swapFlag = 1
+    let dx = Math.abs(xk - xn)
+    let dy = Math.abs(yk - yn)
+
+    dx *= pixelsize
+    dy *= pixelsize
+
+    if (dy < dx) { //m < 1
+        if (xk < xn) {
+            let t = xk
+            xk = xn
+            xn = t
+
+            t = yk
+            yk = yn
+            yn = t
+        }
+
+        m = dy / dx
+        if (yk < yn) {
+            m = -m
+        }
+        yi = yn + m *pixelsize
+
+        ctx.fillStyle = color
+        ctx.fillRect(xn, yn, pixelsize, pixelsize)
+        ctx.fillRect(xn + dx, yn + dy, pixelsize, pixelsize)
+
+        for (let x = xn + pixelsize; x < xn + dx; x += pixelsize) {
+            let curInt = intensity - (yi % pixelsize) / pixelsize * 100
+            let newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, yi - yi % pixelsize, pixelsize, pixelsize)
+            curInt = intensity - curInt
+            newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, yi - yi % pixelsize + pixelsize, pixelsize, pixelsize)
+            yi = yi + m * pixelsize
+        }
     }
     else {
-        swapFlag = 0
-    }
-    let m = dy / dx * intensity
-    let w = intensity - m
-    let er = intensity / 2
-    let x = xn
-    let y = yn
-    for (let i = 0; i <= dx; i++) {
-        let newColor = changeColor(color, er)
-        ctx.fillStyle = newColor
-        ctx.fillRect(x, y, 1, 1)
+        if (yk < yn) {
+            let t = xn
+            xn = xk
+            xk = t
 
-        newColor = changeColor(color, intensity - er)
-        ctx.fillStyle = newColor
-        ctx.fillRect(x, y + 1, 1, 1)
-
-        if (er < w) {
-            if (!swapFlag) { x += sx }
-            else { y += sy }
-            er += m
+            t = yn
+            yn = yk
+            yk = t
         }
-        else {
-            x += sx
-            y += sy
-            er -= w
+        m = dx / dy
+        if ( xk < xn) {
+            m = -m
+        }
+        xi = xn + m
+        ctx.fillStyle = color
+        ctx.fillRect(xn, yn, pixelsize, pixelsize)
+        ctx.fillRect(xn + dx, yn + dy, pixelsize, pixelsize)
+
+        for (let y = yn + pixelsize; y < yn + dy; y += pixelsize) {
+            let curInt =  (xi % pixelsize) / pixelsize * 100
+            let newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, xi - xi % pixelsize, pixelsize, pixelsize)
+            curInt = intensity - curInt
+            newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, xi - xi % pixelsize + pixelsize, pixelsize, pixelsize)
+            xi = xi + m * pixelsize
         }
     }
+    bibl(xn, yn, xn + dx, yn + dy, 'red')
+}
 
+
+//sizepixel = 1
+function By2(xn, yn, xk, yk, color) {
+    let m
+    let xi
+    let yi    
+    const intensity = 100 //levels of intensity
+    let dx = Math.abs(xk - xn)
+    let dy = Math.abs(yk - yn)
+
+    if (dy < dx) { //m < 1
+        if (xk < xn) {
+            let t = xk
+            xk = xn
+            xn = t
+
+            t = yk
+            yk = yn
+            yn = t
+        }
+
+        m = dy / dx
+        if (yk < yn) {
+            m = -m
+        }
+        yi = yn + m
+
+        ctx.fillStyle = color
+        ctx.fillRect(xn, yn, 1, 1)
+        ctx.fillRect(xk, yk, 1, 1)
+
+        for (let x = xn + 1; x < xk; x++) {
+            let curInt = intensity - (yi - Math.floor(yi)) * intensity
+            let newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, Math.floor(yi), 1, 1)
+            curInt = intensity - curInt
+            newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, Math.floor(yi) + 1, 1, 1)
+            yi += m
+        }
+    }
+    else {
+        if (yk < yn) {
+            let t = xn
+            xn = xk
+            xk = t
+
+            t = yn
+            yn = yk
+            yk = t
+        }
+        m = dx / dy
+        if ( xk < xn) {
+            m = -m
+        }
+        xi = xn + m
+        ctx.fillStyle = color
+        ctx.fillRect(xn, yn, 1, 1)
+        ctx.fillRect(yn, yk, 1, 1)
+
+        for (let y = yn + 1; y < yk; y++) {
+            let curInt = intensity - (xi - Math.floor(xi)) * intensity
+            let newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, Math.floor(xi), 1, 1)
+            curInt = (xi - Math.floor(xi)) * intensity
+            newColor = changeColor(color, curInt)
+            ctx.fillStyle = newColor
+            ctx.fillRect(x, Math.floor(xi) + 1, 1, 1)
+            xi += m
+        }
+    }
 }
