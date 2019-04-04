@@ -137,16 +137,57 @@ function brezenStep(xn, yn, xk, yk, color) {
 
 }
 
-function changeColor(color, intensity) {
-    const hsv= HEXtoHSV (color);
-    if (hsv[1] == 0) {
-        hsv[2] = 100 - intensity
-    }
-    else {
-        hsv[1] *= intensity / 100;
-    }
-    const hex = HSVtoHEX(hsv)
-    return hex
+function HSLtoRGB(hsl) {
+    let h = hsl[0]
+    let s = hsl[1]
+    let l = hsl[2]
+    // Must be fractions of 1
+    s /= 100;
+    l /= 100;
+  
+    let c = (1 - Math.abs(2 * l - 1)) * s,
+        x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+        m = l - c/2,
+        r = 0,
+        g = 0,
+        b = 0;
+    
+    if (0 <= h && h < 60) {
+        r = c; g = x; b = 0;
+        } else if (60 <= h && h < 120) {
+        r = x; g = c; b = 0;
+        } else if (120 <= h && h < 180) {
+        r = 0; g = c; b = x;
+        } else if (180 <= h && h < 240) {
+        r = 0; g = x; b = c;
+        } else if (240 <= h && h < 300) {
+        r = x; g = 0; b = c;
+        } else if (300 <= h && h < 360) {
+        r = c; g = 0; b = x;
+        }
+        r = Math.round((r + m) * 255);
+        g = Math.round((g + m) * 255);
+        b = Math.round((b + m) * 255);
+
+    return "rgb(" + r + "," + g + "," + b + ")";
+}
+
+HEXtoRGB = function(hex, intensity) {
+    hex = hex.split('')
+    
+    var r,g,b,h,s,v;
+    r = "0x" + hex[1] + hex[2];
+    g = "0x" + hex[3] + hex[4];
+    b = "0x" + hex[5] + hex[6];
+    console.log(intensity)
+    console.log(r, g, b)
+
+    r = Math.round(r * (100 - intensity) / 100)
+    g = Math.round(g * (100 - intensity) / 100)
+    b = Math.round(b * (100 - intensity) / 100)
+    
+    console.log(r, g, b)
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 
 HEXtoHSV = function(hex) {
@@ -157,6 +198,7 @@ HEXtoHSV = function(hex) {
     g = "0x" + hex[3] + hex[4];
     b = "0x" + hex[5] + hex[6];
 
+    
     min = Math.min( r, g, b );
     max = Math.max( r, g, b );
 
@@ -186,6 +228,45 @@ HEXtoHSV = function(hex) {
     s *= 100
     s = Math.round(s)
     return [h,s,v];
+};
+
+function HEXtoHSL(hex) {
+    hex = hex.split('')
+    
+    var r,g,b,h,s,v;
+    r = "0x" + hex[1] + hex[2];
+    g = "0x" + hex[3] + hex[4];
+    b = "0x" + hex[5] + hex[6];
+
+    min = Math.min( r, g, b );
+    max = Math.max( r, g, b );
+
+    let l = 1/ 2 * (max + min)
+    l = Math.round(max * 100 / 255)
+    delta = max - min;
+    if( max != 0 )
+        s = delta / max;
+    else {
+        // r = g = b = 0        // s = 0, l is undefined
+        s = 0;
+        h = 0;
+        return [h, s, l];
+    }
+    if( r == max )
+        h = ( g - b ) / delta;      // between yellow & magenta
+    else if( g == max )
+        h = 2 + ( b - r ) / delta;  // between cyan & yellow
+    else
+        h = 4 + ( r - g ) / delta;  // between magenta & cyan
+    h *= 60;                // degrees
+    if( h < 0 )
+        h += 360;
+    if ( isNaN(h) )
+        h = 0;
+    
+    s *= 100
+    s = Math.round(s)
+    return [h,s,l];
 };
 
 function HSVtoHEX (hsv) {
@@ -229,8 +310,26 @@ function HSVtoHEX (hsv) {
     //return [r, g, b]
 }
 
+function changeColor(color, intensity) {
+    const hsv= HEXtoHSV (color);
+    if (hsv[1] == 0) {
+        hsv[2] = 100 - intensity
+    }
+    else {
+        hsv[1] *= intensity / 100;
+    }
+    const hex = HSVtoHEX(hsv)
+    return hex
+
+    // debugger
+    // const hsl = HEXtoHSL(color);
+    // hsl[2] = 100 - intensity
+    // const rgb = HSLtoRGB(hsl)
+    // return rgb
+}
+
 //foo
-function By(xn, yn, xk, yk, color) {
+function By2(xn, yn, xk, yk, color) {
     // xn = 10 
     // yn = 300
     // xk = 30
@@ -303,20 +402,22 @@ function By(xn, yn, xk, yk, color) {
             let curInt =  (xi % pixelsize) / pixelsize * 100
             let newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
-            ctx.fillRect(x, xi - xi % pixelsize, pixelsize, pixelsize)
+            ctx.fillRect(xi - xi % pixelsize, y, pixelsize, pixelsize)
             curInt = intensity - curInt
             newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
-            ctx.fillRect(x, xi - xi % pixelsize + pixelsize, pixelsize, pixelsize)
+            ctx.fillRect(xi - xi % pixelsize + pixelsize, y, pixelsize, pixelsize)
             xi = xi + m * pixelsize
         }
     }
     bibl(xn, yn, xn + dx, yn + dy, 'red')
+
+    ctx.fillStyle = "#003df400"
+    ctx.fillRect(30, 40, 50, 50)
 }
 
-
 //sizepixel = 1
-function By2(xn, yn, xk, yk, color) {
+function By(xn, yn, xk, yk, color) {
     let m
     let xi
     let yi    
@@ -380,11 +481,11 @@ function By2(xn, yn, xk, yk, color) {
             let curInt = intensity - (xi - Math.floor(xi)) * intensity
             let newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
-            ctx.fillRect(x, Math.floor(xi), 1, 1)
+            ctx.fillRect(Math.floor(xi), y, 1, 1)
             curInt = (xi - Math.floor(xi)) * intensity
             newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
-            ctx.fillRect(x, Math.floor(xi) + 1, 1, 1)
+            ctx.fillRect(Math.floor(xi) + 1, yi, 1, 1)
             xi += m
         }
     }
