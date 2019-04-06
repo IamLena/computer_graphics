@@ -329,7 +329,7 @@ function changeColor(color, intensity) {
 }
 
 //foo
-function By2(xn, yn, xk, yk, color) {
+function By1(xn, yn, xk, yk, color) {
     // xn = 10 
     // yn = 300
     // xk = 30
@@ -340,14 +340,16 @@ function By2(xn, yn, xk, yk, color) {
     let xi
     let yi    
     const intensity = 100 //levels of intensity
-    let dx = Math.abs(xk - xn)
-    let dy = Math.abs(yk - yn)
+    let dx = (xk - xn) * pixelsize
+    let dy = (yk - yn) * pixelsize
 
-    dx *= pixelsize
-    dy *= pixelsize
+    ctx.fillStyle = color
+    ctx.fillRect(xn, yn, pixelsize, pixelsize)
+    ctx.fillRect(xn + dx, yn + dy, pixelsize, pixelsize)
 
-    if (dy < dx) { //m < 1
-        if (xk < xn) {
+    
+    if (Math.abs(dy) < Math.abs(dx)) { //m < 1
+        if (dx < 0) {
             let t = xk
             xk = xn
             xn = t
@@ -355,18 +357,13 @@ function By2(xn, yn, xk, yk, color) {
             t = yk
             yk = yn
             yn = t
+            dx = -dx
+            dy = -dy
         }
 
         m = dy / dx
-        if (yk < yn) {
-            m = -m
-        }
+
         yi = yn + m *pixelsize
-
-        ctx.fillStyle = color
-        ctx.fillRect(xn, yn, pixelsize, pixelsize)
-        ctx.fillRect(xn + dx, yn + dy, pixelsize, pixelsize)
-
         for (let x = xn + pixelsize; x < xn + dx; x += pixelsize) {
             let curInt = intensity - (yi % pixelsize) / pixelsize * 100
             let newColor = changeColor(color, curInt)
@@ -380,7 +377,7 @@ function By2(xn, yn, xk, yk, color) {
         }
     }
     else {
-        if (yk < yn) {
+        if (dy < 0) {
             let t = xn
             xn = xk
             xk = t
@@ -388,18 +385,16 @@ function By2(xn, yn, xk, yk, color) {
             t = yn
             yn = yk
             yk = t
+            dy = -dy
+            dx = -dx
         }
         m = dx / dy
-        if ( xk < xn) {
-            m = -m
-        }
-        xi = xn + m
-        ctx.fillStyle = color
-        ctx.fillRect(xn, yn, pixelsize, pixelsize)
-        ctx.fillRect(xn + dx, yn + dy, pixelsize, pixelsize)
+        console.log(`m = ${m}, dx = ${dx}, dy = ${dy}, xn = ${xn}`)
 
+        xi = xn + m * pixelsize
+        //ctx.fillRect(xn, yn - pixelsize, pixelsize, pixelsize)
         for (let y = yn + pixelsize; y < yn + dy; y += pixelsize) {
-            let curInt =  (xi % pixelsize) / pixelsize * 100
+            let curInt =  intensity - (xi % pixelsize) / pixelsize * 100
             let newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
             ctx.fillRect(xi - xi % pixelsize, y, pixelsize, pixelsize)
@@ -410,10 +405,8 @@ function By2(xn, yn, xk, yk, color) {
             xi = xi + m * pixelsize
         }
     }
-    bibl(xn, yn, xn + dx, yn + dy, 'red')
 
-    ctx.fillStyle = "#003df400"
-    ctx.fillRect(30, 40, 50, 50)
+    bibl(xn, yn, xn + (xk - xn) * pixelsize, yn + (yk - yn)* pixelsize, 'red')    
 }
 
 //sizepixel = 1
@@ -422,11 +415,31 @@ function By(xn, yn, xk, yk, color) {
     let xi
     let yi    
     const intensity = 100 //levels of intensity
-    let dx = Math.abs(xk - xn)
-    let dy = Math.abs(yk - yn)
+    let dx = (xk - xn)
+    let dy = (yk - yn)
 
-    if (dy < dx) { //m < 1
-        if (xk < xn) {
+    ctx.fillStyle = color
+    ctx.fillRect(xn, yn, 1, 1)
+    ctx.fillRect(xk, yk, 1, 1)
+
+    if (dx == 0) {
+        const sy = Math.sign(yk - yn)
+        let y = yn
+        while (y != yk) {
+            ctx.fillRect(xn, y, 1, 1)
+            y += sy
+        }
+    }
+    else if (dy == 0) {
+        const sx = Math.sign(xk - xn)
+        let x = xn
+        while (x != xk) {
+            ctx.fillRect(x, yn, 1, 1)
+            x += sx
+        }
+    }
+    else if (Math.abs(dy) <= Math.abs(dx)) { //m < 1
+        if (dx < 0) {
             let t = xk
             xk = xn
             xn = t
@@ -434,32 +447,29 @@ function By(xn, yn, xk, yk, color) {
             t = yk
             yk = yn
             yn = t
+            dx = -dx
+            dy = -dy
         }
 
         m = dy / dx
-        if (yk < yn) {
-            m = -m
-        }
+
         yi = yn + m
-
-        ctx.fillStyle = color
-        ctx.fillRect(xn, yn, 1, 1)
-        ctx.fillRect(xk, yk, 1, 1)
-
-        for (let x = xn + 1; x < xk; x++) {
-            let curInt = intensity - (yi - Math.floor(yi)) * intensity
+        for (let x = xn + 1; x < xk; x += 1) {
+            let curInt = intensity - (yi % 1) * 100
             let newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
             ctx.fillRect(x, Math.floor(yi), 1, 1)
-            curInt = intensity - curInt
-            newColor = changeColor(color, curInt)
-            ctx.fillStyle = newColor
-            ctx.fillRect(x, Math.floor(yi) + 1, 1, 1)
-            yi += m
+            if (curInt != 100) {
+                curInt = intensity - curInt
+                newColor = changeColor(color, curInt)
+                ctx.fillStyle = newColor
+                ctx.fillRect(x, Math.ceil(yi), 1, 1)
+            }
+            yi = yi + m
         }
     }
     else {
-        if (yk < yn) {
+        if (dy < 0) {
             let t = xn
             xn = xk
             xk = t
@@ -467,26 +477,97 @@ function By(xn, yn, xk, yk, color) {
             t = yn
             yn = yk
             yk = t
+            dy = -dy
+            dx = -dx
         }
         m = dx / dy
-        if ( xk < xn) {
-            m = -m
-        }
-        xi = xn + m
-        ctx.fillStyle = color
-        ctx.fillRect(xn, yn, 1, 1)
-        ctx.fillRect(yn, yk, 1, 1)
+        console.log(`m = ${m}, dx = ${dx}, dy = ${dy}, xn = ${xn}`)
 
-        for (let y = yn + 1; y < yk; y++) {
-            let curInt = intensity - (xi - Math.floor(xi)) * intensity
+        xi = xn + m
+        for (let y = yn + 1; y < yk; y += 1) {
+            let curInt =  intensity - (xi % 1) * 100
             let newColor = changeColor(color, curInt)
             ctx.fillStyle = newColor
             ctx.fillRect(Math.floor(xi), y, 1, 1)
-            curInt = (xi - Math.floor(xi)) * intensity
-            newColor = changeColor(color, curInt)
-            ctx.fillStyle = newColor
-            ctx.fillRect(Math.floor(xi) + 1, yi, 1, 1)
-            xi += m
+            if (curInt != 100) {
+                curInt = intensity - curInt
+                newColor = changeColor(color, curInt)
+                ctx.fillStyle = newColor
+                ctx.fillRect(Math.ceil(xi), y, 1, 1)
+            }
+            xi = xi + m
         }
     }
+
+    // let m
+    // let xi
+    // let yi    
+    // const intensity = 100 //levels of intensity
+    // let dx = Math.abs(xk - xn)
+    // let dy = Math.abs(yk - yn)
+
+    // if (dy < dx) { //m < 1
+    //     if (xk < xn) {
+    //         let t = xk
+    //         xk = xn
+    //         xn = t
+
+    //         t = yk
+    //         yk = yn
+    //         yn = t
+    //     }
+
+    //     m = dy / dx
+    //     if (yk < yn) {
+    //         m = -m
+    //     }
+    //     yi = yn + m
+
+    //     ctx.fillStyle = color
+    //     ctx.fillRect(xn, yn, 1, 1)
+    //     ctx.fillRect(xk, yk, 1, 1)
+
+    //     for (let x = xn + 1; x < xk; x++) {
+    //         let curInt = intensity - (yi - Math.floor(yi)) * intensity
+    //         let newColor = changeColor(color, curInt)
+    //         ctx.fillStyle = newColor
+    //         ctx.fillRect(x, Math.floor(yi), 1, 1)
+    //         curInt = intensity - curInt
+    //         newColor = changeColor(color, curInt)
+    //         ctx.fillStyle = newColor
+    //         ctx.fillRect(x, Math.floor(yi) + 1, 1, 1)
+    //         yi += m
+    //     }
+    // }
+    // else {
+    //     if (yk < yn) {
+    //         let t = xn
+    //         xn = xk
+    //         xk = t
+
+    //         t = yn
+    //         yn = yk
+    //         yk = t
+    //     }
+    //     m = dx / dy
+    //     if ( xk < xn) {
+    //         m = -m
+    //     }
+    //     xi = xn + m
+    //     ctx.fillStyle = color
+    //     ctx.fillRect(xn, yn, 1, 1)
+    //     ctx.fillRect(yn, yk, 1, 1)
+
+    //     for (let y = yn + 1; y < yk; y++) {
+    //         let curInt = intensity - (xi - Math.floor(xi)) * intensity
+    //         let newColor = changeColor(color, curInt)
+    //         ctx.fillStyle = newColor
+    //         ctx.fillRect(Math.floor(xi), y, 1, 1)
+    //         curInt = (xi - Math.floor(xi)) * intensity
+    //         newColor = changeColor(color, curInt)
+    //         ctx.fillStyle = newColor
+    //         ctx.fillRect(Math.floor(xi) + 1, yi, 1, 1)
+    //         xi += m
+    //     }
+    // }
 }
