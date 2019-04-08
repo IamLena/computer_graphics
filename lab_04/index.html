@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab_04</title>
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <script src="algorithms.js"></script>
+</head>
+<body>     
+    <h1>Исследование алгоритмов отрисовки эллипса</h1>
+    <canvas width="700" height="450" backgroundColor="white"></canvas>
+    <div id="userfield">
+        <form id='input'>
+            <div class="field">
+                <p>введите координаты центра окружности и радиус:</p>
+                <input id="xm" name="xm" placeholder="x центра">
+                <input id="ym" name="ym" placeholder="y центра">
+                <input id="r" name="r" placeholder="радиус">
+            </div>
+            <div class="field">
+                <label for="line">Выберите цвет линий</label>
+                <input id="line" type="color" value="#000000"><br>
+                <label for="background">Выберите цвет фона</label>
+                <input id="background" type="color" value="#ffffff">
+            </div>
+            <div class="field">
+                <p>выберете алгоритм:</p>
+                <input type='radio' name="algorithm" id="op1">алгоритм Брезенхема<br>
+                <input type='radio' name="algorithm" id="op2">алгоритм средней точки<br>
+                <input type='radio' name="algorithm" id="op3">алгоритм, используя каноническое уравнение<br> <!-- x^2 + y^2 = r^2 -->
+                <input type='radio' name="algorithm" id="op4">алгоритм, используя параметрическое уравнение<br>
+                <input type='radio' name="algorithm" id="op5">библиотечная графика<br>
+            </div>
+            <div>
+                <input type='radio' name="shape" id="circle">окружность<br>
+                <input type='radio' name="shape" id="elips">эллипс<br>
+            </div>
+            <button id="submit">отрисовать</button>
+        </form>
+        <button id="clean">очистить</button>
+        <a href="./index2.html">отрисовка элипсов</a>
+        <!-- <button>очистить</button> -->
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
