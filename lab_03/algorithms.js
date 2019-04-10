@@ -1,20 +1,19 @@
-function getLength(xn, yn, xk, yk) {
-    return Math.abs(xn - xk) > Math.abs(yn - yk) ? Math.abs(xn - xk) : Math.abs(yn - yk)
-}
-
 function cda(xn, yn, xk, yk) {
+    let dx = (xk - xn)
+    let dy = (yk - yn)
+    const length = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy)
 
-    const length = getLength(xn, yn, xk, yk)
-    const dx = (xk - xn) / length
-    const dy = (yk - yn) / length
+    const sx = dx / length
+    const sy = dy /length
 
     let x = xn
     let y = yn
+    let m = dy / dx
     for (let i = 0; i <= length; i += 1) {
         //console.log(`dot: ${x}, ${y}`)
         ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
-        x += dx
-        y += dy
+        x += sx
+        y += sy
     }
 }
 
@@ -40,7 +39,7 @@ function brezenR(xn, yn, xk, yk) {
 
     let x = xn
     let y = yn
-    for (let i = 1; i < dx + 1; i++) {
+    for (let i = 0; i < dx + 1; i++) {
         ctx.fillRect(x, y, 1, 1)
         if (er >= 0) {
             if (!swapFlag) { y += sy} 
@@ -311,6 +310,9 @@ function HSVtoHEX (hsv) {
 }
 
 function changeColor(color, intensity) {
+    if (color === '#ffffff') {
+        return color
+    }
     const hsv= HEXtoHSV (color);
     if (hsv[1] == 0) {
         hsv[2] = 100 - intensity
@@ -498,76 +500,4 @@ function By(xn, yn, xk, yk, color) {
             xi = xi + m
         }
     }
-
-    // let m
-    // let xi
-    // let yi    
-    // const intensity = 100 //levels of intensity
-    // let dx = Math.abs(xk - xn)
-    // let dy = Math.abs(yk - yn)
-
-    // if (dy < dx) { //m < 1
-    //     if (xk < xn) {
-    //         let t = xk
-    //         xk = xn
-    //         xn = t
-
-    //         t = yk
-    //         yk = yn
-    //         yn = t
-    //     }
-
-    //     m = dy / dx
-    //     if (yk < yn) {
-    //         m = -m
-    //     }
-    //     yi = yn + m
-
-    //     ctx.fillStyle = color
-    //     ctx.fillRect(xn, yn, 1, 1)
-    //     ctx.fillRect(xk, yk, 1, 1)
-
-    //     for (let x = xn + 1; x < xk; x++) {
-    //         let curInt = intensity - (yi - Math.floor(yi)) * intensity
-    //         let newColor = changeColor(color, curInt)
-    //         ctx.fillStyle = newColor
-    //         ctx.fillRect(x, Math.floor(yi), 1, 1)
-    //         curInt = intensity - curInt
-    //         newColor = changeColor(color, curInt)
-    //         ctx.fillStyle = newColor
-    //         ctx.fillRect(x, Math.floor(yi) + 1, 1, 1)
-    //         yi += m
-    //     }
-    // }
-    // else {
-    //     if (yk < yn) {
-    //         let t = xn
-    //         xn = xk
-    //         xk = t
-
-    //         t = yn
-    //         yn = yk
-    //         yk = t
-    //     }
-    //     m = dx / dy
-    //     if ( xk < xn) {
-    //         m = -m
-    //     }
-    //     xi = xn + m
-    //     ctx.fillStyle = color
-    //     ctx.fillRect(xn, yn, 1, 1)
-    //     ctx.fillRect(yn, yk, 1, 1)
-
-    //     for (let y = yn + 1; y < yk; y++) {
-    //         let curInt = intensity - (xi - Math.floor(xi)) * intensity
-    //         let newColor = changeColor(color, curInt)
-    //         ctx.fillStyle = newColor
-    //         ctx.fillRect(Math.floor(xi), y, 1, 1)
-    //         curInt = (xi - Math.floor(xi)) * intensity
-    //         newColor = changeColor(color, curInt)
-    //         ctx.fillStyle = newColor
-    //         ctx.fillRect(Math.floor(xi) + 1, yi, 1, 1)
-    //         xi += m
-    //     }
-    // }
 }
