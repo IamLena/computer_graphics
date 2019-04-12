@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>lab_04</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="funcs.js"></script>
+</head>
+<body>
+    <canvas width="500" height="500"></canvas>
+    <div id='input-form'>
+        <div class="tab">
+            <button id="butCircle" class="tablinks" onclick="openShape(event, 'circle')">окружность</button>
+            <button id="butEllips" class="tablinks" onclick="openShape(event, 'ellips')">эллипс</button>
+        </div>
+        <h3>введите необходимые для построения параметры</h3>
+        
+        <div id ="circle" class="tabcontent">
+            
+            <input id="ccx" placeholder="center x">
+            <input id="ccy" placeholder="center y">
+            <input id="cr" placeholder="radius">
+        </div>
+            
+        <div id ="ellips" class="tabcontent">
+            <!-- <h3 class="instruction">Введите необходимые для построения параметры</h3> -->
+            <input id="ecx" placeholder="center x">
+            <input id="ecy" placeholder="center y">
+            <input id="a" placeholder="a">
+            <input id="b" placeholder="b">
+        </div>
+    
+        <form id="color-alg-input">
+            <h3 class="instruction">выберете цвет фона и пера</h3>
+            <div class = "container" id="color-choice">
+                <input type="color" class="color" name="bgcolor" id="bgcolor">
+                <label for="bgcolor">цвет фона</label><br>
+                <input type="color" class="color" name="scolor" id="scolor">
+                <label for="scolor">цвет пера</label><br>
+            </div>
+    
+            <h3 class="instruction">выберете алгоритм</h3>
+            <div class = "container" id="algo-choice">
+                <input type="radio" name="algorithm" id="canon">
+                <label for="canon">алгоритм, используя каноническое уравнение</label><br>
+                <input type="radio" name="algorithm" id="param">
+                <label for="param">алгоритм, используя параметрическое уравнение</label><br>
+                <input type="radio" name="algorithm" id="brez">
+                <label for="brez">алгоритм Брезенхема</label><br>
+                <input type="radio" name="algorithm" id="midpoint">
+                <label for="midpoint">алгоритм средней точки</label><br>
+                <input type="radio" name="algorithm" id="lib">
+                <label for="lib">библиотечный</label><br>
+            </div>
+            <button id="submit">отрисовать</button>
+    </div>
+    </form>
+    <script src="app.js"></script>
+</body>
+</html>
