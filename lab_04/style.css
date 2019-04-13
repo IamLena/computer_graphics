@@ -66,6 +66,8 @@ h3{
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
+    color: black;
+    font-size: 4vmin;
 }
   
   /* Change background color of buttons on hover */
@@ -84,15 +86,20 @@ h3{
   /* Style the tab content */
   .tabcontent {
     display: none;
-    padding: 6px 12px;
+    padding: 15px;
     border: 1px solid #ccc;
     border-top: none;
     background-color: rgb(230, 230, 255);
-    height: 100px;
+    height: 80px;
     margin: 5px;
   }
 
 #color-alg-input{
     align-items: center;
     justify-content: center;
+}
+
+.data {
+    margin: 2px;
+    padding: 2px;
 }
