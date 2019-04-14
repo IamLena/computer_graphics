@@ -88,50 +88,57 @@ function bre_circle(xc, yc, r, ctx)
     }
 }
 
-// function midpoint_circle(xc, yc, r, ctx)
-// {
-//     int x = 0;
-//     int y = r;
-//     int df = 0;
-//     int delta = -2 * y;
+function midpoint_circle(xc, yc, r, ctx)
+{
+    console.log('midpoint')
+    let x = 0;
+    let y = r;
+    let df = 0;
+    let delta = -2 * y;
 
 
-//     int x_bound = r / sqrt(2);
-//     int f = 1.25 - r;
+    let x_bound = r / Math.sqrt(2);
+    let f = 1.25 - r;
 
-//     for (; x <= x_bound; x++)
-//     {
-//         painter.drawPoint(xc + x, yc + y);
-//         painter.drawPoint(xc - x, yc + y);
-//         painter.drawPoint(xc + x, yc - y);
-//         painter.drawPoint(xc - x, yc - y);
+    for (; x <= x_bound; x++)
+    {
+        ctx.fillRect(xc + x, yc + y, 1, 1);
+        ctx.fillRect(xc - x, yc + y, 1, 1);
+        ctx.fillRect(xc + x, yc - y, 1, 1);
+        ctx.fillRect(xc - x, yc - y, 1, 1);
 
-//         if (f >= 0)
-//         {
-//             y -= 1;
-//             delta += 2;
-//             f += delta;
-//         }
-//         df += 2;
-//         f += df + 1;
-//     }
+        if (f >= 0)
+        {
+            y -= 1;
+            delta += 2;
+            f += delta;
+        }
+        df += 2;
+        f += df + 1;
+    }
 
-//     delta = 2 * x;
-//     df = -2 * y;
-//     f += -x - y;
-//     for (; y >= 0; y--)
-//     {
-//         painter.drawPoint(xc + x, yc + y);
-//         painter.drawPoint(xc - x, yc + y);
-//         painter.drawPoint(xc + x, yc - y);
-//         painter.drawPoint(xc - x, yc - y);
-//         if (f < 0)
-//         {
-//             x += 1;
-//             delta += 2;
-//             f += delta;
-//         }
-//         df += 2;
-//         f += 1 + df;
-//     }
-// }
+    delta = 2 * x;
+    df = -2 * y;
+    f += -x - y;
+    for (; y >= 0; y--)
+    {
+        ctx.fillRect(xc + x, yc + y, 1, 1);
+        ctx.fillRect(xc - x, yc + y, 1, 1);
+        ctx.fillRect(xc + x, yc - y, 1, 1);
+        ctx.fillRect(xc - x, yc - y, 1, 1);
+        if (f < 0)
+        {
+            x += 1;
+            delta += 2;
+            f += delta;
+        }
+        df += 2;
+        f += 1 + df;
+    }
+}
+
+function lib_circle(xc, yc, r, ctx) {
+    ctx.beginPath();
+    ctx.arc(xc, yc, r, 0, 2 * Math.PI);
+    ctx.stroke();
+}

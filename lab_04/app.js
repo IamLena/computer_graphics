@@ -48,13 +48,7 @@ document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
     try {
         valid(data);
         console.log(data)
-        //draw(data);
-
-        const ctx = document.querySelector('canvas').getContext('2d')
-
-        //canon_circle(data.cx, data.cy, data.r, ctx)
-        //param_circle(data.cx, data.cy, data.r, ctx)
-        bre_circle(data.cx, data.cy, data.r, ctx)
+        draw(data);
     }
     catch(e) {
         alert(e.message)
@@ -62,15 +56,6 @@ document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
 })
 
 function valid(data) {
-    // strokeColor: 'black',
-    // bgColor: 'white',
-    // algorithm: undefined,
-    // cx: undefined,
-    // cy: undefined,
-    // r: undefined,
-    // a: undefined,
-    // b: undefined
-
     if (data.algorithm == undefined) {
         throw Error ('Выберете алгоритм')
     }
@@ -112,4 +97,22 @@ function valid(data) {
 
 function validINput(x) {
     return (!isNaN(x) && x != '')
+}
+
+function draw(data) {
+    const canvas = document.querySelector('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.style.backgroundColor = data.bgColor
+    ctx.fillStyle = data.strokeColor
+    ctx.strokeStyle = data.strokeColor
+    if (data.shape === 'circle') {
+        const cx = data.cx
+        const cy = data.cy
+        const r = data.r
+        if (data.algorithm == 'canon') {canon_circle(cx, cy, r, ctx)}
+        else if (data.algorithm == 'param') {param_circle(cx, cy, r, ctx)}
+        else if (data.algorithm == 'brez') {bre_circle(cx, cy, r, ctx)}
+        else if (data.algorithm == 'midpoint') {midpoint_circle(cx, cy, r, ctx)}
+        else {lib_circle(cx, cy, r, ctx)}
+    }
 }
