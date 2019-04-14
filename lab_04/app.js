@@ -115,4 +115,15 @@ function draw(data) {
         else if (data.algorithm == 'midpoint') {midpoint_circle(cx, cy, r, ctx)}
         else {lib_circle(cx, cy, r, ctx)}
     }
+    else {
+        const cx = data.cx
+        const cy = data.cy
+        const a = data.a
+        const b = data.b
+        if (data.algorithm == 'canon') {canon_ellipse(cx, cy, a, b, ctx)}
+        else if (data.algorithm == 'param') {param_ellipse(cx, cy, a, b, ctx)}
+        else if (data.algorithm == 'brez') {bre_ellipse(cx, cy, a, b, ctx)}
+        else if (data.algorithm == 'midpoint') {midpoint_ellipse(cx, cy, a, b, ctx)}
+        else {lib_ellipse(cx, cy, a, b, ctx)}
+    }
 }

@@ -142,3 +142,168 @@ function lib_circle(xc, yc, r, ctx) {
     ctx.arc(xc, yc, r, 0, 2 * Math.PI);
     ctx.stroke();
 }
+
+function canon_ellipse(xc, yc, a, b, ctx)
+{
+    console.log('canon')
+    let x, y;
+    let x_rounded, y_rounded;
+    let a2 = a * a;
+    let b2 = b * b;
+    if (a != 0)
+    {
+        for (let x = 0; x <= a; x++)
+        {
+            y = b * Math.sqrt(1.0 - x * x / a2);
+            y_rounded = Math.round(y);
+            ctx.fillRect(xc + x, yc + y_rounded, 1, 1);
+            ctx.fillRect(xc - x, yc + y_rounded, 1, 1);
+            ctx.fillRect(xc + x, yc - y_rounded, 1, 1);
+            ctx.fillRect(xc - x, yc - y_rounded, 1, 1);
+        }
+    }
+    if (b != 0)
+    {
+        for (let y = 0; y <= b; y++)
+        {
+            x = a * Math.sqrt(1.0 - y * y / b2);
+            x_rounded = Math.round(x);
+            ctx.fillRect(xc + x_rounded, yc + y, 1, 1);
+            ctx.fillRect(xc - x_rounded, yc + y, 1, 1);
+            ctx.fillRect(xc + x_rounded, yc - y, 1, 1);
+            ctx.fillRect(xc - x_rounded, yc - y, 1, 1);
+        }
+    }
+}
+
+function param_ellipse(xc, yc, a, b, ctx)
+{    
+    console.log('param')
+    let max_r = (a > b) ? a : b;
+    let d = 1.0 / max_r;
+    let x, y;
+    let tmp = 0;
+    while (tmp <= Math.PI + d)
+    {
+        x = (Math.round(a * Math.cos(tmp)));
+        y = (Math.round(b * Math.sin(tmp)));
+        ctx.fillRect(xc + x, yc + y, 1, 1);
+        ctx.fillRect(xc - x, yc + y, 1, 1);
+        ctx.fillRect(xc + x, yc - y, 1, 1);
+        ctx.fillRect(xc - x, yc - y, 1, 1);
+        tmp += d;
+    }
+}
+
+function bre_ellipse(xc, yc, a, b, ctx)
+{
+    let x = 0;
+    let y = b; // при b = 0 и a != 0 отрисовывает точку (а не прямую)
+    let a2 = a * a;
+    let b2 = b * b;
+    let da2 = 2 * a2;
+    let db2 = 2 * b2;
+    let d = b2 - da2 * b + a2;
+    let d1 = 0, d2 = 0;
+    let y_end = 0;
+    while (y >= y_end)
+    {
+        ctx.fillRect(xc + x, yc + y, 1, 1);
+        ctx.fillRect(xc - x, yc + y, 1, 1);
+        ctx.fillRect(xc + x, yc - y, 1, 1);
+        ctx.fillRect(xc - x, yc - y, 1, 1);
+        if (d < 0)
+        {
+           d1 = 2 * d + da2 * y - a2;
+           x += 1;
+           if (d1 < 0)
+               d = d + db2 * x + b2;
+           else
+           {
+               y -= 1;
+               d = d + db2 * x - da2 * y + a2 + b2;
+           }
+        }
+        else if (d == 0)
+        {
+            x += 1;
+            y -= 1;
+            d = d + db2 * x - da2 * y + a2 + b2;
+        }
+        else
+        {
+            d2 = 2 * d - db2 * x - b2;
+            y -= 1;
+            if (d2 < 0)
+            {
+                x += 1;
+                d = d + db2 * x - da2 * y + a2 + b2;
+            }
+            else
+                d = d - da2 * y + a2;
+        }
+    }
+}
+
+function midpoint_ellipse(xc, yc, a, b, ctx)
+{
+    let a2 = a * a;
+    let b2 = b * b;
+    let da2 = 2 * a2;
+    let db2 = 2 * b2;
+    let x = 0;
+    let y = b;
+    let df = 0;
+    let delta = -da2 * y;
+
+
+    let x_bound = a2 / Math.sqrt(a2 + b2);
+    let f = b2 - a2 * b + 0.25 * a2;
+
+    if (b == 0)
+        f = -1;
+
+    for (; x <= x_bound; x++)
+    {
+        ctx.fillRect(xc + x, yc + y, 1, 1);
+        ctx.fillRect(xc - x, yc + y, 1, 1);
+        ctx.fillRect(xc + x, yc - y, 1, 1);
+        ctx.fillRect(xc - x, yc - y, 1, 1);
+        if (f >= 0)
+        {
+            y -= 1;
+            delta += da2;
+            f += delta;
+        }
+        df += db2;
+        f += df + b2;
+    }
+
+    if (a == 0)
+        x = 0;
+
+    delta = db2 * x;
+    df = -da2 * y;
+    f += 0.75 * (a2 - b2) - a2 * y - b2 * x;
+    for (; y >= 0; y--)
+    {
+        ctx.fillRect(xc + x, yc + y, 1, 1);
+        ctx.fillRect(xc - x, yc + y, 1, 1);
+        ctx.fillRect(xc + x, yc - y, 1, 1);
+        ctx.fillRect(xc - x, yc - y, 1, 1);
+        if (f < 0)
+        {
+            x += 1;
+            delta += db2;
+            f += delta;
+        }
+        df += da2;
+        f += a2 + df;
+    }
+}
+
+function lib_ellipse(cx, cy, a, b, ctx) {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, a, b, 0, 0,  2 * Math.PI);
+    ctx.stroke()
+}
