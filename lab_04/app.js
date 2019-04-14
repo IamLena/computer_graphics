@@ -47,11 +47,14 @@ document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
 
     try {
         valid(data);
+        console.log(data)
         //draw(data);
 
         const ctx = document.querySelector('canvas').getContext('2d')
 
-        canon_circle(data.cx, data.cy, data.r, ctx)
+        //canon_circle(data.cx, data.cy, data.r, ctx)
+        //param_circle(data.cx, data.cy, data.r, ctx)
+        bre_circle(data.cx, data.cy, data.r, ctx)
     }
     catch(e) {
         alert(e.message)
