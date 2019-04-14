@@ -4,10 +4,13 @@ let data = {
     algorithm: undefined,
     cx: undefined,
     cy: undefined,
+
     r: undefined,
     a: undefined,
     b: undefined,
-    shape: undefined
+    shape: undefined,
+    step: undefined,
+    quantity: undefined
 }
 
 function findChecked(item) {
@@ -17,14 +20,6 @@ function findChecked(item) {
 document.querySelector('#butCircle').click()
 
 document.querySelector('#clear').addEventListener('click', (e) => {
-    e.preventDefault()
-    console.log('clean')
-    const canvas = document.querySelector('canvas')
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-})
-
-document.querySelector('#sun').addEventListener('click', (e) => {
     e.preventDefault()
     console.log('clean')
     const canvas = document.querySelector('canvas')
@@ -51,6 +46,8 @@ document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
         data.cx = document.querySelector('#ccx').value
         data.cy = document.querySelector('#ccy').value
         data.r = document.querySelector('#cr').value
+        data.step = document.querySelector('#cstep').value
+        data.quantity = document.querySelector('#cn').value
         data.shape = 'circle'
     }
     if (active.id === 'butEllips') {
@@ -58,6 +55,8 @@ document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
         data.cy = document.querySelector('#ecy').value
         data.a = document.querySelector('#a').value
         data.b = document.querySelector('#b').value
+        data.step = document.querySelector('#estep').value
+        data.quantity = document.querySelector('#en').value
         data.shape = 'ellips'
     }
 
@@ -65,6 +64,7 @@ document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
         valid(data);
         console.log(data)
         draw(data);
+        console.log(data)
     }
     catch(e) {
         alert(e.message)
@@ -76,7 +76,7 @@ function valid(data) {
         throw Error ('Выберете алгоритм')
     }
     if (data.shape === 'circle') {
-        if (data.cx == undefined || data.cy == undefined || data.r == undefined) {
+        if (data.cx == undefined || data.cy == undefined || data.r == undefined || data.quantity == undefined || data.step == undefined)  {
             throw Error ('Введите все необходимые для построения параметры')
         }
         else {
@@ -84,6 +84,8 @@ function valid(data) {
                 data.cx = parseFloat(data.cx)
                 data.cy = parseFloat(data.cy)
                 data.r = parseFloat(data.r)
+                data.quantity = parseInt(data.quantity)
+                data.step = parseInt(data.step)
             }
             else {
                 throw Error ('Некорректный ввод')
@@ -91,7 +93,7 @@ function valid(data) {
         }
     }
     else if (data.shape === 'ellips') {
-        if (data.cx == undefined || data.cy == undefined || data.b == undefined || data.a == undefined) {
+        if (data.cx == undefined || data.cy == undefined || data.b == undefined || data.a == undefined || data.quantity == undefined || data.step == undefined) {
             throw Error ('Введите все необходимые для построения параметры')
         }
         else {
@@ -100,6 +102,8 @@ function valid(data) {
                 data.cy = parseFloat(data.cy)
                 data.a = parseFloat(data.a)
                 data.b = parseFloat(data.b)
+                data.quantity = parseInt(data.quantity)
+                data.step = parseInt(data.step)
             }
             else {
                 throw Error ('Некорректный ввод')
@@ -124,22 +128,84 @@ function draw(data) {
     if (data.shape === 'circle') {
         const cx = data.cx
         const cy = data.cy
-        const r = data.r
-        if (data.algorithm == 'canon') {canon_circle(cx, cy, r, ctx)}
-        else if (data.algorithm == 'param') {param_circle(cx, cy, r, ctx)}
-        else if (data.algorithm == 'brez') {bre_circle(cx, cy, r, ctx)}
-        else if (data.algorithm == 'midpoint') {midpoint_circle(cx, cy, r, ctx)}
-        else {lib_circle(cx, cy, r, ctx)}
+        let r = data.r
+        const step = data.step
+        const N = data.quantity
+
+        if (data.algorithm == 'canon') {
+            for (let i = 0; i <= N; i++) {
+                canon_circle(cx, cy, r, ctx)
+                r += step
+            }
+        }
+        else if (data.algorithm == 'param') {
+            for (let i = 0; i <= N; i++) {
+                param_circle(cx, cy, r, ctx)
+                r += step
+            }
+        }
+        else if (data.algorithm == 'brez') {
+            for (let i = 0; i <= N; i++) {
+                bre_circle(cx, cy, r, ctx)
+                r += step
+            }
+        }
+        else if (data.algorithm == 'midpoint') {
+            for (let i = 0; i <= N; i++) {
+                midpoint_circle(cx, cy, r, ctx)
+                r += step
+            }
+        }
+        else {
+            for (let i = 0; i <= N; i++) {
+                lib_circle(cx, cy, r, ctx)
+                r += step
+            }
+        }
     }
     else {
         const cx = data.cx
         const cy = data.cy
-        const a = data.a
-        const b = data.b
-        if (data.algorithm == 'canon') {canon_ellipse(cx, cy, a, b, ctx)}
-        else if (data.algorithm == 'param') {param_ellipse(cx, cy, a, b, ctx)}
-        else if (data.algorithm == 'brez') {bre_ellipse(cx, cy, a, b, ctx)}
-        else if (data.algorithm == 'midpoint') {midpoint_ellipse(cx, cy, a, b, ctx)}
-        else {lib_ellipse(cx, cy, a, b, ctx)}
+        let a = data.a
+        let b = data.b
+        let coef = b / a
+        const step = data.step
+        const N = data.quantity
+
+        if (data.algorithm == 'canon') {
+            for (let i = 0; i <= N; i++) {
+                canon_ellipse(cx, cy, a, b, ctx)
+                a += step
+                b = coef * a
+            }
+        }
+        else if (data.algorithm == 'param') {
+            for (let i = 0; i <= N; i++) {
+                param_ellipse(cx, cy, a, b, ctx)
+                a += step
+                b = coef * a
+            }
+        }
+        else if (data.algorithm == 'brez') {
+            for (let i = 0; i <= N; i++) {
+                bre_ellipse(cx, cy, a, b, ctx)
+                a += step
+                b = coef * a
+            }
+        }
+        else if (data.algorithm == 'midpoint') {
+            for (let i = 0; i <= N; i++) {
+                midpoint_ellipse(cx, cy, a, b, ctx)
+                a += step
+                b = coef * a
+            }
+        }
+        else {
+            for (let i = 0; i <= N; i++) {
+                lib_ellipse(cx, cy, a, b, ctx)
+                a += step
+                b = coef * a
+            }
+        }
     }
 }

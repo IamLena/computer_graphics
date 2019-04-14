@@ -51,6 +51,15 @@ h3{
     padding: 5px;
 }
 
+#clear {
+    border: none;
+    background-color: rgb(64, 0, 128);
+    color: white;
+    font-size: 4vmin;
+    margin: 5px;
+    padding: 5px;
+}
+
 /* Style the tab */
 .tab {
     overflow: hidden;
