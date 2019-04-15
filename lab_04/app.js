@@ -24,14 +24,6 @@ document.querySelector('#clear').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 })
 
-document.querySelector('#sun').addEventListener('click', (e) => {
-    e.preventDefault()
-    console.log('clean')
-    const canvas = document.querySelector('canvas')
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-})
-
 document.querySelector('#color-alg-input').addEventListener('submit', (e) => {
     e.preventDefault()
     console.log(e)

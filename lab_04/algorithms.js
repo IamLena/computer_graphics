@@ -3,22 +3,23 @@ function canon_circle(xc, yc, r, ctx) {
     let x, y;
     let x_rounded, y_rounded;
     let r2 = r * r;
-    for (let x = 0; x <= r; x++)
+    let endR = Math.sqrt(2) / 2 * r
+    for (let x = 0; x < endR; x++)
     {
         y = Math.sqrt(r2 - x * x);
         y_rounded = (Math.round(y));
         ctx.fillRect(xc + x, yc + y_rounded, 1, 1);
-        ctx.fillRect(xc - x, yc + y_rounded, 1, 1);
-        ctx.fillRect(xc + x, yc - y_rounded, 1, 1);
-        ctx.fillRect(xc - x, yc - y_rounded, 1, 1);
+        ctx.fillRect(xc - 1 - x, yc + y_rounded, 1, 1);
+        ctx.fillRect(xc + x, yc - y_rounded + 1, 1, 1);
+        ctx.fillRect(xc - 1 - x, yc - y_rounded + 1, 1, 1);
     }
-    for (let y = 0; y <= r; y++)
+    for (let y = 0; y < endR; y++)
     {
         x = Math.sqrt(r2 - y * y);
         x_rounded = (Math.round(x));
-        ctx.fillRect(xc + x_rounded, yc + y, 1, 1);
-        ctx.fillRect(xc - x_rounded, yc + y, 1, 1);
-        ctx.fillRect(xc + x_rounded, yc - y, 1, 1);
+        ctx.fillRect(xc + x_rounded - 1, yc + y + 1, 1, 1);
+        ctx.fillRect(xc - x_rounded, yc + y + 1, 1, 1);
+        ctx.fillRect(xc + x_rounded - 1, yc - y, 1, 1);
         ctx.fillRect(xc - x_rounded, yc - y, 1, 1);
     }
 }
