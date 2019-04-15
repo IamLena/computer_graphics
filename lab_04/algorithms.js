@@ -1,49 +1,52 @@
+function drawDot(x, y, ctx) {
+    ctx.fillRect(Math.round(x), Math.round(y), 1, 1);
+}
+
 function canon_circle(xc, yc, r, ctx) {
     console.log('canon')
     let x, y;
     let x_rounded, y_rounded;
     let r2 = r * r;
     let endR = Math.sqrt(2) / 2 * r
-    for (let x = 0; x < r; x++)
+
+    for (let x = 0; x <= r; x+=0.01)
     {
         y = Math.sqrt(r2 - x * x);
-        y_rounded = (Math.round(y));
-        ctx.fillRect(xc + x, yc + y_rounded - 1, 1, 1);
-        ctx.fillRect(xc - 1 - x, yc + y_rounded - 1, 1, 1);
-        ctx.fillRect(xc + x, yc - y_rounded, 1, 1);
-        ctx.fillRect(xc - 1 - x, yc - y_rounded, 1, 1);
+        
+        drawDot(xc + x, yc + y, ctx);
+        drawDot(xc - x, yc + y, ctx);
+        drawDot(xc + x, yc - y, ctx);
+        drawDot(xc - x, yc - y, ctx);
     }
-    for (let y = 0; y < r; y++)
+    for (let y = 0; y <= r; y+=0.01)
     {
         x = Math.sqrt(r2 - y * y);
-        x_rounded = (Math.round(x));
-        ctx.fillRect(xc + x_rounded - 1, yc + y, 1, 1);
-        ctx.fillRect(xc - x_rounded, yc + y, 1, 1);
-        ctx.fillRect(xc + x_rounded - 1, yc - y - 1, 1, 1);
-        ctx.fillRect(xc - x_rounded, yc - y - 1, 1, 1);
+
+        drawDot(xc + x, yc + y, ctx);
+        drawDot(xc - x, yc + y, ctx);
+        drawDot(xc + x, yc - y, ctx);
+        drawDot(xc - x, yc - y, ctx);
     }
 }
 
 function param_circle(xc, yc, r, ctx) {
     console.log('param')
-    let d = 1 / r;
+    let d = 1 / r / 10;
     let x, y;
-    let tmp = 0;
-    //M_PI_2
-    // while (tmp <= Math.PI + d)
-    while (tmp <= Math.PI / 2)
+    let tmp = Math.PI / 2;
+    while (tmp <= Math.PI)
     {
-        console.log(tmp, Math.cos(tmp), Math.sin(tmp))
-        x = (Math.round(r * Math.cos(tmp)));
-        y = (Math.round(r * Math.sin(tmp)));
-        ctx.fillRect(xc + x, yc + y, 1, 1);
-        // ctx.fillRect(xc - x, yc + y, 1, 1);
-        // ctx.fillRect(xc + x, yc - y, 1, 1);
-        // ctx.fillRect(xc - x, yc - y, 1, 1);
+        x = (r * Math.cos(tmp));
+        y = (r * Math.sin(tmp));
+
+        drawDot(xc + x, yc + y, ctx);
+        drawDot(xc - x, yc + y, ctx);
+        drawDot(xc + x, yc - y, ctx);
+        drawDot(xc - x, yc - y, ctx);
+
         tmp += d;
     }
 }
-
 
 function bre_circle(xc, yc, r, ctx)
 {
