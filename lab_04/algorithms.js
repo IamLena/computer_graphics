@@ -10,6 +10,7 @@ function canon_circle(xc, yc, r, ctx) {
     let endR = Math.sqrt(2) / 2 * r
 
     for (let x = 0; x <= r; x+=0.01)
+    //for (let x = 0; x <= r; x+=1)
     {
         y = Math.sqrt(r2 - x * x);
         
@@ -19,6 +20,7 @@ function canon_circle(xc, yc, r, ctx) {
         drawDot(xc - x, yc - y, ctx);
     }
     for (let y = 0; y <= r; y+=0.01)
+    // for (let y = 0; y <= r; y+=1)
     {
         x = Math.sqrt(r2 - y * y);
 
@@ -32,8 +34,9 @@ function canon_circle(xc, yc, r, ctx) {
 function param_circle(xc, yc, r, ctx) {
     console.log('param')
     let d = 1 / r / 10;
+    // let d = 1 / r
     let x, y;
-    let tmp = Math.PI / 2;
+    let tmp = Math.PI/2;
     while (tmp <= Math.PI)
     {
         x = (r * Math.cos(tmp));
@@ -186,10 +189,11 @@ function param_ellipse(xc, yc, a, b, ctx)
 {    
     console.log('param')
     let max_r = (a > b) ? a : b;
-    let d = 1.0 / max_r;
+    let d = 1.0 / max_r / 10;
     let x, y;
     let tmp = 0;
-    while (tmp <= Math.PI + d)
+    while (tmp <= Math.PI / 2)
+    //while (tmp <= Math.PI + d)
     {
         x = (Math.round(a * Math.cos(tmp)));
         y = (Math.round(b * Math.sin(tmp)));
@@ -220,15 +224,15 @@ function bre_ellipse(xc, yc, a, b, ctx)
         ctx.fillRect(xc - x, yc - y, 1, 1);
         if (d < 0)
         {
-           d1 = 2 * d + da2 * y - a2;
-           x += 1;
-           if (d1 < 0)
-               d = d + db2 * x + b2;
-           else
-           {
-               y -= 1;
-               d = d + db2 * x - da2 * y + a2 + b2;
-           }
+            d1 = 2 * d + da2 * y - a2;
+            x += 1;
+            if (d1 < 0)
+                d = d + db2 * x + b2;
+            else
+            {
+                y -= 1;
+                d = d + db2 * x - da2 * y + a2 + b2;
+            }
         }
         else if (d == 0)
         {
