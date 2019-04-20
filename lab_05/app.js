@@ -4,7 +4,7 @@ let fillAction = false
 let speed = 15
 let mouseDown = false
 let first
-let last = [0, 0]
+let last
 let dots = []
 
 const slider = document.getElementById("myRange");
@@ -26,6 +26,9 @@ ctx.fillStyle = 'black'
 
 document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
+    first = undefined
+    last = undefined
+    dots = []
 })
 
 $('input[type="radio"]').on('click change', function(e) {
@@ -58,7 +61,6 @@ $('input[id="bgcolor"]').on('change', function(e) {
     canvas.style.backgroundColor = color
 });
 
-console.log(canvas.offsetLeft)
 
 canvas.addEventListener('mousedown', (e) => {
     if (e.which === 1) {
@@ -84,8 +86,7 @@ canvas.addEventListener('mousedown', (e) => {
             mouseDown = true
         }
         if (fillAction) {
-            console.log(findMaxMinY(dots))
-            console.log(dots)
+            fillArea(dots)
         }
     }
     if (e.which === 3) {
@@ -118,13 +119,66 @@ document.addEventListener('mouseup', (e) => {
     mouseDown = false
 });
 
-function findMaxMinY(dots) {
-    let max = dots[0][1]
-    let min = dots[0][1]
-
-    dots.forEach((dot) => {
-        if (dot[1] > max) {max = dot[1]}
-        if (dot[1] < min) {min = dot[1]}
+async function fillArea (dots) {
+    let copyDots = dots.slice()
+    copyDots.sort(function(a, b) {
+        return a[1] - b[1]
     })
-    return [min, max]
+
+    for (let i = 0; i < copyDots.length - 1; i++) {
+        const ymin = copyDots[i][1]
+        const ymax = copyDots[i+1][1]
+        const borderMB = getLine([ymin, ymax])
+        const borderM = borderMB[0]
+
+        let interEdges = []
+        for (let j = 0; j < dots.length - 1; j++) {
+            if ((dots[j][1] <= ymin && dots[j + 1][1] >= ymax) || (dots[j][1] >= ymax && dots[j + 1][1] <= ymin)) {
+                interEdges.push([dots[j], dots[j+1]])
+            }
+        }
+        if ((dots[dots.length - 1][1] <= ymin && dots[0][1] >= ymax) || (dots[dots.length - 1][1] >= ymax && dots[0][1] <= ymin)) {
+            interEdges.push([dots[dots.length - 1], dots[0]])
+        }
+
+        for (let y = ymin; y <= ymax; y += 1) {
+            let interX = []
+            for (let j = 0; j < interEdges.length; j++) {
+                const interMB = getLine(interEdges[j])
+                interX.push((y - interMB[1]) / interMB[0])
+            }
+            interX.sort()
+            for (let j = 0; j < interX.length - 1; j += 2) {
+                fillLine(interX[j], interX[j + 1], y)
+                if (speed != 0) {
+                    await sleep(speed);
+                }
+            }
+        }
+
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getLine(dots) {
+    const x1 = dots[0][0]
+    const y1 = dots[0][1]
+    const x2 = dots[1][0]
+    const y2 = dots[1][1]
+    const m = (y1 - y2)/(x1 - x2)
+    const b = y1 - m * x1
+    return [m, b]
+}
+
+function findIntersection(m, b, y) {
+    return (y - b) / m
+}
+
+function fillLine(x1, x2, y) {
+    for (let x = x1; x < x2; x++) {
+        ctx.fillRect(x, y, 1, 1)
+    }
 }
