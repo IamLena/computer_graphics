@@ -3,8 +3,9 @@ let lineAction = false
 let fillAction = false
 let speed = 15
 let mouseDown = false
-let firstdot
-let dot = [0, 0]
+let first
+let last = [0, 0]
+let dots = []
 
 const slider = document.getElementById("myRange");
 let output = document.getElementById("demo");
@@ -64,50 +65,66 @@ canvas.addEventListener('mousedown', (e) => {
         if (lineAction) {
             let x = e.offsetX
             let y = e.offsetY;
-            if (firstdot == undefined) {
-                firstdot = [x, y]
+            if (first == undefined) {
+                dots = []
+                first = [x, y]
                 ctx.fillRect(x, y, 1, 1)
-                dot = [x, y]
+                last = [x, y]
             }
-            ctx.beginPath()
-            ctx.moveTo(dot[0], dot[1])
-            ctx.lineTo(x, y)
-            ctx.stroke()
-            dot = [x, y]
-            console.log(x)
-            console.log(y)
+            else {
+                ctx.beginPath()
+                ctx.moveTo(last[0], last[1])
+                ctx.lineTo(x, y)
+                ctx.stroke()
+                last = [x, y]
+            }
+            dots.push([x, y])
         }
         if (pencilAction) {
             mouseDown = true
         }
+        if (fillAction) {
+            console.log(findMaxMinY(dots))
+            console.log(dots)
+        }
     }
     if (e.which === 3) {
-        if (firstdot) {
+        if (first) {
             ctx.beginPath()
-            ctx.moveTo(dot[0], dot[1])
-            ctx.lineTo(firstdot[0], firstdot[1])
+            ctx.moveTo(last[0], last[1])
+            ctx.lineTo(first[0], first[1])
             ctx.stroke()
-            firstdot = undefined
+            first = undefined
         }
-            
     }
 });
 canvas.addEventListener('mousemove', (e) => {
     if (mouseDown && pencilAction) {
         let x = e.offsetX
             let y = e.offsetY;
-            if (firstdot == undefined) {
-                firstdot = [x, y]
+            if (first == undefined) {
+                first = [x, y]
                 ctx.fillRect(x, y, 1, 1)
-                dot = [x, y]
+                last = [x, y]
             }
             ctx.beginPath()
-            ctx.moveTo(dot[0], dot[1])
+            ctx.moveTo(last[0], last[1])
             ctx.lineTo(x, y)
             ctx.stroke()
-            dot = [x, y]
+            last = [x, y]
     }
 });
 document.addEventListener('mouseup', (e) => {
     mouseDown = false
 });
+
+function findMaxMinY(dots) {
+    let max = dots[0][1]
+    let min = dots[0][1]
+
+    dots.forEach((dot) => {
+        if (dot[1] > max) {max = dot[1]}
+        if (dot[1] < min) {min = dot[1]}
+    })
+    return [min, max]
+}
