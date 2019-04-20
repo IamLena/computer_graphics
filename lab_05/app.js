@@ -47,10 +47,14 @@ $('input[type="radio"]').on('click change', function(e) {
     }
 });
 
-$('input[type="color"]').on('change', function(e) {
+$('input[id="color"]').on('change', function(e) {
     const color = e.target.value;
     ctx.strokeStyle = color
     ctx.fillStyle = color
+});
+$('input[id="bgcolor"]').on('change', function(e) {
+    const color = e.target.value;
+    canvas.style.backgroundColor = color
 });
 
 console.log(canvas.offsetLeft)
@@ -78,12 +82,14 @@ canvas.addEventListener('mousedown', (e) => {
         }
     }
     if (e.which === 3) {
-        console.log('close')
-        ctx.beginPath()
-        ctx.moveTo(dot[0], dot[1])
-        ctx.lineTo(firstdot[0], firstdot[1])
-        ctx.stroke()
-        firstdot = undefined
+        if (firstdot) {
+            ctx.beginPath()
+            ctx.moveTo(dot[0], dot[1])
+            ctx.lineTo(firstdot[0], firstdot[1])
+            ctx.stroke()
+            firstdot = undefined
+        }
+            
     }
 });
 canvas.addEventListener('mousemove', (e) => {

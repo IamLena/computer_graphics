@@ -28,10 +28,16 @@
                         <input type="radio" name="action" id="fill" autocomplete="off"> Fill
                     </label>
                 </div>
-                <label class="btn btn-secondary fas fa-palette">
+
+                <label class="btn btn-secondary fas fa-palette color">
                     <input type='color' id = "color" value="#000000"></input>
                 </label>
-                <button id = "clean" class="btn btn-secondary fas fa-eraser"></button>
+
+                <button id='clean' class=' btn btn-secondary fas fa-eraser'></button>
+                <label class="btn btn-secondary color bgcolor">
+                    <input id='bgcolor' type='color' value="#ffffff"></input>
+                </label>
+
                 <div class="slidecontainer">
                     <input type="range" min="0" max="30" value="15" class="slider" id="myRange">
                     <p>speed: <span id="demo"></span></p>
