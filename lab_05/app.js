@@ -5,15 +5,16 @@ let speed = 15
 let mouseDown = false
 let first
 let last
-let dots = [[240, 127], [402, 339], [266, 257], [119, 349], [62, 266]]
+let dots = [[200, 100], [200, 200], [100, 200], [100, 100]]
+// [[240, 127], [402, 339], [266, 257], [119, 349], [62, 266]]
 
 
 const slider = document.getElementById("myRange");
 let output = document.getElementById("demo");
-output.innerHTML = slider.value;
+output.innerHTML = `${slider.value} ms`;
 
 slider.oninput = function() {
-  output.innerHTML = this.value;
+  output.innerHTML = `${this.value} ms`;
   speed = this.value
 }
 
@@ -37,8 +38,8 @@ ctx.stroke()
 // ctx.lineTo(500, 257)
 // ctx.stroke()
 
-fillLine(0, 500, 257)
-fillLine(81.20863309352522, 334.75471698113205, 251)
+// fillLine(0, 500, 257)
+// fillLine(81.20863309352522, 334.75471698113205, 251)
 
 
 document.querySelector('#clean').addEventListener('click', (e) => {
@@ -141,40 +142,48 @@ async function fillArea (dots) {
     copyDots.sort(function(a, b) {
         return a[1] - b[1]
     })
-    const tmp = ctx.fillStyle
-    ctx.fillStyle = 'red';
-    copyDots.forEach((dot) => {
-        fillLine(0, 500, dot[1])
-    })
-    ctx.fillStyle = tmp
+    // const tmp = ctx.fillStyle
+    // ctx.fillStyle = 'red';
+    // copyDots.forEach((dot) => {
+    //     fillLine(0, 500, dot[1])
+    // })
+    // ctx.fillStyle = tmp
 
     for (let i = 0; i < copyDots.length - 1; i++) {
         const ymin = copyDots[i][1]
         const ymax = copyDots[i+1][1]
-        const borderMB = getLine([ymin, ymax])
-        const borderM = borderMB[0]
-
-        let interEdges = []
-        for (let j = 0; j < dots.length - 1; j++) {
-            if ((dots[j][1] <= ymin && dots[j + 1][1] >= ymax) || (dots[j][1] >= ymax && dots[j + 1][1] <= ymin)) {
-                interEdges.push([dots[j], dots[j+1]])
+        if (ymin != ymax)
+        {
+            const borderMB = getLine([ymin, ymax])
+            const borderM = borderMB[0]
+    
+            let interEdges = []
+            for (let j = 0; j < dots.length - 1; j++) {
+                if ((dots[j][1] <= ymin && dots[j + 1][1] >= ymax) || (dots[j][1] >= ymax && dots[j + 1][1] <= ymin)) {
+                    interEdges.push([dots[j], dots[j+1]])
+                }
             }
-        }
-        if ((dots[dots.length - 1][1] <= ymin && dots[0][1] >= ymax) || (dots[dots.length - 1][1] >= ymax && dots[0][1] <= ymin)) {
-            interEdges.push([dots[dots.length - 1], dots[0]])
-        }
-
-        for (let y = ymin; y <= ymax; y += 1) {
-            let interX = []
-            for (let j = 0; j < interEdges.length; j++) {
-                const interMB = getLine(interEdges[j])
-                interX.push((y - interMB[1]) / interMB[0])
+            if ((dots[dots.length - 1][1] <= ymin && dots[0][1] >= ymax) || (dots[dots.length - 1][1] >= ymax && dots[0][1] <= ymin)) {
+                interEdges.push([dots[dots.length - 1], dots[0]])
             }
-            let sortedX = interX.sort(function(a,b) { return a - b;})
-            for (let j = 0; j < sortedX.length - 1; j += 2) {
-                fillLine(sortedX[j], sortedX[j + 1], y)
-                if (speed != 0) {
-                    await sleep(speed);
+    
+            for (let y = ymin; y <= ymax; y += 1) {
+                let interX = []
+                for (let j = 0; j < interEdges.length; j++) {
+                    if (interEdges[j][0][0] == interEdges[j][1][0]) {
+                        interX.push(interEdges[j][0][0])
+                    }
+                    else {
+                        const interMB = getLine(interEdges[j])
+                        interX.push((y - interMB[1]) / interMB[0])
+                    }
+                }
+                let sortedX = interX.sort(function(a,b) { return a - b;})
+                for (let j = 0; j < sortedX.length - 1; j += 2) {
+                    fillLine(sortedX[j], sortedX[j + 1], y)
+                    if (speed != 0) {
+                        await sleep(speed);
+                    }
                 }
             }
         }
