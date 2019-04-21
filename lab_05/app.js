@@ -167,7 +167,7 @@ async function fillArea (dots) {
                 interEdges.push([dots[dots.length - 1], dots[0]])
             }
     
-            for (let y = ymin; y <= ymax; y += 1) {
+            for (let y = ymin; y < ymax; y += 1) {
                 let interX = []
                 for (let j = 0; j < interEdges.length; j++) {
                     if (interEdges[j][0][0] == interEdges[j][1][0]) {
