@@ -5,7 +5,8 @@ let speed = 15
 let mouseDown = false
 let first
 let last
-let dots = []
+let dots = [[240, 127], [402, 339], [266, 257], [119, 349], [62, 266]]
+
 
 const slider = document.getElementById("myRange");
 let output = document.getElementById("demo");
@@ -22,6 +23,22 @@ const width = canvas.width
 const height = canvas.height
 ctx.strokeStyle = 'black'
 ctx.fillStyle = 'black'
+
+ctx.beginPath()
+ctx.moveTo(dots[0], dots[1])
+dots.forEach((dot) => { 
+    ctx.lineTo(dot[0], dot[1])
+    ctx.stroke()
+})
+ctx.lineTo(dots[0][0], dots[0][1])
+ctx.stroke()
+
+// ctx.moveTo(0, 257)
+// ctx.lineTo(500, 257)
+// ctx.stroke()
+
+fillLine(0, 500, 257)
+fillLine(81.20863309352522, 334.75471698113205, 251)
 
 
 document.querySelector('#clean').addEventListener('click', (e) => {
@@ -124,6 +141,12 @@ async function fillArea (dots) {
     copyDots.sort(function(a, b) {
         return a[1] - b[1]
     })
+    const tmp = ctx.fillStyle
+    ctx.fillStyle = 'red';
+    copyDots.forEach((dot) => {
+        fillLine(0, 500, dot[1])
+    })
+    ctx.fillStyle = tmp
 
     for (let i = 0; i < copyDots.length - 1; i++) {
         const ymin = copyDots[i][1]
@@ -147,9 +170,9 @@ async function fillArea (dots) {
                 const interMB = getLine(interEdges[j])
                 interX.push((y - interMB[1]) / interMB[0])
             }
-            interX.sort()
-            for (let j = 0; j < interX.length - 1; j += 2) {
-                fillLine(interX[j], interX[j + 1], y)
+            let sortedX = interX.sort(function(a,b) { return a - b;})
+            for (let j = 0; j < sortedX.length - 1; j += 2) {
+                fillLine(sortedX[j], sortedX[j + 1], y)
                 if (speed != 0) {
                     await sleep(speed);
                 }
