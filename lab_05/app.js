@@ -179,6 +179,6 @@ function findIntersection(m, b, y) {
 
 function fillLine(x1, x2, y) {
     for (let x = x1; x < x2; x++) {
-        ctx.fillRect(x, y, 1, 1)
+        ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
     }
 }
