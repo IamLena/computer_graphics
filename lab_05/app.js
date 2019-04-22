@@ -2,10 +2,13 @@ let pencilAction = true
 let lineAction = false
 let fillAction = false
 let speed = 15
+let backgroundColor = [255, 255, 255]
+let strokeColor = [0, 0,0]
 let mouseDown = false
 let first
 let last
-let dots = [[200, 100], [200, 200], [100, 200], [100, 100]]
+let dots 
+//[[200, 100], [200, 200], [100, 200], [100, 100]]
 // [[240, 127], [402, 339], [266, 257], [119, 349], [62, 266]]
 
 
@@ -22,31 +25,27 @@ const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 const width = canvas.width
 const height = canvas.height
-ctx.strokeStyle = 'black'
-ctx.fillStyle = 'black'
+ctx.strokeStyle = rgbSTR(strokeColor)
+ctx.fillStyle = rgbSTR(backgroundColor)
 
-ctx.beginPath()
-ctx.moveTo(dots[0], dots[1])
-dots.forEach((dot) => { 
-    ctx.lineTo(dot[0], dot[1])
-    ctx.stroke()
-})
-ctx.lineTo(dots[0][0], dots[0][1])
-ctx.stroke()
+ctx.fillRect(0, 0, width, height)
 
-// ctx.moveTo(0, 257)
-// ctx.lineTo(500, 257)
+// ctx.beginPath()
+// ctx.moveTo(dots[0], dots[1])
+// dots.forEach((dot) => { 
+//     ctx.lineTo(dot[0], dot[1])
+//     ctx.stroke()
+// })
+// ctx.lineTo(dots[0][0], dots[0][1])
 // ctx.stroke()
-
-// fillLine(0, 500, 257)
-// fillLine(81.20863309352522, 334.75471698113205, 251)
-
 
 document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
     first = undefined
     last = undefined
     dots = []
+    ctx.fillStyle = rgbSTR(backgroundColor)
+    ctx.fillRect(0, 0, width, height)
 })
 
 $('input[type="radio"]').on('click change', function(e) {
@@ -70,15 +69,22 @@ $('input[type="radio"]').on('click change', function(e) {
 });
 
 $('input[id="color"]').on('change', function(e) {
-    const color = e.target.value;
+    const colorRGB = HEXtoRGB(e.target.value)
+    color = rgbSTR(colorRGB)
     ctx.strokeStyle = color
     ctx.fillStyle = color
+    strokeColor = colorRGB
 });
 $('input[id="bgcolor"]').on('change', function(e) {
-    const color = e.target.value;
+    const colorRGB = HEXtoRGB(e.target.value)
+    color = rgbSTR(colorRGB)
     canvas.style.backgroundColor = color
+    backgroundColor = colorRGB
 });
 
+function rgbSTR(colorRGB) {
+    return "rgb(" + colorRGB[0] + "," + colorRGB[1] + "," + colorRGB[2] + ")"
+}
 
 canvas.addEventListener('mousedown', (e) => {
     if (e.which === 1) {
@@ -104,7 +110,8 @@ canvas.addEventListener('mousedown', (e) => {
             mouseDown = true
         }
         if (fillAction) {
-            fillArea(dots)
+            //fillArea(dots)
+            fillAreaEdges(dots)
         }
     }
     if (e.which === 3) {
@@ -191,8 +198,87 @@ async function fillArea (dots) {
     }
 }
 
+async function fillAreaEdges (dots) {
+    let edges = makeEdges(dots)
+    for (let i = 0; i < edges.length; i++) {
+        await fillEdge(edges[i])
+    }
+}
+
+async function fillEdge(edge) {
+    if (edge[0][1] != edge[1][1]) {
+        let y = edge[0][1]
+        let yn = y
+        let yend = edge[1][1]
+        let x = edge[0][0]
+        let dx
+
+        if (edge[0][0] == edge[1][0]) {
+            dx = 0
+        }
+        else {
+            const mb = getLine(edge)
+            m = mb[0]
+            dx = 1 / m
+            b = mb[1]
+        }
+
+        // while (y != yend) {
+        //     fillLine(x, 500, y)
+        //     await sleep(speed)
+        // }
+
+        var timerId  = setTimeout(async function run() {
+            if (y === yend) {clearTimeout(timerId);}
+            else {
+                //fillLine(x, 500, y)
+                fillLineReverse(x, 500, y)
+                x += dx
+                y += 1
+                setTimeout(run, speed);
+            }
+            //await sleep()
+        }, speed);
+        await sleep(speed * (yend - yn) + 1000)
+    }
+}
+
+function fillLineReverse(x1, x2, y) {
+    for (let x = x1; x < x2; x++) {
+        reverseColor(Math.round(x), Math.round(y))
+        ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
+    }
+}
+
+function reverseColor(x, y) {
+    let curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
+    if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
+        ctx.fillStyle = rgbSTR(backgroundColor)
+        console.log(ctx.fillStyle)
+    }
+    else {
+        ctx.fillStyle = rgbSTR(strokeColor)
+    }
+}
+
+function makeEdges(dots) {
+    let edges = []
+    for (let i = 0; i < dots.length -1; i++) {
+        if (dots[i][1] < dots[i + 1][1]) {
+            edges.push([dots[i], dots[i+1]])
+        }
+        else {edges.push([dots[i+1], dots[i]])}
+    }
+    if (dots[dots.length - 1] < dots[0][1]) {
+        edges.push([dots[dots.length - 1], dots[0]])
+    }
+    else {edges.push([dots[0], dots[dots.length - 1]])}
+
+    return edges
+}
+
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function getLine(dots) {
@@ -213,4 +299,19 @@ function fillLine(x1, x2, y) {
     for (let x = x1; x < x2; x++) {
         ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
     }
+}
+
+HEXtoRGB = function(hex, intensity) {
+    hex = hex.split('')
+    
+    var r,g,b,h,s,v;
+    r = "0x" + hex[1] + hex[2];
+    g = "0x" + hex[3] + hex[4];
+    b = "0x" + hex[5] + hex[6];
+
+    r = parseInt(r)
+    g = parseInt(g)
+    b = parseInt(b)
+    
+    return [r, g, b]
 }
