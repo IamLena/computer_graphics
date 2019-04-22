@@ -138,6 +138,7 @@ canvas.addEventListener('mousemove', (e) => {
             ctx.lineTo(x, y)
             ctx.stroke()
             last = [x, y]
+            dots.push([x, y])
     }
 });
 document.addEventListener('mouseup', (e) => {
