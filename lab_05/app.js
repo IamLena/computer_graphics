@@ -224,23 +224,25 @@ async function fillEdge(edge) {
             b = mb[1]
         }
 
-        // while (y != yend) {
-        //     fillLine(x, 500, y)
-        //     await sleep(speed)
-        // }
+        while (y != yend) {
+            fillLineReverse(x, 500, y)
+            x += dx
+            y += 1
+            await sleep(speed)
+        }
 
-        var timerId  = setTimeout(async function run() {
-            if (y === yend) {clearTimeout(timerId);}
-            else {
-                //fillLine(x, 500, y)
-                fillLineReverse(x, 500, y)
-                x += dx
-                y += 1
-                setTimeout(run, speed);
-            }
-            //await sleep()
-        }, speed);
-        await sleep(speed * (yend - yn) + 1000)
+        // var timerId  = setTimeout(async function run() {
+        //     if (y === yend) {clearTimeout(timerId);}
+        //     else {
+        //         //fillLine(x, 500, y)
+        //         fillLineReverse(x, 500, y)
+        //         x += dx
+        //         y += 1
+        //         setTimeout(run, speed);
+        //     }
+        //     //await sleep()
+        // }, speed);
+        // await sleep(speed * (yend - yn) + 1000)
     }
 }
 
@@ -252,6 +254,7 @@ function fillLineReverse(x1, x2, y) {
 }
 
 function reverseColor(x, y) {
+    // фигура поверх другой
     let curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
     if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
         ctx.fillStyle = rgbSTR(backgroundColor)
