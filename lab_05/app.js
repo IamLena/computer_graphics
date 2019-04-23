@@ -1,5 +1,5 @@
-let pencilAction = true
-let lineAction = false
+let pencilAction = false
+let lineAction = true
 let fillAction = false
 let speed = 15
 let backgroundColor = [255, 255, 255]
@@ -7,10 +7,7 @@ let strokeColor = [0, 0,0]
 let mouseDown = false
 let first
 let last
-let dots 
-//[[200, 100], [200, 200], [100, 200], [100, 100]]
-// [[240, 127], [402, 339], [266, 257], [119, 349], [62, 266]]
-
+let dots = []
 
 const slider = document.getElementById("myRange");
 let output = document.getElementById("demo");
@@ -30,15 +27,6 @@ ctx.fillStyle = rgbSTR(backgroundColor)
 
 ctx.fillRect(0, 0, width, height)
 
-// ctx.beginPath()
-// ctx.moveTo(dots[0], dots[1])
-// dots.forEach((dot) => { 
-//     ctx.lineTo(dot[0], dot[1])
-//     ctx.stroke()
-// })
-// ctx.lineTo(dots[0][0], dots[0][1])
-// ctx.stroke()
-
 document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
     first = undefined
@@ -48,18 +36,24 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.fillRect(0, 0, width, height)
 })
 
-$('input[type="radio"]').on('click change', function(e) {
+$('input[type="radio"]').on('change', function(e) {
     console.log(e.target.id);
     const action = e.target.id
     if (action === 'pencil') {
         pencilAction = true
         lineAction = false
         fillAction = false
+        first = undefined
+        last = undefined
+        dots = []
     }
     else if (action === 'line') {
         pencilAction = false
         lineAction = true
         fillAction = false
+        first = undefined
+        last = undefined
+        dots = []
     }
     else {
         pencilAction = false
@@ -254,11 +248,12 @@ function fillLineReverse(x1, x2, y) {
 }
 
 function reverseColor(x, y) {
-    // фигура поверх другой
-    let curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
+    // let curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
+    // let newColor = [255 - curColor[0], 255 - curColor[1], 255 - curColor[2]]
+    // ctx.fillStyle = rgbSTR(newColor)
+
     if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
         ctx.fillStyle = rgbSTR(backgroundColor)
-        console.log(ctx.fillStyle)
     }
     else {
         ctx.fillStyle = rgbSTR(strokeColor)
