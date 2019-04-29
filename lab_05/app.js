@@ -7,6 +7,7 @@ let strokeColor = [0, 0,0]
 let mouseDown = false
 let first
 let last
+let edges = []
 let dots = []
 
 const slider = document.getElementById("myRange");
@@ -30,6 +31,7 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     first = undefined
     last = undefined
     dots = []
+    edges = []
     ctx.fillStyle = rgbSTR(backgroundColor)
     ctx.fillRect(0, 0, width, height)
 })
@@ -40,17 +42,11 @@ $('input[type="radio"]').on('change', function(e) {
         pencilAction = true
         lineAction = false
         fillAction = false
-        first = undefined
-        last = undefined
-        dots = []
     }
     else if (action === 'line') {
         pencilAction = false
         lineAction = true
         fillAction = false
-        first = undefined
-        last = undefined
-        dots = []
     }
     else {
         pencilAction = false
@@ -65,7 +61,6 @@ $('input[id="color"]').on('change', function(e) {
 
     const color = rgbSTR(colorRGB)
     ctx.strokeStyle = color
-    // ctx.fillStyle = color
 });
 $('input[id="bgcolor"]').on('change', function(e) {
     const colorRGB = HEXtoRGB(e.target.value)
@@ -82,7 +77,6 @@ canvas.addEventListener('mousedown', (e) => {
             let x = e.offsetX
             let y = e.offsetY;
             if (first === undefined) {
-                dots = []
                 first = [x, y]
                 ctx.fillRect(x, y, 1, 1)
                 last = [x, y]
@@ -92,6 +86,12 @@ canvas.addEventListener('mousedown', (e) => {
                 ctx.moveTo(last[0], last[1])
                 ctx.lineTo(x, y)
                 ctx.stroke()
+                if (last[1] > y) {
+                    edges.push([[x, y], [last[0], last[1]]])
+                }
+                else {
+                    edges.push([[last[0], last[1]], [x, y]])
+                }
                 last = [x, y]
             }
             dots.push([x, y])
@@ -108,6 +108,12 @@ canvas.addEventListener('mousedown', (e) => {
             ctx.beginPath()
             ctx.moveTo(last[0], last[1])
             ctx.lineTo(first[0], first[1])
+            if (last[1] > first[1]) {
+                edges.push([[first[0], first[1]], [last[0], last[1]]])
+            }
+            else {
+                edges.push([[last[0], last[1]], [first[0], first[1]]])
+            }
             ctx.stroke()
             first = undefined
         }
@@ -118,7 +124,7 @@ canvas.addEventListener('mousemove', (e) => {
         let x = e.offsetX
         let y = e.offsetY;
         if (first == undefined) {
-            dots = []
+            // dots = []
             first = [x, y]
             ctx.fillRect(x, y, 1, 1)
             last = [x, y]
@@ -128,6 +134,12 @@ canvas.addEventListener('mousemove', (e) => {
             ctx.moveTo(last[0], last[1])
             ctx.lineTo(x, y)
             ctx.stroke()
+            if (last[1] > y) {
+                edges.push([[x, y], [last[0], last[1]]])
+            }
+            else {
+                edges.push([[last[0], last[1]], [x, y]])
+            }
             last = [x, y]
         }
         dots.push([x, y])
@@ -137,62 +149,8 @@ document.addEventListener('mouseup', (e) => {
     mouseDown = false
 });
 
-async function fillArea (dots) {
-    let copyDots = dots.slice()
-    copyDots.sort(function(a, b) {
-        return a[1] - b[1]
-    })
-    // const tmp = ctx.fillStyle
-    // ctx.fillStyle = 'red';
-    // copyDots.forEach((dot) => {
-    //     fillLine(0, 500, dot[1])
-    // })
-    // ctx.fillStyle = tmp
-
-    for (let i = 0; i < copyDots.length - 1; i++) {
-        const ymin = copyDots[i][1]
-        const ymax = copyDots[i+1][1]
-        if (ymin != ymax)
-        {
-            const borderMB = getLine([ymin, ymax])
-            const borderM = borderMB[0]
-    
-            let interEdges = []
-            for (let j = 0; j < dots.length - 1; j++) {
-                if ((dots[j][1] <= ymin && dots[j + 1][1] >= ymax) || (dots[j][1] >= ymax && dots[j + 1][1] <= ymin)) {
-                    interEdges.push([dots[j], dots[j+1]])
-                }
-            }
-            if ((dots[dots.length - 1][1] <= ymin && dots[0][1] >= ymax) || (dots[dots.length - 1][1] >= ymax && dots[0][1] <= ymin)) {
-                interEdges.push([dots[dots.length - 1], dots[0]])
-            }
-    
-            for (let y = ymin; y < ymax; y += 1) {
-                let interX = []
-                for (let j = 0; j < interEdges.length; j++) {
-                    if (interEdges[j][0][0] == interEdges[j][1][0]) {
-                        interX.push(interEdges[j][0][0])
-                    }
-                    else {
-                        const interMB = getLine(interEdges[j])
-                        interX.push((y - interMB[1]) / interMB[0])
-                    }
-                }
-                let sortedX = interX.sort(function(a,b) { return a - b;})
-                for (let j = 0; j < sortedX.length - 1; j += 2) {
-                    fillLine(sortedX[j], sortedX[j + 1], y)
-                    if (speed != 0) {
-                        await sleep(speed);
-                    }
-                }
-            }
-        }
-
-    }
-}
-
 async function fillAreaEdges (dots) {
-    let edges = makeEdges(dots)
+    //let edges = makeEdges(dots)
     for (let i = 0; i < edges.length; i++) {
         await fillEdge(edges[i])
     }
