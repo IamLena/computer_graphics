@@ -198,7 +198,7 @@ async function fillEdge(edge) {
 }
 
 function fillLineReverse(x1, x2, y) {
-    for (let x = x1; x < x2; x++) {
+    for (let x = x1 + 1; x < x2; x++) {
         reverseColor(Math.round(x), Math.round(y))
         ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
     }
@@ -212,13 +212,16 @@ function reverseColor(x, y) {
     if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
         ctx.fillStyle = rgbSTR(backgroundColor)
     }
-    else {
-        ctx.fillStyle = rgbSTR(strokeColor)
-    }
-
-    // else if (curColor[0] === backgroundColor[0] && curColor[1] === backgroundColor[1] && curColor[2] === backgroundColor[2]){
+    // else {
     //     ctx.fillStyle = rgbSTR(strokeColor)
     // }
+
+    else if (curColor[0] === backgroundColor[0] && curColor[1] === backgroundColor[1] && curColor[2] === backgroundColor[2]){
+        ctx.fillStyle = rgbSTR(strokeColor)
+    }
+    else {
+        ctx.fillStyle = rgbSTR(curColor)
+    }
 }
 
 function sleep(ms) {
