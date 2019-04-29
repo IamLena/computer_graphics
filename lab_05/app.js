@@ -24,11 +24,9 @@ const width = canvas.width
 const height = canvas.height
 ctx.strokeStyle = rgbSTR(strokeColor)
 ctx.fillStyle = rgbSTR(backgroundColor)
-
 ctx.fillRect(0, 0, width, height)
 
 document.querySelector('#clean').addEventListener('click', (e) => {
-    ctx.clearRect(0, 0, width, height)
     first = undefined
     last = undefined
     dots = []
@@ -37,7 +35,6 @@ document.querySelector('#clean').addEventListener('click', (e) => {
 })
 
 $('input[type="radio"]').on('change', function(e) {
-    console.log(e.target.id);
     const action = e.target.id
     if (action === 'pencil') {
         pencilAction = true
@@ -64,15 +61,14 @@ $('input[type="radio"]').on('change', function(e) {
 
 $('input[id="color"]').on('change', function(e) {
     const colorRGB = HEXtoRGB(e.target.value)
-    color = rgbSTR(colorRGB)
-    ctx.strokeStyle = color
-    ctx.fillStyle = color
     strokeColor = colorRGB
+
+    const color = rgbSTR(colorRGB)
+    ctx.strokeStyle = color
+    // ctx.fillStyle = color
 });
 $('input[id="bgcolor"]').on('change', function(e) {
     const colorRGB = HEXtoRGB(e.target.value)
-    color = rgbSTR(colorRGB)
-    canvas.style.backgroundColor = color
     backgroundColor = colorRGB
 });
 
@@ -85,7 +81,7 @@ canvas.addEventListener('mousedown', (e) => {
         if (lineAction) {
             let x = e.offsetX
             let y = e.offsetY;
-            if (first == undefined) {
+            if (first === undefined) {
                 dots = []
                 first = [x, y]
                 ctx.fillRect(x, y, 1, 1)
@@ -104,7 +100,6 @@ canvas.addEventListener('mousedown', (e) => {
             mouseDown = true
         }
         if (fillAction) {
-            //fillArea(dots)
             fillAreaEdges(dots)
         }
     }
@@ -121,18 +116,21 @@ canvas.addEventListener('mousedown', (e) => {
 canvas.addEventListener('mousemove', (e) => {
     if (mouseDown && pencilAction) {
         let x = e.offsetX
-            let y = e.offsetY;
-            if (first == undefined) {
-                first = [x, y]
-                ctx.fillRect(x, y, 1, 1)
-                last = [x, y]
-            }
+        let y = e.offsetY;
+        if (first == undefined) {
+            dots = []
+            first = [x, y]
+            ctx.fillRect(x, y, 1, 1)
+            last = [x, y]
+        }
+        else {
             ctx.beginPath()
             ctx.moveTo(last[0], last[1])
             ctx.lineTo(x, y)
             ctx.stroke()
             last = [x, y]
-            dots.push([x, y])
+        }
+        dots.push([x, y])
     }
 });
 document.addEventListener('mouseup', (e) => {
@@ -200,66 +198,6 @@ async function fillAreaEdges (dots) {
     }
 }
 
-async function fillEdge(edge) {
-    if (edge[0][1] != edge[1][1]) {
-        let y = edge[0][1]
-        let yn = y
-        let yend = edge[1][1]
-        let x = edge[0][0]
-        let dx
-
-        if (edge[0][0] == edge[1][0]) {
-            dx = 0
-        }
-        else {
-            const mb = getLine(edge)
-            m = mb[0]
-            dx = 1 / m
-            b = mb[1]
-        }
-
-        while (y != yend) {
-            fillLineReverse(x, 500, y)
-            x += dx
-            y += 1
-            await sleep(speed)
-        }
-
-        // var timerId  = setTimeout(async function run() {
-        //     if (y === yend) {clearTimeout(timerId);}
-        //     else {
-        //         //fillLine(x, 500, y)
-        //         fillLineReverse(x, 500, y)
-        //         x += dx
-        //         y += 1
-        //         setTimeout(run, speed);
-        //     }
-        //     //await sleep()
-        // }, speed);
-        // await sleep(speed * (yend - yn) + 1000)
-    }
-}
-
-function fillLineReverse(x1, x2, y) {
-    for (let x = x1; x < x2; x++) {
-        reverseColor(Math.round(x), Math.round(y))
-        ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
-    }
-}
-
-function reverseColor(x, y) {
-    // let curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
-    // let newColor = [255 - curColor[0], 255 - curColor[1], 255 - curColor[2]]
-    // ctx.fillStyle = rgbSTR(newColor)
-
-    if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
-        ctx.fillStyle = rgbSTR(backgroundColor)
-    }
-    else {
-        ctx.fillStyle = rgbSTR(strokeColor)
-    }
-}
-
 function makeEdges(dots) {
     let edges = []
     for (let i = 0; i < dots.length -1; i++) {
@@ -276,28 +214,57 @@ function makeEdges(dots) {
     return edges
 }
 
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+async function fillEdge(edge) {
+    if (edge[0][1] != edge[1][1]) {
+        let y = edge[0][1]
+        let yn = y
+        let yend = edge[1][1]
+        let x = edge[0][0]
+        let dx
+
+        if (edge[0][0] == edge[1][0]) {
+            dx = 0
+        }
+        else {
+            const m = (edge[1][1] - edge[0][1]) / (edge[1][0] - edge[0][0])
+            dx = 1 / m
+        }
+
+        while (y != yend) {
+            fillLineReverse(x, width, y)
+            x += dx
+            y += 1
+            await sleep(speed)
+        }
+    }
 }
 
-function getLine(dots) {
-    const x1 = dots[0][0]
-    const y1 = dots[0][1]
-    const x2 = dots[1][0]
-    const y2 = dots[1][1]
-    const m = (y1 - y2)/(x1 - x2)
-    const b = y1 - m * x1
-    return [m, b]
-}
-
-function findIntersection(m, b, y) {
-    return (y - b) / m
-}
-
-function fillLine(x1, x2, y) {
+function fillLineReverse(x1, x2, y) {
     for (let x = x1; x < x2; x++) {
+        reverseColor(Math.round(x), Math.round(y))
         ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
     }
+}
+
+function reverseColor(x, y) {
+    const curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
+    // let newColor = [255 - curColor[0], 255 - curColor[1], 255 - curColor[2]]
+    // ctx.fillStyle = rgbSTR(newColor)
+
+    if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
+        ctx.fillStyle = rgbSTR(backgroundColor)
+    }
+    else {
+        ctx.fillStyle = rgbSTR(strokeColor)
+    }
+
+    // else if (curColor[0] === backgroundColor[0] && curColor[1] === backgroundColor[1] && curColor[2] === backgroundColor[2]){
+    //     ctx.fillStyle = rgbSTR(strokeColor)
+    // }
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 HEXtoRGB = function(hex, intensity) {
