@@ -3,6 +3,7 @@ let lineAction = true
 let fillAction = false
 let speed = 15
 let backgroundColor = [255, 255, 255]
+let curBackGround = [255, 255, 255]
 let strokeColor = [0, 0,0]
 let mouseDown = false
 let first
@@ -33,6 +34,7 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     dots = []
     edges = []
     ctx.fillStyle = rgbSTR(backgroundColor)
+    curBackGround = backgroundColor
     ctx.fillRect(0, 0, width, height)
 })
 
@@ -100,7 +102,7 @@ canvas.addEventListener('mousedown', (e) => {
             mouseDown = true
         }
         if (fillAction) {
-            fillAreaEdges(edges, backgroundColor, strokeColor)
+            fillAreaEdges(edges, curBackGround, strokeColor)
         }
     }
     if (e.which === 3) {
