@@ -12,10 +12,10 @@ let dots = []
 
 const slider = document.getElementById("myRange");
 let output = document.getElementById("demo");
-output.innerHTML = `${slider.value} ms`;
+output.innerHTML = `${slider.value} мс`;
 
 slider.oninput = function() {
-  output.innerHTML = `${this.value} ms`;
+  output.innerHTML = `${this.value} мс`;
   speed = this.value
 }
 
@@ -100,7 +100,7 @@ canvas.addEventListener('mousedown', (e) => {
             mouseDown = true
         }
         if (fillAction) {
-            fillAreaEdges(dots)
+            fillAreaEdges(edges, backgroundColor, strokeColor)
         }
     }
     if (e.which === 3) {
@@ -149,30 +149,13 @@ document.addEventListener('mouseup', (e) => {
     mouseDown = false
 });
 
-async function fillAreaEdges (dots) {
-    //let edges = makeEdges(dots)
+async function fillAreaEdges (edges, backgroundColor, strokeColor) {
     for (let i = 0; i < edges.length; i++) {
-        await fillEdge(edges[i])
+        await fillEdge(edges[i], backgroundColor, strokeColor)
     }
 }
 
-function makeEdges(dots) {
-    let edges = []
-    for (let i = 0; i < dots.length -1; i++) {
-        if (dots[i][1] < dots[i + 1][1]) {
-            edges.push([dots[i], dots[i+1]])
-        }
-        else {edges.push([dots[i+1], dots[i]])}
-    }
-    if (dots[dots.length - 1] < dots[0][1]) {
-        edges.push([dots[dots.length - 1], dots[0]])
-    }
-    else {edges.push([dots[0], dots[dots.length - 1]])}
-
-    return edges
-}
-
-async function fillEdge(edge) {
+async function fillEdge(edge, backgroundColor, strokeColor) {
     if (edge[0][1] != edge[1][1]) {
         let y = edge[0][1]
         let yn = y
@@ -189,7 +172,7 @@ async function fillEdge(edge) {
         }
 
         while (y != yend) {
-            fillLineReverse(x, width, y)
+            fillLineReverse(x, width, y, backgroundColor, strokeColor)
             x += dx
             y += 1
             await sleep(speed)
@@ -197,25 +180,19 @@ async function fillEdge(edge) {
     }
 }
 
-function fillLineReverse(x1, x2, y) {
+function fillLineReverse(x1, x2, y, backgroundColor, strokeColor) {
     for (let x = x1 + 1; x < x2; x++) {
-        reverseColor(Math.round(x), Math.round(y))
+        reverseColor(Math.round(x), Math.round(y), backgroundColor, strokeColor)
         ctx.fillRect(Math.round(x), Math.round(y), 1, 1)
     }
 }
 
-function reverseColor(x, y) {
+function reverseColor(x, y, backgroundColor, strokeColor) {
     const curColor = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data
-    // let newColor = [255 - curColor[0], 255 - curColor[1], 255 - curColor[2]]
-    // ctx.fillStyle = rgbSTR(newColor)
 
     if (curColor[0] === strokeColor[0] && curColor[1] === strokeColor[1] && curColor[2] === strokeColor[2]) {
         ctx.fillStyle = rgbSTR(backgroundColor)
     }
-    // else {
-    //     ctx.fillStyle = rgbSTR(strokeColor)
-    // }
-
     else if (curColor[0] === backgroundColor[0] && curColor[1] === backgroundColor[1] && curColor[2] === backgroundColor[2]){
         ctx.fillStyle = rgbSTR(strokeColor)
     }
