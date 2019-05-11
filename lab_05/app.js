@@ -178,7 +178,7 @@ async function fillEdge(edge, backgroundColor, strokeColor) {
             x += dx
             y += 1
             await sleep(speed)
-        }
+        
     }
 }
 

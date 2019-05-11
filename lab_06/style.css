@@ -4,9 +4,13 @@
     }
 }
 
+body {
+    background-color: black;
+}
+
 .btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
     color: #fff;
-    background-color: #1b78d6;
+    background-color: #201e97;
     border-color: #414549;
 }
 
@@ -19,7 +23,7 @@
 }
 .container {
     border: 2px solid black;
-    background-color: lightgreen;
+    background-color: white;
     padding: 20px;
     width: 100%;
 }
@@ -29,6 +33,10 @@ canvas {
     background-color: white;
 }
 
+.btn-group-toggle {
+    margin-bottom: 10px;
+}
+
 .media-body {
     margin: 15px;
 }
@@ -36,6 +44,7 @@ canvas {
 .btn {
     margin: 4px;
     cursor: pointer;
+    background-color: #141416;
 }
 
 .slidecontainer {
@@ -47,7 +56,7 @@ canvas {
     width: 100%;
     height: 15px;
     border-radius: 5px;
-    background: white;
+    background: black;
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
@@ -64,7 +73,7 @@ canvas {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #1b78d6;
+    background: #201e97;
     cursor: pointer;
 }
   
@@ -72,6 +81,18 @@ canvas {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #1b78d6;
+    background: #201e97;
     cursor: pointer;
+}
+
+input[type="color"] {
+	opacity: 0;
+	display: block;
+	width: 32px;
+	
+}
+.color-wrapper {
+    float: left;
+    margin-right: 4px;
+    border: 1px solid white;
 }
