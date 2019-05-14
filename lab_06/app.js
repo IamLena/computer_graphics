@@ -93,7 +93,7 @@ canvas.addEventListener('mousedown', (e) => {
             mouseDown = true
         }
         if (fillAction) {
-            fillArea([x, y], fillColor, backgroundColor)
+            fillArea([x, y], fillColor, borderColor)
         }
     }
     if (e.which === 3) {
@@ -123,7 +123,7 @@ document.addEventListener('mouseup', (e) => {
     mouseDown = false
 });
 
-async function fillArea (pixel, strokeColor, curBackGround) {
+async function fillArea (pixel, fillColor, borderColor) {
     stack.push(pixel)
     while (stack.length != 0) {
         let zatr = stack.pop()
