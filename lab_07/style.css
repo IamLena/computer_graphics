@@ -1,0 +1,27 @@
+@media (max-width: 800px) {
+    .media {
+        display: inline-block;
+    }
+}
+.container {
+    border: 2px solid black;
+    background-color: pink;
+    padding: 20px;
+    width: 100%;
+}
+
+canvas {
+    border: 2px solid black;
+    background-color: white;
+}
+
+input[type="color"] {
+	opacity: 0;
+	display: block;
+    width: 29px;
+    height: 29px;
+}
+.color-wrapper {
+    margin: 4px;
+    border: 1px solid white;
+}
