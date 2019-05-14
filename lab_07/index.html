@@ -23,7 +23,11 @@
                             <input type='color' id = "rectColor" value="#00aa00"></input>
                         </div>
                     </label>
-                    <button type="button" class="btn btn-outline-dark">начертить прямоугольник</button>
+                    <input id="x" class="form-control" placeholder="x">
+                    <input id="y" class="form-control" placeholder="y">
+                    <input id="a" class="form-control" placeholder="a">
+                    <input id="b" class="form-control" placeholder="b">
+                    <button id="drawRect" type="button" class="btn btn-outline-dark">начертить прямоугольник</button>
                 </div>
                 <div>
                     <label>
@@ -31,7 +35,11 @@
                             <input type='color' id = "lineColor" value="#0000aa"></input>
                         </div>
                     </label>
-                    <button type="button" class="btn btn-outline-dark">начертить отрезок</button>
+                    <input id="x1" class="form-control" placeholder="x1">
+                    <input id="y1" class="form-control" placeholder="y1">
+                    <input id="x2" class="form-control" placeholder="x2">
+                    <input id="y2" class="form-control" placeholder="y2">
+                    <button id="drawLine" type="button" class="btn btn-outline-dark">начертить отрезок</button>
                 </div>
                 <div>
                     <label>
@@ -39,8 +47,9 @@
                             <input type='color' id = "cutColor" value="#aa0000"></input>
                         </div>
                     </label>
-                    <button type="button" class="btn btn-outline-dark">отсечь</button>
+                    <button id="cut" type="button" class="btn btn-outline-dark">отсечь</button>
                 </div>
+                <button id="clean" type="button" class="btn btn-outline-dark">очистить</button>
             </div>
             <div class='media-canvas'>
                 <canvas width="500" height="500"></canvas>

@@ -25,3 +25,8 @@ input[type="color"] {
     margin: 4px;
     border: 1px solid white;
 }
+
+.form-control {
+    display: inline;
+    width: 60px;
+}
