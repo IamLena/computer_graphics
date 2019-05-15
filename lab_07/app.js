@@ -101,25 +101,6 @@ document.querySelector('#cut').addEventListener('click', (e) => {
             ctx.stroke()
             ctx.closePath()
         }
-        // if (lineCode == 0) {//inside
-        //     ctx.beginPath()
-        //     ctx.moveTo(line[0], line[1])
-        //     ctx.lineTo(line[2], line[3])
-        //     ctx.stroke()
-        //     ctx.closePath()
-        // }
-        // else if (lineCode == 1) {//cut
-        //     console.log('culc cut')
-        //     findCut(line)
-        //     ctx.beginPath()
-        //     ctx.moveTo(line[0], line[1])
-        //     ctx.lineTo(line[2], line[3])
-        //     ctx.stroke()
-        //     ctx.closePath()
-        // }
-        // else {
-        //     console.log('out')//outside
-        // }
     })
 })
 
@@ -174,40 +155,45 @@ function findCut(line) {
     const m = mb[0]
     const b = mb[1]
 
+    const left = borders[0]
+    const bottom = borders[1]
+    const right = borders[2]
+    const top = borders[3]
+
     let code = getCode(x1, y1)
     if ((code & 8) === 8) {
-        x1 = (borders[3] - b ) / m
-        y1 = borders[3]
+        x1 = (top - b ) / m
+        y1 = top
     }
     if ((code & 4) === 4) {
-        x1 = (borders[1] - b) / m
-        y1 = borders[1]
+        x1 = (bottom - b) / m
+        y1 = bottom
     }
     if ((code & 2) === 2) {
-        y1 = m * borders[2] + b
-        x1 = borders[2]
+        y1 = m * right + b
+        x1 = right
     }
     if ((code & 1) === 1) {
-        y1 = m * borders[0] + b
-        x1 = borders[0]
+        y1 = m * left + b
+        x1 = left
     }
 
     code = getCode(x2, y2)
     if ((code & 8) === 8) {
-        x2 = (borders[3] - b ) / m
-        y2 = borders[3]
+        x2 = (top - b ) / m
+        y2 = top
     }
     if ((code & 4) === 4) {
-        x2 = (borders[1] - b) / m
-        y2 = borders[1]
+        x2 = (bottom - b) / m
+        y2 = bottom
     }
     if ((code & 2) === 2) {
-        y2 = m * borders[2] + b
-        x2 = borders[2]
+        y2 = m * right + b
+        x2 = right
     }
     if ((code & 1) === 1) {
-        y2 = m * borders[0] + b
-        x2 = borders[0]
+        y2 = m * left + b
+        x2 = left
     }
 
     line[0] = x1
