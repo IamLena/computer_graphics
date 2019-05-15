@@ -33,7 +33,7 @@ const yHolder = document.querySelector('#y')
 const aHolder = document.querySelector('#a')
 const bHolder = document.querySelector('#b')
 
-let rectangle = []
+let borders = []
 
 const lineColor = document.querySelector('#lineColor')
 const x1Holder = document.querySelector('#x1')
@@ -42,12 +42,11 @@ const x2Holder = document.querySelector('#x2')
 const y2Holder = document.querySelector('#y2')
 let lines = []
 
-
 const cutColor = document.querySelector('#cutColor')
 
 document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
-    rectangle = []
+    borders = [] //left, bottom, right, top
     lines = []
 })
 
@@ -62,8 +61,7 @@ document.querySelector('#drawRect').addEventListener('click', (e) => {
         ctx.rect(x, y, a, b)
         ctx.stroke()
         ctx.closePath()
-        rectangle.push(x, y, a, b)
-        console.log(rectangle)
+        borders.push(x, y, x + a, y + b)
     }
     else {
         alert('input error')
@@ -93,25 +91,35 @@ document.querySelector('#cut').addEventListener('click', (e) => {
     ctx.strokeStyle = cutColor.value
     lines.forEach((line) => {
         const lineCode = inOut(line)
-        if (lineCode == 0) {//inside
+        if (lineCode != 2) {
+            if (lineCode == 1) {
+                findCut(line)
+            }
             ctx.beginPath()
             ctx.moveTo(line[0], line[1])
             ctx.lineTo(line[2], line[3])
             ctx.stroke()
             ctx.closePath()
         }
-        else if (lineCode == 1) {//cut
-            console.log('culc cut')
-            findCut(line)
-            ctx.beginPath()
-            ctx.moveTo(line[0], line[1])
-            ctx.lineTo(line[2], line[3])
-            ctx.stroke()
-            ctx.closePath()
-        }
-        else {
-            console.log('out')//outside
-        }
+        // if (lineCode == 0) {//inside
+        //     ctx.beginPath()
+        //     ctx.moveTo(line[0], line[1])
+        //     ctx.lineTo(line[2], line[3])
+        //     ctx.stroke()
+        //     ctx.closePath()
+        // }
+        // else if (lineCode == 1) {//cut
+        //     console.log('culc cut')
+        //     findCut(line)
+        //     ctx.beginPath()
+        //     ctx.moveTo(line[0], line[1])
+        //     ctx.lineTo(line[2], line[3])
+        //     ctx.stroke()
+        //     ctx.closePath()
+        // }
+        // else {
+        //     console.log('out')//outside
+        // }
     })
 })
 
@@ -122,12 +130,12 @@ function convertToInt(x) {
     else return parseInt(x)
 }
 
-function getCode(x, y, left, right, top, bottom) {
+function getCode(x, y) {
     let code = 0
-    if (y > top) {code += 8}
-    if (y < bottom) {code += 4}
-    if (x > right) {code += 2}
-    if (x < left) {code += 1}
+    if (y > borders[3]) {code += 8}//top
+    if (y < borders[1]) {code += 4}//bottom
+    if (x > borders[2]) {code += 2}//right
+    if (x < borders[0]) {code += 1}//left
     return code
 }
 
@@ -137,13 +145,8 @@ function inOut(line) {
     const x2 = line[2]
     const y2 = line[3]
 
-    const left = rectangle[0]
-    const bottom = rectangle[1]
-    const right = left + rectangle[2]
-    const top = bottom + rectangle[3]
-
-    let code1 = getCode(x1, y1, left, right, top, bottom)
-    let code2 = getCode(x2, y2, left, right, top, bottom)
+    let code1 = getCode(x1, y1)
+    let code2 = getCode(x2, y2)
 
     console.log(code1, code2)
 
@@ -171,45 +174,40 @@ function findCut(line) {
     const m = mb[0]
     const b = mb[1]
 
-    const left = rectangle[0]
-    const bottom = rectangle[1]
-    const right = left + rectangle[2]
-    const top = bottom + rectangle[3]
-
-    let code = getCode(x1, y1, left, right, top, bottom)
+    let code = getCode(x1, y1)
     if ((code & 8) === 8) {
-        x1 = (top - b ) / m
-        y1 = top
+        x1 = (borders[3] - b ) / m
+        y1 = borders[3]
     }
     if ((code & 4) === 4) {
-        x1 = (bottom - b) / m
-        y1 = bottom
+        x1 = (borders[1] - b) / m
+        y1 = borders[1]
     }
     if ((code & 2) === 2) {
-        y1 = m * right + b
-        x1 = right
+        y1 = m * borders[2] + b
+        x1 = borders[2]
     }
     if ((code & 1) === 1) {
-        y1 = m * left + b
-        x1 = left
+        y1 = m * borders[0] + b
+        x1 = borders[0]
     }
 
-    code = getCode(x2, y2, left, right, top, bottom)
+    code = getCode(x2, y2)
     if ((code & 8) === 8) {
-        x2 = (top - b ) / m
-        y2 = top
+        x2 = (borders[3] - b ) / m
+        y2 = borders[3]
     }
     if ((code & 4) === 4) {
-        x2 = (bottom - b) / m
-        y2 = bottom
+        x2 = (borders[1] - b) / m
+        y2 = borders[1]
     }
     if ((code & 2) === 2) {
-        y2 = m * right + b
-        x2 = right
+        y2 = m * borders[2] + b
+        x2 = borders[2]
     }
     if ((code & 1) === 1) {
-        y2 = m * left + b
-        x2 = left
+        y2 = m * borders[0] + b
+        x2 = borders[0]
     }
 
     line[0] = x1
