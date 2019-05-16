@@ -48,9 +48,11 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
     borders = [] //left, bottom, right, top
     lines = []
+    rectBut.disabled = false
 })
 
-document.querySelector('#drawRect').addEventListener('click', (e) => {
+const rectBut = document.querySelector('#drawRect')
+rectBut.addEventListener('click', (e) => {
     ctx.strokeStyle = rectColor.value
     let x = convertToInt(xHolder.value)
     let y = convertToInt(yHolder.value)
@@ -62,6 +64,7 @@ document.querySelector('#drawRect').addEventListener('click', (e) => {
         ctx.stroke()
         ctx.closePath()
         borders.push(x, y, x + a, y + b)
+        rectBut.disabled = true
     }
     else {
         alert('input error')
