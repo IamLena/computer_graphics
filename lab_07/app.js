@@ -124,16 +124,8 @@ function getCode(x, y) {
 }
 
 function inOut(line) {
-    const x1 = line[0]
-    const y1 = line[1]
-    const x2 = line[2]
-    const y2 = line[3]
-
-    let code1 = getCode(x1, y1)
-    let code2 = getCode(x2, y2)
-
-    console.log(code1, code2)
-
+    const code1 = getCode(line[0], line[1])
+    const code2 = getCode(line[2], line[3])
     if ((code1 == code2) && (code1 == 0)) {
         return 0 // inside
     }
@@ -154,49 +146,66 @@ function findCut(line) {
     let y1 = line[1]
     let x2 = line[2]
     let y2 = line[3]
-    const mb = culcLine(x1, y1, x2, y2)
-    const m = mb[0]
-    const b = mb[1]
 
     const left = borders[0]
     const bottom = borders[1]
     const right = borders[2]
     const top = borders[3]
 
-    let code = getCode(x1, y1)
-    if ((code & 8) === 8) {
-        x1 = (top - b ) / m
-        y1 = top
-    }
-    if ((code & 4) === 4) {
-        x1 = (bottom - b) / m
-        y1 = bottom
-    }
-    if ((code & 2) === 2) {
-        y1 = m * right + b
-        x1 = right
-    }
-    if ((code & 1) === 1) {
-        y1 = m * left + b
-        x1 = left
+    if (x1 == x2) {//vertical
+        if (y1 > top) {y1 = top}
+        else if (y1 < bottom) {y1 = bottom}
+
+        if (y2 > top) {y2 = top}
+        else if (y2 < bottom) {y2 = bottom}
     }
 
-    code = getCode(x2, y2)
-    if ((code & 8) === 8) {
-        x2 = (top - b ) / m
-        y2 = top
+    else if (y1 == y2) {//horizontal
+        if (x1 < left) {x1 = left}
+        else if (x1 > right) {x1 = right}
+
+        if (x2 < left) {x2 = left}
+        else if (x2 > right) {x2 = right}
     }
-    if ((code & 4) === 4) {
-        x2 = (bottom - b) / m
-        y2 = bottom
-    }
-    if ((code & 2) === 2) {
-        y2 = m * right + b
-        x2 = right
-    }
-    if ((code & 1) === 1) {
-        y2 = m * left + b
-        x2 = left
+
+    else {
+        const mb = culcLine(x1, y1, x2, y2)
+        const m = mb[0]
+        const b = mb[1]
+
+        if (y1 > top) {
+            x1 = (top - b ) / m
+            y1 = top
+        }
+        else if (y1 < bottom) {
+            x1 = (bottom - b) / m
+            y1 = bottom
+        }
+        if (x1 > right) {
+            y1 = m * right + b
+            x1 = right
+        }
+        else if (x1 < left) {
+            y1 = m * left + b
+            x1 = left
+        }
+
+        if (y2 > top) {
+            x2 = (top - b ) / m
+            y2 = top
+        }
+        else if (y2 < bottom) {
+            x2 = (bottom - b) / m
+            y2 = bottom
+        }
+        if (x2 > right) {
+            y2 = m * right + b
+            x2 = right
+        }
+        else if (x2 < left) {
+            y2 = m * left + b
+            x2 = left
+        }
     }
 
     line[0] = x1
