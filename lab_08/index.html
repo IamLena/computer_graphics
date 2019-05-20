@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lab_08</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+        <div class="container">
+        <div class="media">
+            <div class="media-body">
+                <h3>Лабораторная №8</h3>
+                <h5>Отсечение отрезков произвольным выпуклым многоугольником</h5>
+                <p>
+                    Для того, чтобы начертить полигон-отсекатель, нажмите <kbd>начертить полигон</kbd>,
+                    и щелчком <kbd>левой кнопки мыши</kbd> по канвасу добавляйте вершины, после чего щелчком <kbd>правой кнопки мыши</kbd> замкните многоугольник.
+                </p>
+                <p>
+                    Для того, чтобы начертить отрезок, нажмите <kbd>начертить отрезок</kbd>, 
+                    и щелчком <kbd>левой кнопки мыши</kbd> по канвасу отметьте начало и конец отрезка.
+                </p>
+                <div>
+                    <label>
+                        <div class="color-wrapper" id="color-wrapper-rect">
+                            <input type='color' id = "rectColor" value="#00aa00"></input>
+                        </div>
+                    </label>
+                    <button id="addDotPolygon" type="button" class="btn btn-outline-dark">начертить полигон</button>
+                </div>
+                <div>
+                    <label>
+                        <div class="color-wrapper" id="color-wrapper-line">
+                            <input type='color' id = "lineColor" value="#0000aa"></input>
+                        </div>
+                    </label>
+                    <button id="drawLine" type="button" class="btn btn-outline-dark">начертить отрезок</button>
+                </div>
+                <div>
+                    <label>
+                        <div class="color-wrapper" id="color-wrapper-cut">
+                            <input type='color' id = "cutColor" value="#aa0000"></input>
+                        </div>
+                    </label>
+                    <button id="cut" type="button" class="btn btn-outline-dark">отсечь</button>
+                </div>
+                <button id="clean" type="button" class="btn btn-outline-dark">очистить</button>
+            </div>
+            <div class='media-canvas'>
+                <canvas width="500" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+</body>
+</html>
