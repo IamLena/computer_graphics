@@ -45,6 +45,7 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     lines = []
     polygon = []
     vertCount = 0
+    polyBut.disabled = false;
 })
 
 const polyBut = document.querySelector('#addDotPolygon')
@@ -105,41 +106,140 @@ function drawLine(x1, y1, x2, y2, color) {
     ctx.closePath()
 }
 
-// document.querySelector('#drawLine').addEventListener('click', (e) => {
-//     ctx.strokeStyle = lineColor.value
-//     let x1 = convertToInt(x1Holder.value)
-//     let y1 = convertToInt(y1Holder.value)
-//     let x2 = convertToInt(x2Holder.value)
-//     let y2 = convertToInt(y2Holder.value)
-//     if (x1 && y1 && x2 && y2) {
-//         lines.push([x1, y1, x2, y2])
-//         ctx.beginPath()
-//         ctx.moveTo(x1, y1)
-//         ctx.lineTo(x2, y2)
-//         ctx.stroke()
-//         ctx.closePath()
-//     }
-//     else {
-//         alert('input error')
-//     }    
-// })
+function scalProVect(v1, v2) {
+    return v1[0]*v2[0] + v1[1]*v2[1]
+}
+
+function normal(vectEdge, obhod) {
+    if (obhod == 1) {
+        return [vectEdge[1], -vectEdge[0]]
+    }
+    return [-vectEdge[1], vectEdge[0]]
+    
+}
+
+function P(line, t) {
+    let x = line[0] + (line[2] - line[0]) * t
+    let y = line[1] + (line[3] - line[1]) * t
+    return [x, y]
+}
+
+function cutLine(line, obhod) {
+    const polyLen = polygon.length
+    let tn = 0
+    let tv = 1
+    let D = getVector([line[0], line[1]], [line[2], line[3]])
+    
+    for (let j = 0; j < polyLen - 1; j++) {
+        let vEdge = getVector(polygon[j], polygon[j+1])
+        let n = normal(vEdge, obhod)
+        let w = getVector(polygon[j], [line[0], line[1]])
+
+        let Ds = scalProVect(n, D)
+        let Ws = scalProVect(w, n)
+
+        if (Ds == 0) { // параллельный или вырожденный
+            if (Ws >= 0) {
+                break // видимый
+            }
+            else {
+                return // невидимый
+            }
+        }
+        let t = - Ws / Ds // пересечение
+        if (Ds > 0) { // направлен внутрь (P2 - внутри)
+            if (t > 1) {
+                return // невидимый
+            }
+            else {
+                tn = tn > t ? tn : t // переносим P1 (если она вне области)
+            }
+        }
+        else { // направлен наружу (Р1 - внутри)
+            if (t < 0) {
+                return // невидимый
+            }
+            else {
+                tv = tv < t ? tv : t // перенесем P2 (если она вне области)
+            }
+        }
+    }
+
+    let vEdge = getVector(polygon[polyLen - 1], polygon[0])
+    let n = normal(vEdge, obhod)
+    let w = getVector(polygon[polyLen - 1], [line[0], line[1]])
+
+    let Ds = scalProVect(n, D)
+    let Ws = scalProVect(w, n)
+
+    if (Ds == 0) { // параллельный или вырожденный
+        if (Ws < 0) {
+           return // невидимый
+        }
+    }
+    else {
+        let t = - Ws / Ds // пересечение
+        if (Ds > 0) { // направлен внутрь (P2 - внутри)
+            if (t > 1) {
+                return // невидимый
+            }
+            else {
+                tn = tn > t ? tn : t // переносим P1 (если она вне области)
+            }
+        }
+        else { // направлен наружу (Р1 - внутри)
+            if (t < 0) {
+                return // невидимый
+            }
+            else {
+                tv = tv < t ? tv : t // перенесем P2 (если она вне области)
+            }
+        }
+    }
+
+    if (tn <= tv) {
+        let dot1 = P(line, tn)
+        let dot2 = P(line, tv)
+        drawLine(dot1[0], dot1[1], dot2[0], dot2[1], CutColor)
+    }       
+}
 
 document.querySelector('#cut').addEventListener('click', (e) => {
-    ctx.strokeStyle = cutColor.value
-    lines.forEach((line) => {
-        const lineCode = inOut(line)
-        if (lineCode != 2) {
-            if (lineCode == 1) {
-                findCut(line)
-            }
-            ctx.beginPath()
-            ctx.moveTo(line[0], line[1])
-            ctx.lineTo(line[2], line[3])
-            ctx.stroke()
-            ctx.closePath()
+    const linesLen = lines.length 
+    let obhod = convex(polygon)
+    if (obhod != 0 && linesLen != 0) {
+        for (let i = 0; i < linesLen; i++) {
+            let line = lines[i]
+            cutLine(line, obhod)
         }
-    })
+    }
 })
+
+function getVector(dot1, dot2) {
+    return [dot2[0]-dot1[0], dot2[1]-dot1[1]]
+}
+
+function getSign(vector1, vector2) {
+    return Math.sign(vector1[0]*vector2[1] - vector1[1]*vector2[0])
+    //z = ax*by - ay*bx
+}
+
+function convex(polygon) {
+    const length = polygon.length
+    let v1 = getVector(polygon[0], polygon[1])
+    let v2 = getVector(polygon[length - 1], polygon[0])
+    let sign = getSign(v1, v2)
+    let tmpSign;
+    for (let i = 1; i < length - 1; i++) {
+        v1 = getVector(polygon[i], polygon[i+1])
+        v2 = getVector(polygon[i-1], polygon[i])
+        tmpSign = getSign(v1, v2)
+        if (tmpSign * sign == -1) {
+            return 0
+        }
+    }
+    return sign
+}
 
 function convertToInt(x) {
     if (isNaN(x) || x == '') {
