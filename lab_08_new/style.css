@@ -122,3 +122,15 @@ a:hover,a:focus{
 .box {
     width: 90%;
 }
+
+#clean {
+    margin-left: 50px;
+}
+
+#verts {
+    width: 90%;
+    height: 100px;
+    margin-top: 10px;
+    background-color: whitesmoke;
+    border: 2px solid #079fc9;
+}

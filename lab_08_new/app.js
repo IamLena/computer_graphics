@@ -41,13 +41,66 @@ let drawPoly = false
 let vertCount = 0
 
 const polyActive = document.querySelector('#polyActive')
+const addVertex = document.querySelector('#addVertex')
+const closePoly = document.querySelector('#closePoly')
+const addLine = document.querySelector("#addLine")
+const vertList = document.querySelector("#vertlist")
+
+const RxHolder = document.querySelector("#Rx")
+const RyHolder = document.querySelector("#Ry")
+const x1Holder = document.querySelector("#Lx1")
+const y1Holder = document.querySelector("#Ly1")
+const x2Holder = document.querySelector("#Lx2")
+const y2Holder = document.querySelector("#Ly2")
 
 document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
     lines = []
     polygon = []
     vertCount = 0
-    polyBut.disabled = false;
+    addVertex.disabled = false;
+    closePoly.disabled = false;
+    vertList.innerText = ''
+})
+
+addVertex.addEventListener('click', (e) => {
+    let x = convertToInt(RxHolder.value)
+    let y = convertToInt(RyHolder.value)
+    if (x && y) {
+        if (vertCount == 0) {
+            ctx.fillStyle = RectColor
+            ctx.fillRect(x, y, 1, 1)
+        }
+        else {
+            drawLine(polygon[vertCount - 1][0], polygon[vertCount - 1][1], x, y, RectColor)
+        }
+        polygon.push([x, y])
+        vertCount += 1
+        vertList.innerText += ` (${x}, ${y});`
+    }
+})
+
+addLine.addEventListener('click', (e) => {
+    let x1 = convertToInt(x1Holder.value)
+    let y1 = convertToInt(y1Holder.value)
+    let x2 = convertToInt(x2Holder.value)
+    let y2 = convertToInt(y2Holder.value)
+
+    if (x1 && y1 && x2 && y2) {
+        if (line.length == 0) {
+            lines.push([x1, y1, x2, y2])
+            drawLine(x1, y1, x2, y2, LineColor)
+        }
+    }
+})
+
+closePoly.addEventListener('click', (e) => {
+    if (vertCount != 0) {
+        drawLine(polygon[vertCount - 1][0], polygon[vertCount - 1][1], polygon[0][0], polygon[0][1], RectColor)
+        drawPoly = false;
+        addVertex.disabled = true;
+        closePoly.disabled = true;
+    }
 })
 
 canvas.addEventListener('mousedown', (e) => {
@@ -64,6 +117,7 @@ canvas.addEventListener('mousedown', (e) => {
             }
             polygon.push([x, y])
             vertCount += 1
+            vertList.innerText += ` (${x}, ${y});`
         }
         else {
             if (line.length == 0) {
@@ -76,15 +130,14 @@ canvas.addEventListener('mousedown', (e) => {
                 drawLine(line[0], line[1], line[2], line[3], LineColor)
                 lines.push(line.slice())
                 line = []
-                drawLineAction = false
             }
         }
     }
     if (e.which === 3) {
         if (vertCount != 0) {
             drawLine(polygon[vertCount - 1][0], polygon[vertCount - 1][1], polygon[0][0], polygon[0][1], RectColor)
-            drawPoly = false;
-            polyBut.disabled = true;
+            addVertex.disabled = true;
+            closePoly.disabled = true;
         }
     }
 });
