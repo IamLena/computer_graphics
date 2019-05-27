@@ -134,3 +134,7 @@ a:hover,a:focus{
     background-color: whitesmoke;
     border: 2px solid #079fc9;
 }
+
+#instructions {
+    font-size: 10pt;
+}
