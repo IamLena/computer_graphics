@@ -152,14 +152,19 @@ function drawLine(x1, y1, x2, y2, color) {
 }
 
 function scalProVect(v1, v2) {
-    return v1[0]*v2[0] + v1[1]*v2[1]
+    let res = v1[0]*v2[0] + v1[1]*v2[1]
+    return res
 }
 
 function normal(vectEdge, obhod) {
+    let res
     if (obhod == 1) {
-        return [vectEdge[1], -vectEdge[0]]
+        res = [vectEdge[1], -vectEdge[0]]
     }
-    return [-vectEdge[1], vectEdge[0]]
+    else {
+        res = [-vectEdge[1], vectEdge[0]]
+    }
+    return res
     
 }
 
@@ -185,7 +190,7 @@ function cutLine(line, obhod) {
 
         if (Ds == 0) { // параллельный или вырожденный
             if (Ws >= 0) {
-                break // видимый
+                continue // видимый
             }
             else {
                 return // невидимый
@@ -261,7 +266,8 @@ document.querySelector('#cut').addEventListener('click', (e) => {
 })
 
 function getVector(dot1, dot2) {
-    return [dot2[0]-dot1[0], dot2[1]-dot1[1]]
+    let res = [dot2[0]-dot1[0], dot2[1]-dot1[1]]
+    return res
 }
 
 function getSign(vector1, vector2) {
