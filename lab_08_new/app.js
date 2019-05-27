@@ -40,6 +40,8 @@ let drawLineAction = false
 let drawPoly = false
 let vertCount = 0
 
+const polyActive = document.querySelector('#polyActive')
+
 document.querySelector('#clean').addEventListener('click', (e) => {
     ctx.clearRect(0, 0, width, height)
     lines = []
@@ -48,21 +50,11 @@ document.querySelector('#clean').addEventListener('click', (e) => {
     polyBut.disabled = false;
 })
 
-const polyBut = document.querySelector('#addDotPolygon')
-polyBut.addEventListener('click', (e) => {
-    drawPoly = true;
-})
-
-const lineBut = document.querySelector('#drawLine')
-lineBut.addEventListener('click', (e) => {
-    drawLineAction = true;
-})
-
 canvas.addEventListener('mousedown', (e) => {
     if (e.which === 1) {
         let x = e.offsetX
         let y = e.offsetY;
-        if (drawPoly) {
+        if (polyActive.classList.length) {
             if (vertCount == 0) {
                 ctx.fillStyle = RectColor
                 ctx.fillRect(x, y, 1, 1)
@@ -73,7 +65,7 @@ canvas.addEventListener('mousedown', (e) => {
             polygon.push([x, y])
             vertCount += 1
         }
-        if (drawLineAction) {
+        else {
             if (line.length == 0) {
                 line.push(x, y)
                 ctx.fillStyle = LineColor
@@ -267,12 +259,6 @@ function inOut(line) {
         return 2 //outside
     }
     return 1 //cut
-}
-
-function culcLine(x1, y1, x2, y2) {
-    const m = (y1 - y2) / (x1 - x2)
-    const b = y1 - m * x1
-    return [m, b]
 }
 
 function findCut(line) {

@@ -28,18 +28,39 @@
                             <div class="tab" role="tabpanel">
                                 <!-- Nav tabs -->
                                 <ul class="nav nav-tabs" role="tablist">
-                                    <li role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab">Отрезок</a></li>
-                                    <li role="presentation"><a href="#Section2" aria-controls="profile" role="tab" data-toggle="tab">Полигон</a></li>
+                                    <li id="polyActive" role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab">Полигон</a></li>
+                                    <li id="lineActive" role="presentation"><a href="#Section2" aria-controls="profile" role="tab" data-toggle="tab">Отрезок</a></li>
                                 </ul>
                                 <!-- Tab panes -->
                                 <div class="tab-content tabs">
                                     <div role="tabpanel" class="tab-pane fade in active" id="Section1">
-                                        <h3>Начертить отрезок</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
+                                        <h3>Начертить полигон</h3>
+                                        <div>
+                                            <label>
+                                                <div class="color-wrapper" id="color-wrapper-rect">
+                                                    <input type='color' id = "rectColor" value="#00aa00"></input>
+                                                </div>
+                                            </label>
+                                            <input class = "inputData" name="Rx" placeholder="x">
+                                            <input class = "inputData" name="Ry" placeholder="y">
+                                            <button id="addDot" type="button" class="btn btn-outline-dark">добавить вершину</button>
+                                            <button id="close" type="button" class="btn btn-outline-dark">замкнуть полигон</button>
+                                        </div>
                                     </div>
                                     <div role="tabpanel" class="tab-pane fade" id="Section2">
-                                        <h3>Начертить полигон</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
+                                        <h3>Начертить отрезок</h3>
+                                        <div>
+                                            <label>
+                                                <div class="color-wrapper" id="color-wrapper-line">
+                                                    <input type='color' id = "lineColor" value="#0000aa"></input>
+                                                </div>
+                                            </label>
+                                            <input class = "inputData" name="Lx1" placeholder="x1">
+                                            <input class = "inputData" name="Ly1" placeholder="y1">
+                                            <input class = "inputData" name="Lx2" placeholder="x2">
+                                            <input class = "inputData" name="Ly2" placeholder="y2">
+                                            <button id="addDotLine" type="button" class="btn btn-outline-dark">начертить отрезок</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -47,26 +68,8 @@
                     </div>
                 </div>
 
-                <div>
-                    <label>
-                        <div class="color-wrapper" id="color-wrapper-rect">
-                            <input type='color' id = "rectColor" value="#00aa00"></input>
-                        </div>
-                    </label>
-                    <input class = "inputData" name="Rx" placeholder="x">
-                    <input class = "inputData" name="Ry" placeholder="y">
-                    <button id="addDot" type="button" class="btn btn-outline-dark">добавить вершину</button>
-                    <button id="close" type="button" class="btn btn-outline-dark">замкнуть полигон</button>
-                    <button id="addDotPolygon" type="button" class="btn btn-outline-dark">начертить полигон</button>
-                </div>
-                <div>
-                    <label>
-                        <div class="color-wrapper" id="color-wrapper-line">
-                            <input type='color' id = "lineColor" value="#0000aa"></input>
-                        </div>
-                    </label>
-                    <button id="drawLine" type="button" class="btn btn-outline-dark">начертить отрезок</button>
-                </div>
+                
+                
                 <div>
                     <label>
                         <div class="color-wrapper" id="color-wrapper-cut">
