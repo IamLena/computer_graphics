@@ -184,23 +184,27 @@ function newCut(line) {
         let code1 = getCodeArr(x1, y1)
         let code2 = getCodeArr(x2, y2)
         if (i < 2) {
-            if (code1[i] == 1) {
-                y1 = m * (borders[i] - x1) + y1
-                x1 = borders[i]
-            }
-            if (code2[i] == 1) {
-                y2 = m * (borders[i] - x2) + y2
-                x2 = borders[i]
+            if (code1[i] ^ code2[i] == 1) {
+                if (code1[i] == 1) {
+                    y1 = m * (borders[i] - x1) + y1
+                    x1 = borders[i]
+                }
+                else {
+                    y2 = m * (borders[i] - x2) + y2
+                    x2 = borders[i]
+                }
             }
         }
         else {
-            if (code1[i] == 1) {
-                if (flag != -1){x1 = (borders[i] - y1) / m + x1}
-                y1 = borders[i]
-            }
-            if (code2[i] == 1) {
-                if (flag != -1){x2 = (borders[i] - y2) / m + x2}
-                y2 = borders[i]
+            if (code1[i] ^ code2[i] == 1) {
+                if (code1[i] == 1) {
+                    if (flag != -1){x1 = (borders[i] - y1) / m + x1}
+                    y1 = borders[i]
+                }
+                else {
+                    if (flag != -1){x2 = (borders[i] - y2) / m + x2}
+                    y2 = borders[i]
+                }
             }
         }
     }
