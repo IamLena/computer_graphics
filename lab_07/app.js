@@ -63,7 +63,27 @@ rectBut.addEventListener('click', (e) => {
         ctx.rect(x, y, a, b)
         ctx.stroke()
         ctx.closePath()
-        borders.push(x, y, x + a, y + b)
+        //borders.push(x, y, x + a, y + b)
+
+        let left, right, bottom, top
+        if (a > 0) {
+            left = x
+            right = x + a
+        }
+        else {
+            left = x + a
+            right = x
+        }
+        if (b > 0) {
+            bottom = y
+            top = y + b
+        }
+        else {
+            bottom = y + b
+            top = y
+        }
+        borders.push(left, bottom, right, top)
+
         rectBut.disabled = true
     }
     else {
