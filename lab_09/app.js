@@ -148,9 +148,9 @@ canvas.addEventListener('mousedown', (e) => {
 
 document.querySelector('#cut').addEventListener('click', (e) => {
     let result = cutPolygon(polygon, cutter)
-    result.forEach((dot) => {
-        vertListR.innerText += ` (${dot[0]}, ${dot[1]});`
-    })
+    for (let i =0; i < result.length - 1; i++) {
+        vertListR.innerText += ` (${result[i][0]}, ${result[i][1]});`
+    }
     let len = result.length
     for (let i = 0; i < len - 1; i++) {
         drawLine(result[i][0], result[i][1], result[i + 1][0], result[i+1][1], CutColor)
@@ -179,28 +179,29 @@ function cutPolygon(polygon, cutter) {
 
                 if (Ds == 0) { // параллельный или вырожденный
                     if (Ws >= 0) {
-                        continue // видимый
+                        cutResult.push(polygon[j+1]) // видимый
                     }
                     else {
-                        return // невидимый
+                        continue // невидимый
                     }
                 }
                 let t = - Ws / Ds // пересечение
                 if (Ds > 0) { // направлен внутрь (P2 - внутри)
                     if (t > 1) {
-                        return // невидимый
+                        continue // невидимый
                     }
                     else {
-                        tn = tn > t ? tn : t // переносим P1 (если она вне области)
-                        if (tn <= tv) {
-                            let dot2 = P(polygon[j], polygon[j+1], tv)
-                            cutResult.push(dot2)
+                        if (t > 0 && t < 1) {
+                            let dot1 = P(polygon[j], polygon[j+1], t)
+                            cutResult.push(dot1)
                         }
+                        let dot2 = P(polygon[j], polygon[j+1], tv)
+                        cutResult.push(dot2)
                     }
                 }
                 else { // направлен наружу (Р1 - внутри)
                     if (t < 0) {
-                        return // невидимый
+                        continue // невидимый
                     }
                     else {
                         tv = tv < t ? tv : t // перенесем P2 (если она вне области)
@@ -212,6 +213,10 @@ function cutPolygon(polygon, cutter) {
                 }
             }
             cutResult.push(cutResult[0])
+            // let len = cutResult.length
+            // for (let i = 0; i < len - 1; i++) {
+            //     drawLine(cutResult[i][0], cutResult[i][1], cutResult[i + 1][0], cutResult[i+1][1], '#f442f4')
+            // }
             polygon = cutResult
         }
     }
@@ -248,6 +253,8 @@ function P(dot1, dot2, t) {
     //x1, y1, x2, y2
     let x = dot1[0] + (dot2[0] - dot1[0]) * t
     let y = dot1[1] + (dot2[1] - dot1[1]) * t
+    x = Math.round(x)
+    y = Math.round(y)
     return [x, y]
 }
 
