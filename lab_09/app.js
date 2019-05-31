@@ -133,6 +133,75 @@ canvas.addEventListener('mousedown', (e) => {
     }
 });
 
+document.querySelector('#cut').addEventListener('click', (e) => {
+    let result = cutPolygon(polygon, cutter)
+    let len = result.length
+    for (let i = 0; i < len - 1; i++) {
+        drawLine(result[i][0], result[i][1], result[i + 1][0], result[i+1][1], cutColor)
+    }
+})
+
+function cutPolygon(polygon, cutter) {
+    let lenP = polygon.length
+    let lenC = cutter.length
+
+    if (lenP > 3 && lenC > 3) {
+        let obhod = convex(cutter);
+        for (let i = 0; i < lenC - 1; i++) {//for cutter edges
+            lenP = polygon.length
+            let cEdge = getVector(cutter[i], cutter[i + 1])
+            let n = normal(cEdge, obhod)
+            let cutResult = []
+            for (let j = 0; j < lenP - 1; j++) {//for polygon edges
+                let tn = 0
+                let tv = 1
+                let pLine = getVector(polygon[j], polygon[j + 1])
+                let w = getVector(cutter[i], polygon[j])
+
+                let Ds = scalProVect(n, pLine)             
+                let Ws = scalProVect(w, n)
+
+                if (Ds == 0) { // параллельный или вырожденный
+                    if (Ws >= 0) {
+                        continue // видимый
+                    }
+                    else {
+                        return // невидимый
+                    }
+                }
+                let t = - Ws / Ds // пересечение
+                if (Ds > 0) { // направлен внутрь (P2 - внутри)
+                    if (t > 1) {
+                        return // невидимый
+                    }
+                    else {
+                        tn = tn > t ? tn : t // переносим P1 (если она вне области)
+                        if (tn <= tv) {
+                            let dot2 = P(polygon[j], polygon[j+1], tv)
+                            cutResult.push(dot2)
+                        }
+                    }
+                }
+                else { // направлен наружу (Р1 - внутри)
+                    if (t < 0) {
+                        return // невидимый
+                    }
+                    else {
+                        tv = tv < t ? tv : t // перенесем P2 (если она вне области)
+                        if (tn <= tv) {
+                            let dot2 = P(polygon[j], polygon[j+1], tv)
+                            cutResult.push(dot2)
+                        }
+                    }
+                }
+            }
+            cutResult.push(cutResult[0])
+            polygon = cutResult
+        }
+    }
+    return polygon
+}
+
 function drawLine(x1, y1, x2, y2, color) {
     ctx.strokeStyle = color
     ctx.beginPath()
@@ -159,9 +228,10 @@ function normal(vectEdge, obhod) {
     
 }
 
-function P(line, t) {
-    let x = line[0] + (line[2] - line[0]) * t
-    let y = line[1] + (line[3] - line[1]) * t
+function P(dot1, dot2, t) {
+    //x1, y1, x2, y2
+    let x = dot1[0] + (dot2[0] - dot1[0]) * t
+    let y = dot1[1] + (dot2[1] - dot1[1]) * t
     return [x, y]
 }
 
@@ -245,16 +315,6 @@ function cutLine(line, obhod) {
     }       
 }
 
-document.querySelector('#cut').addEventListener('click', (e) => {
-    const linesLen = lines.length 
-    let obhod = convex(polygon)
-    if (obhod != 0 && linesLen != 0) {
-        for (let i = 0; i < linesLen; i++) {
-            let line = lines[i]
-            cutLine(line, obhod)
-        }
-    }
-})
 
 function getVector(dot1, dot2) {
     let res = [dot2[0]-dot1[0], dot2[1]-dot1[1]]
@@ -268,11 +328,11 @@ function getSign(vector1, vector2) {
 
 function convex(polygon) {
     const length = polygon.length
+    let tmpSign, sign
     let v1 = getVector(polygon[0], polygon[1])
-    let v2 = getVector(polygon[length - 1], polygon[0])
-    let sign = getSign(v1, v2)
-    let tmpSign;
-    for (let i = 1; i < length - 1; i++) {
+    let v2 = getVector(polygon[length - 2], polygon[0])
+    sign = getSign(v1, v2)
+    for (let i = 1; i < length - 2; i++) {
         v1 = getVector(polygon[i], polygon[i+1])
         v2 = getVector(polygon[i-1], polygon[i])
         tmpSign = getSign(v1, v2)
