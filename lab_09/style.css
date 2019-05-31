@@ -128,7 +128,8 @@ a:hover,a:focus{
 }
 
 .verts {
-    width: 90%;
+    width: 100%;
+    max-width: 500px;
     min-height: 100px;
     margin-top: 10px;
     margin-bottom: 10px;

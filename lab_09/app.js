@@ -38,12 +38,17 @@ let cutter = []
 let lenC = 0
 
 const polyActive = document.querySelector('#polyActive')
+const lineActive = document.querySelector('#lineActive')
 const addP= document.querySelector('#addVertexP')
 const closeP = document.querySelector('#closeP')
 const addC = document.querySelector("#addVertexC")
 const closeC = document.querySelector('#closeC')
 const vertListP = document.querySelector("#vertlistP")
 const vertListC = document.querySelector("#vertlistC")
+const vertListR = document.querySelector("#vertlistR")
+
+let canPoly = true
+let canLine = true
 
 const PxHolder = document.querySelector("#Px")
 const PyHolder = document.querySelector("#Py")
@@ -63,6 +68,10 @@ document.querySelector('#clean').addEventListener('click', (e) => {
 
     vertListP.innerText = ''
     vertListC.innerText = ''
+    vertListR.innerText = ''
+
+    canPoly = true
+    canLine = true
 })
 
 function addDot(len, array, color, list, x, y) {
@@ -106,38 +115,45 @@ addC.addEventListener('click', (e) => {
 
 closeP.addEventListener('click', (e) => {
     close(lenP, polygon, addP, closeP, RectColor)
+    canPoly = false
 })
 
 closeC.addEventListener('click', (e) => {
     close(lenC, cutter, addC, closeC, LineColor)
+    canLine = false
 })
 
 canvas.addEventListener('mousedown', (e) => {
     if (e.which === 1) {
         let x = e.offsetX
         let y = e.offsetY;
-        if (polyActive.classList.length) {
+        if (polyActive.classList.length && canPoly) {
             lenP = addDot(lenP, polygon, RectColor, vertListP, x, y)
         }
-        else {
+        else if (lineActive.classList.length && canLine){
             lenC = addDot(lenC, cutter, LineColor, vertListC, x, y)
         }
     }
     else if (e.which === 3) {
-        if (polyActive.classList.length) {
+        if (polyActive.classList.length && canPoly) {
             close(lenP, polygon, addP, closeP, RectColor)
+            canPoly = false
         }
-        else {
+        else if (lineActive.classList.length && canLine){
             close(lenC, cutter, addC, closeC, LineColor)
+            canLine = false
         }
     }
 });
 
 document.querySelector('#cut').addEventListener('click', (e) => {
     let result = cutPolygon(polygon, cutter)
+    result.forEach((dot) => {
+        vertListR.innerText += ` (${dot[0]}, ${dot[1]});`
+    })
     let len = result.length
     for (let i = 0; i < len - 1; i++) {
-        drawLine(result[i][0], result[i][1], result[i + 1][0], result[i+1][1], cutColor)
+        drawLine(result[i][0], result[i][1], result[i + 1][0], result[i+1][1], CutColor)
     }
 })
 
@@ -235,87 +251,6 @@ function P(dot1, dot2, t) {
     return [x, y]
 }
 
-function cutLine(line, obhod) {
-    const polyLen = polygon.length
-    let tn = 0
-    let tv = 1
-    let D = getVector([line[0], line[1]], [line[2], line[3]])
-    
-    for (let j = 0; j < polyLen - 1; j++) {
-        let vEdge = getVector(polygon[j], polygon[j+1])
-        let n = normal(vEdge, obhod)
-        let w = getVector(polygon[j], [line[0], line[1]])
-
-        let Ds = scalProVect(n, D)
-        let Ws = scalProVect(w, n)
-
-        if (Ds == 0) { // параллельный или вырожденный
-            if (Ws >= 0) {
-                continue // видимый
-            }
-            else {
-                return // невидимый
-            }
-        }
-        let t = - Ws / Ds // пересечение
-        if (Ds > 0) { // направлен внутрь (P2 - внутри)
-            if (t > 1) {
-                return // невидимый
-            }
-            else {
-                tn = tn > t ? tn : t // переносим P1 (если она вне области)
-            }
-        }
-        else { // направлен наружу (Р1 - внутри)
-            if (t < 0) {
-                return // невидимый
-            }
-            else {
-                tv = tv < t ? tv : t // перенесем P2 (если она вне области)
-            }
-        }
-    }
-
-    let vEdge = getVector(polygon[polyLen - 1], polygon[0])
-    let n = normal(vEdge, obhod)
-    let w = getVector(polygon[polyLen - 1], [line[0], line[1]])
-
-    let Ds = scalProVect(n, D)
-    let Ws = scalProVect(w, n)
-
-    if (Ds == 0) { // параллельный или вырожденный
-        if (Ws < 0) {
-           return // невидимый
-        }
-    }
-    else {
-        let t = - Ws / Ds // пересечение
-        if (Ds > 0) { // направлен внутрь (P2 - внутри)
-            if (t > 1) {
-                return // невидимый
-            }
-            else {
-                tn = tn > t ? tn : t // переносим P1 (если она вне области)
-            }
-        }
-        else { // направлен наружу (Р1 - внутри)
-            if (t < 0) {
-                return // невидимый
-            }
-            else {
-                tv = tv < t ? tv : t // перенесем P2 (если она вне области)
-            }
-        }
-    }
-
-    if (tn <= tv) {
-        let dot1 = P(line, tn)
-        let dot2 = P(line, tv)
-        drawLine(dot1[0], dot1[1], dot2[0], dot2[1], CutColor)
-    }       
-}
-
-
 function getVector(dot1, dot2) {
     let res = [dot2[0]-dot1[0], dot2[1]-dot1[1]]
     return res
@@ -348,98 +283,4 @@ function convertToInt(x) {
         return NaN
     }
     else return parseInt(x)
-}
-
-function getCode(x, y) {
-    let code = 0
-    if (y > borders[3]) {code += 8}//top
-    if (y < borders[1]) {code += 4}//bottom
-    if (x > borders[2]) {code += 2}//right
-    if (x < borders[0]) {code += 1}//left
-    return code
-}
-
-function inOut(line) {
-    const code1 = getCode(line[0], line[1])
-    const code2 = getCode(line[2], line[3])
-    if ((code1 == code2) && (code1 == 0)) {
-        return 0 // inside
-    }
-    if ((code1 & code2) != 0) {
-        return 2 //outside
-    }
-    return 1 //cut
-}
-
-function findCut(line) {
-    let x1 = line[0]
-    let y1 = line[1]
-    let x2 = line[2]
-    let y2 = line[3]
-
-    const left = borders[0]
-    const bottom = borders[1]
-    const right = borders[2]
-    const top = borders[3]
-
-    if (x1 == x2) {//vertical
-        if (y1 > top) {y1 = top}
-        else if (y1 < bottom) {y1 = bottom}
-
-        if (y2 > top) {y2 = top}
-        else if (y2 < bottom) {y2 = bottom}
-    }
-
-    else if (y1 == y2) {//horizontal
-        if (x1 < left) {x1 = left}
-        else if (x1 > right) {x1 = right}
-
-        if (x2 < left) {x2 = left}
-        else if (x2 > right) {x2 = right}
-    }
-
-    else {
-        const mb = culcLine(x1, y1, x2, y2)
-        const m = mb[0]
-        const b = mb[1]
-
-        if (y1 > top) {
-            x1 = (top - b ) / m
-            y1 = top
-        }
-        else if (y1 < bottom) {
-            x1 = (bottom - b) / m
-            y1 = bottom
-        }
-        if (x1 > right) {
-            y1 = m * right + b
-            x1 = right
-        }
-        else if (x1 < left) {
-            y1 = m * left + b
-            x1 = left
-        }
-
-        if (y2 > top) {
-            x2 = (top - b ) / m
-            y2 = top
-        }
-        else if (y2 < bottom) {
-            x2 = (bottom - b) / m
-            y2 = bottom
-        }
-        if (x2 > right) {
-            y2 = m * right + b
-            x2 = right
-        }
-        else if (x2 < left) {
-            y2 = m * left + b
-            x2 = left
-        }
-    }
-
-    line[0] = x1
-    line[1] = y1
-    line[2] = x2
-    line[3] = y2
 }
