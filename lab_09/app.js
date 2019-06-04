@@ -148,6 +148,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 document.querySelector('#cut').addEventListener('click', (e) => {
     let result = cutPolygon(polygon, cutter)
+    if (result == undefined) {return;}
     for (let i =0; i < result.length - 1; i++) {
         vertListR.innerText += ` (${result[i][0]}, ${result[i][1]});`
     }
@@ -163,6 +164,7 @@ function cutPolygon(polygon, cutter) {
 
     if (lenP > 3 && lenC > 3) {
         let obhod = convex(cutter);
+        if (obhod == 0) {return;}
         for (let i = 0; i < lenC - 1; i++) {//for cutter edges
             lenP = polygon.length
             let cEdge = getVector(cutter[i], cutter[i + 1])
