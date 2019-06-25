@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html, body, main {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;}
+
+            #carousel{
+            position: relative;
+            height: 400px;
+            top: 50%;
+            transform: translateY(-50%);
+            overflow: hidden;}
+
+            div{
+            position: absolute;
+            transition: transform 1s, left 1s, opacity 1s, z-index 0s;
+            opacity: 1;}
+
+            img{
+            width: 400px;
+            transition: width 1s;}
+
+            .hideLeft{
+            left: 0%;
+            opacity: 0;
+            transform: translateY(50%) translateX(-50%);}
+
+            img{
+                width: 200px;}
+
+            .hideRight{
+            left: 100%;
+            opacity: 0;
+            transform: translateY(50%) translateX(-50%);}
+            img{
+                width: 200px;}
+
+            .prev
+        {    z-index: 5;
+            left: 30%;
+            transform: translateY(50px) translateX(-50%);}
+
+            img
+               { width: 300px;}
+
+            .prevLeftSecond
+            {z-index: 4;
+            left: 15%;
+            transform: translateY(50%) translateX(-50%);
+            opacity: .7;}
+
+            img
+                {width: 200px;}
+
+            .selected
+            {z-index: 10;
+            left: 50%;
+            transform: translateY(0px) translateX(-50%);}
+
+            .next
+            {z-index: 5;
+            left: 70%;
+            transform: translateY(50px) translateX(-50%);}
+
+            img
+               { width: 300px;}
+
+            .nextRightSecond
+            {z-index: 4;
+            left: 85%;
+            transform: translateY(50%) translateX(-50%);
+            opacity: .7;}
+
+            img
+              {  width: 200px;}
+
+            .buttons
+            {position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 10px;}
+
+            img {
+                cursor: pointer;
+            }
+
+        </style>
+    </head>
+    <body>
+        
+  <main>
+
+    <div id="carousel">
+<!-- 
+       <div class="hideLeft">
+        <img src="https://i1.sndcdn.com/artworks-000165384395-rhrjdn-t500x500.jpg">
+      </div> -->
+
+      <div class="prevLeftSecond">
+        <img src="https://i1.sndcdn.com/artworks-000185743981-tuesoj-t500x500.jpg">
+      </div>
+
+      <div class="prev">
+        <img src="https://i1.sndcdn.com/artworks-000158708482-k160g1-t500x500.jpg">
+      </div>
+
+      <div class="selected">
+        <img src="https://i1.sndcdn.com/artworks-000062423439-lf7ll2-t500x500.jpg">
+      </div>
+
+      <div class="next">
+        <img src="https://i1.sndcdn.com/artworks-000028787381-1vad7y-t500x500.jpg">
+      </div>
+
+      <div class="nextRightSecond">
+        <img src="https://i1.sndcdn.com/artworks-000108468163-dp0b6y-t500x500.jpg">
+      </div>
+
+      <!-- <div class="hideRight">
+        <img src="https://i1.sndcdn.com/artworks-000064920701-xrez5z-t500x500.jpg">
+      </div> -->
+
+    </div>
+  </main>
+    </body>
+    <script>
+        let s2 = document.querySelector('.prevLeftSecond')
+        let s3 = document.querySelector('.prev')
+        let s4 = document.querySelector('.selected')
+        let s5 = document.querySelector('.next')
+        let s6 = document.querySelector('.nextRightSecond')
+
+        let s = [s2, s3, s4, s5, s6, s2, s3, s4, s5]
+
+        //s4 - 2
+        //s5 - 3
+        //s6 - 4
+        //s2 - 5
+        //s3 - 6
+
+        s2.addEventListener('click', (e) => {
+            select(5);
+        })
+
+        s3.addEventListener('click', (e) => {
+            select(6);
+        })
+
+        s4.addEventListener('click', (e) => {
+            select(2);
+        })
+
+        s5.addEventListener('click', (e) => {
+            select(3);
+        })
+
+        s6.addEventListener('click', (e) => {
+            select(4);
+        })
+
+        function select(i) {
+            s[i].classList.remove("selected")
+            s[i].classList.remove("prev")
+            s[i].classList.remove("prevLeftSecond")
+            s[i].classList.remove("next")
+            s[i].classList.remove("nextRightSecond")
+
+            s[i].classList.add('selected');
+
+            s[i - 1].classList.remove("selected")
+            s[i - 1].classList.remove("prev")
+            s[i - 1].classList.remove("prevLeftSecond")
+            s[i - 1].classList.remove("next")
+            s[i - 1].classList.remove("nextRightSecond")
+
+            s[i - 1].classList.add('prev');
+
+            s[i - 2].classList.remove("selected")
+            s[i - 2].classList.remove("prev")
+            s[i - 2].classList.remove("prevLeftSecond")
+            s[i - 2].classList.remove("next")
+            s[i - 2].classList.remove("nextRightSecond")
+
+            s[i - 2].classList.add('prevLeftSecond');
+
+            s[i + 1].classList.remove("selected")
+            s[i + 1].classList.remove("prev")
+            s[i + 1].classList.remove("prevLeftSecond")
+            s[i + 1].classList.remove("next")
+            s[i + 1].classList.remove("nextRightSecond")
+
+            s[i + 1].classList.add('next');
+
+            s[i + 2].classList
+            s[i + 2].classList.remove("selected")
+            s[i + 2].classList.remove("prev")
+            s[i + 2].classList.remove("prevLeftSecond")
+            s[i + 2].classList.remove("next")
+            s[i + 2].classList.remove("nextRightSecond")
+
+            s[i + 2].classList.add('nextRightSecond');
+        }
+    </script>
+</html>

@@ -1,0 +1,93 @@
+--------- Брезенхем с устранением ступенчатости ---------------
+ввод: xn, yn, xk, yk
+пиксель - как площадь
+закрашивается с интенсивностью пропорциональной площади под отрезком
+
+intencity = 100
+x = xn
+y = xn
+dx = xk - xn
+dy = yk - yn
+sx = sign(dx)
+sy = sign(dy)
+dx = |dx|
+dy = |dy|
+
+ЕСЛИ (dx < dy), ТО { swap(dx, dy), obmen = true }
+ИНАЧЕ obmen = false
+
+m = dy / dx * intensity
+w = intensity - m
+er = intensity / 2
+
+ЦИКЛ (для i от 1 до dx + 1) {
+    высвечивание (x, y) с интенсивностью er
+    ЕСЛИ ( er < w ) {
+        ЕСЛИ (obmen), ТО { y += sx }
+        ИНАЧЕ {x += sx} 
+        e += m
+    }
+    ИНАЧЕ {
+        y += sx
+        x += sx
+        e -= w
+    }
+}
+---------------------------------------------------------------
+
+--------------------- алгоритм ВУ ------------------------------
+ввод: xn, yn, xk, yk
+
+intensity = 100 //levels of intensity
+dx = (xk - xn)
+dy = (yk - yn)
+
+высветим начало и конеуц
+
+отдельно горизонтальный, вертикальным
+(учитывая sx/sy знак приращения)
+
+if (|dy| <= |dx|) { //m < 1
+    if (dx < 0) {
+        swap(xk, xn)
+        swap(yk, yn)
+        dx = -dx
+        dy = -dy
+    }
+
+    m = dy / dx
+
+    yi = yn + m
+    for (let x = xn + 1; x < xk; x += 1) {
+        curInt = intensity - (yi % 1) * 100
+        высветить (x, floor(yi)) c интенсивностью curInt
+        if (curInt != 100) {
+            curInt = intensity - curInt
+            высветить (x, ceil(yi))  c интенсивностью curInt
+        }
+        yi = yi + m
+    }
+}
+else {
+    if (dy < 0) {
+        swap(xk, xn)
+        swap(yk, yn)
+        dx = -dx
+        dy = -dy
+    }
+    m = dx / dy
+
+    xi = xn + m
+    for (let y = yn + 1; y < yk; y += 1) {
+        let curInt =  intensity - (xi % 1) * 100
+        высветить (Math.floor(xi), y) c интенсивностью curInt
+        if (curInt != 100) {
+            curInt = intensity - curInt
+            высветить (Math.ceil(xi), y) c интенсивностью curInt
+        }
+        xi = xi + m
+    }
+}
+
+
+----------------------------------------------------------------
